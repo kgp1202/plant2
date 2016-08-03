@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false"    >
+    <item android:drawable="@drawable/wheel1" android:duration="100"/>
+    <item android:drawable="@drawable/wheel2" android:duration="100"/>
+    <item android:drawable="@drawable/wheel3" android:duration="100"/>
+    <item android:drawable="@drawable/wheel4" android:duration="100"/>
+    <item android:drawable="@drawable/wheel5" android:duration="100"/>
+    <item android:drawable="@drawable/wheel6" android:duration="100"/>
+    <item android:drawable="@drawable/wheel7" android:duration="100"/>
+    <item android:drawable="@drawable/wheel8" android:duration="100"/>
+    <item android:drawable="@drawable/wheel9" android:duration="100"/>
+    <item android:drawable="@drawable/wheel10" android:duration="100"/>
+    <item android:drawable="@drawable/wheel11" android:duration="100"/>
+    <item android:drawable="@drawable/wheel12" android:duration="100"/>
+    <item android:drawable="@drawable/wheel13" android:duration="100"/>
+    <item android:drawable="@drawable/wheel14" android:duration="100"/>
+    <item android:drawable="@drawable/wheel15" android:duration="100"/>
+    <item android:drawable="@drawable/wheel16" android:duration="100"/>
+    <item android:drawable="@drawable/wheel17" android:duration="100"/>
+    <item android:drawable="@drawable/wheel18" android:duration="100"/>
+    <item android:drawable="@drawable/wheel19" android:duration="100"/>
+    <item android:drawable="@drawable/wheel20" android:duration="100"/>
+    <item android:drawable="@drawable/wheel21" android:duration="100"/>
+    <item android:drawable="@drawable/wheel22" android:duration="100"/>
+    <item android:drawable="@drawable/wheel23" android:duration="100"/>
+    <item android:drawable="@drawable/wheel24" android:duration="100"/>
+    <item android:drawable="@drawable/wheel25" android:duration="100"/>
+    <item android:drawable="@drawable/wheel26" android:duration="100"/>
+    <item android:drawable="@drawable/wheel27" android:duration="100"/>
+    <item android:drawable="@drawable/wheel28" android:duration="100"/>
+    <item android:drawable="@drawable/wheel29" android:duration="100"/>
+    <item android:drawable="@drawable/wheel30" android:duration="100"/>
+</animation-list>

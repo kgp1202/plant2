@@ -1,0 +1,7 @@
+Push 할때,
+git add *
+git commit -m ""
+git push origin kgp1202
+
+
+Pull 할 때,

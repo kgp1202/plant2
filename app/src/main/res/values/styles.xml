@@ -1,0 +1,28 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:divider">@drawable/dialog_divider</item>
+    </style>
+
+    <style name="Theme.YP.MyDatePicker" parent="@android:style/Theme.Holo.Light.Dialog.NoActionBar">
+        <item name="android:textColor">@color/colorOrange</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!-- changes the default text colour for the EditTexts -->
+    <style name="editTextStyle" parent="android:style/Widget.EditText">
+        <item name="android:textColor">@color/colorOrange</item>
+    </style>
+
+    <style name="splashScreenTheme" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+         <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+    <style name="LoginTheme" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/login</item>
+    </style>
+</resources>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="3.5"
+    android:foreground="@drawable/dialog_detail_member_ring">
+
+        <ImageView
+        android:id="@+id/dialog_detail_member_profile_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/dialog_detail_member_default"
+            android:scaleType="centerCrop"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="5"
+    android:orientation="vertical">
+
+        <TextView
+        android:id="@+id/dialog_detail_member_profile_point"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:text="111점"
+        android:textAlignment="viewEnd"
+        android:textSize="15dp"
+        android:textColor="@color/colorMainOrange"
+        android:layout_marginRight="20dp"/>
+
+        <TextView
+        android:id="@+id/dialog_detail_member_profile_name"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:text="김근표"
+        android:textSize="21dp"
+         android:textAlignment="center"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>
