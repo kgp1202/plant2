@@ -62,7 +62,7 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
     RoomData roomData = new RoomData();
     View mainView;
-    Spinner UserNumSpin;
+    Spinner withNumSpin;
     int year;
     int month;
     int day;
@@ -100,7 +100,7 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         parentLayout = (LinearLayout) mainView.findViewById(R.id.fragment_reservation_make_parent);
         destination_editText = (AutoCompleteTextView) mainView.findViewById(R.id.destination_editText);
         comment_editText = (EditText) mainView.findViewById(R.id.comment_editText);
-        UserNumSpin = (Spinner) mainView.findViewById(R.id.UserNumSpin);
+        withNumSpin = (Spinner) mainView.findViewById(R.id.UserNumSpin);
         reservation_make_month_textView = (TextView) mainView.findViewById(R.id.reservation_make_month_textView);
         reservation_make_day_textView = (TextView) mainView.findViewById(R.id.reservation_make_day_textView);
         reservation_make_hour_textView = (TextView) mainView.findViewById(R.id.reservation_make_hour_textView);
@@ -134,6 +134,13 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         dayLaout.setOnClickListener(this);
         timeLayout.setOnClickListener(this);
         send_btn.setOnClickListener(this);
+        withNumSpin.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                destination_editText.clearFocus();
+                return false;
+            }
+        });
     }
 
     private class AutoCompletePHP extends AsyncTask<Void, Void, String[]>{
@@ -193,21 +200,23 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
             case R.id.send_btn:
                 if (destination_editText.getText().toString().trim().equals("")) {
                     Toast.makeText(getContext(), "목적지를 입력해주세요.", Toast.LENGTH_SHORT).show();
-                } else if (((String) UserNumSpin.getSelectedItem()).equals("인원")) {
-                    Toast.makeText(getContext(), "인원을 선택해주세요.", Toast.LENGTH_SHORT).show();
+                } else if (((String) withNumSpin.getSelectedItem()).equals("동행 인원")) {
+                    Toast.makeText(getContext(), "동행 인원을 선택해주세요.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "예약이 완료되었습니다.", Toast.LENGTH_SHORT).show();
 
                     //시간정보 format으로 변경하여 저장.
                     roomData.setRoomTimeData(year, month, day, hour, minute);
                     roomData.hostUserID = ((FrameActivity)getActivity()).userData.userID;
-                    roomData.userNum = 1;
-                    roomData.maxUserNum = Integer.parseInt((String)UserNumSpin.getSelectedItem());
+                    if(withNumSpin.getSelectedItem().equals("없음")){
+                        roomData.userNum = 1;
+                    }else {
+                        roomData.userNum = Integer.parseInt((String)withNumSpin.getSelectedItem());
+                    }
                     roomData.roomType = RoomData.ROOM_TYPE_RESERVE;
                     roomData.setDestPoint(destination_editText.getText().toString());
                     roomData.comment = comment_editText.getText().toString();
-
-                    Log.d("before", roomData.getRoomDataJSONString());
+                    roomData.maxUserNum = 4;
 
                     MakeRoomPHP makeRoomPHP = new MakeRoomPHP();
                     makeRoomPHP.execute(roomData);
@@ -215,7 +224,6 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
                 break;
         }
     }
-
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -238,7 +246,6 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
         @Override
         protected Void doInBackground(RoomData... params) {
-            StringBuilder jsonResult = new StringBuilder();
             try {
                 URL loginObj = new URL(makeRoomURL);
                 HttpURLConnection conn = (HttpURLConnection) loginObj.openConnection();
@@ -254,20 +261,14 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
                 int result = conn.getResponseCode();
                 if ( result == HttpURLConnection.HTTP_OK ) {
-                    Log.d("Interent Connect", makeRoomURL + " connect successful");
-
                     BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
                     while ( true ) {
                         String line = br.readLine();
                         if ( line == null )
                             break;
-                        jsonResult.append(line + "\n");
+                        roomData.roomID = Long.parseLong(line);
                     }
                     br.close();
-
-                    Log.d("result", jsonResult.toString());
-                }else {
-                    Log.d("Interent Connect", makeRoomURL + " connect fail or error");
                 }
             } catch (ProtocolException e) {
                 e.printStackTrace();
@@ -281,8 +282,10 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            ((FrameActivity) getActivity()).roomDataList.add(roomData);
+            ((FrameActivity) getActivity()).reservationCheckListCache.add(0, roomData);
+            ((FrameActivity) getActivity()).reservationListCache.add(0, roomData);
             ((FrameActivity) getActivity()).makeChange(3);
+            ((FrameActivity) getActivity()).makeRoomCount++;
         }
     }
 
@@ -312,7 +315,7 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
                     onetwoWay_btn[1].setBackground(ContextCompat.getDrawable(getContext(), R.drawable.reserve_twoway_clicked_btn));
                     break;
                 default:
-                    Log.d("error", "onetwoWayListener");
+                    Log.d("ReservationMakeFragment", "error at onetwoWayListener");
             }
         }
     };

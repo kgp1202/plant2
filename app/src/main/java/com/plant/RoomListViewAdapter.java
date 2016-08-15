@@ -6,8 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.zip.Inflater;
 
@@ -16,9 +19,11 @@ import java.util.zip.Inflater;
  */
 public class RoomListViewAdapter extends BaseAdapter {
 
+    public Context myContext;
     private ArrayList<RoomData> list = new ArrayList<RoomData>();
 
-    public void setList(ArrayList<RoomData> inputList){
+    public void setList(Context con,ArrayList<RoomData> inputList){
+        myContext=con;
         list = inputList;
     }
 
@@ -37,15 +42,79 @@ public class RoomListViewAdapter extends BaseAdapter {
         return position;
     }
 
+    public static class Holder{
+        TextView date;
+        ImageView goalImage;
+        ImageView reservationCnt;
+        TextView destination;
+        TextView startingPoint;
+        ImageView returnImage;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if(convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        Holder myHolder;
+        if(convertView==null) {
+            LayoutInflater inflater = (LayoutInflater) myContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.reservation_list_item, parent, false);
+
+            myHolder = new Holder();
+
+            myHolder.goalImage = (ImageView) convertView.findViewById(R.id.goalImage);
+            myHolder.destination = (TextView) convertView.findViewById(R.id.destinationPoint);
+            myHolder.startingPoint = (TextView) convertView.findViewById(R.id.startingPoint);
+            myHolder.returnImage = (ImageView) convertView.findViewById(R.id.returnImage);
+            myHolder.date = (TextView) convertView.findViewById(R.id.date);
+            myHolder.reservationCnt = (ImageView) convertView.findViewById(R.id.reservationCnt);
+
+            convertView.setTag(myHolder);
+        }
+        else{
+            myHolder = (Holder)convertView.getTag();
+        }
+        RoomData temp=list.get(position);
+        DateFormat sdFormat = new SimpleDateFormat("yyyyMMdd");
+        String dateStr = sdFormat.format(temp.startTime);
+        myHolder.date.setText(dateStr);
+
+        switch (temp.roomObject){
+            case 0:
+                myHolder.goalImage.setImageResource(R.drawable.certification);
+                break;
+            case 1:
+                myHolder.goalImage.setImageResource(R.drawable.toeic);
+                break;
+            case 2:
+                myHolder.goalImage.setImageResource(R.drawable.etc);
+                break;
         }
 
-        TextView textView = (TextView) convertView.findViewById(R.id.room_data);
-        textView.setText(list.get(position).getRoomDataJSONString());
+        switch (temp.userNum){
+            case 1:
+                myHolder.reservationCnt.setImageResource(R.drawable.reservation_count_1);
+                break;
+            case 2:
+                myHolder.reservationCnt.setImageResource(R.drawable.reservation_count_2);
+                break;
+            case 3:
+                myHolder.reservationCnt.setImageResource(R.drawable.reservation_count_3);
+                break;
+            case 4:
+                myHolder.reservationCnt.setImageResource(R.drawable.reservation_count_4);
+                break;
+        }
+
+        if(temp.round)
+            myHolder.returnImage.setImageResource(R.drawable.dialog_detail_round);
+        else
+            myHolder.returnImage.setImageResource(R.drawable.dialog_detail_non_round);
+
+        if(temp.startingPoint==1) myHolder.startingPoint.setText("후문");
+        else if(temp.startingPoint==3) myHolder.startingPoint.setText("정문");
+
+        myHolder.destination.setText(temp.destPoint);
+        //TextView textView = (TextView) convertView.findViewById(R.id.room_data);
+        //textView.setText(list.get(position).getRoomDataJSONString());
 
         return convertView;
     }

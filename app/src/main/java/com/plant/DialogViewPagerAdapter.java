@@ -4,14 +4,18 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,6 +24,7 @@ import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Kim on 2016-07-26.
@@ -33,10 +38,9 @@ class DialogViewPagerAdapter extends PagerAdapter {
 
     private RoomData currentRoomData;
 
-    ImageView profileImageView = null;
-    TextView profilePoint = null;
-    TextView profileName = null;
+    FrameLayout profileFrame = null;
     ImageView viewPagerStatus[] = new ImageView[3];
+    ImageView profileImg[] = new ImageView[4];
 
     public DialogViewPagerAdapter(Context context, ViewPager viewPager, Dialog dialog){
         mContext = context;
@@ -101,75 +105,49 @@ class DialogViewPagerAdapter extends PagerAdapter {
             case 1:     //members
                 view = inflater.inflate(R.layout.dialog_detail_member, null);
 
+                profileFrame = (FrameLayout) view.findViewById(R.id.dialog_detail_member_profile_frame);
+
                 LinearLayout profile[] = new LinearLayout[4];
                 profile[0] = (LinearLayout) view.findViewById(R.id.dialog_detail_member_profile1);
                 profile[1] = (LinearLayout) view.findViewById(R.id.dialog_detail_member_profile2);
                 profile[2] = (LinearLayout) view.findViewById(R.id.dialog_detail_member_profile3);
                 profile[3] = (LinearLayout) view.findViewById(R.id.dialog_detail_member_profile4);
 
-                ImageView profileStatus[] = new ImageView[4];
-                profileStatus[0] = (ImageView) view.findViewById(R.id.dialog_detail_member_profile1_status);
-                profileStatus[1] = (ImageView) view.findViewById(R.id.dialog_detail_member_profile2_status);
-                profileStatus[2] = (ImageView) view.findViewById(R.id.dialog_detail_member_profile3_status);
-                profileStatus[3] = (ImageView) view.findViewById(R.id.dialog_detail_member_profile4_status);
-
                 //dialog_detail_member에 들어갈 프로필을 inflate 해준다.
                 while(!itemClickListener.userDataLodingComplete){ }    //데이터 로딩이 완료되면
 
                 //profile을 설정.
-                for(int i = 0; i < currentRoomData.userNum; i++) {
-                    UserData tempUserData = itemClickListener.participateUserData.get(i);
+                for(int i = 0; i < itemClickListener.participateUserData.size(); i++) {
+                    for(int withNum = 0; withNum < itemClickListener.withNumber.get(i); withNum++){
+                        View memberProfileView = inflater.inflate(R.layout.dialog_detail_member_exist, null);
 
-                    View memberProfileView = null;
+                        TextView profilePoint = (TextView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_point);
+                        TextView profileName = (TextView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_name);
+                        profileImg[i + withNum] = (ImageView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_img);
 
-                    if (memberProfileView == null) {
-                        memberProfileView = inflater.inflate(R.layout.dialog_detail_member_exist, null);
+                        UserData tempUserData = itemClickListener.participateUserData.get(i);
 
-                        profileImageView = (ImageView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_img);
-                        profilePoint = (TextView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_point);
-                        profileName = (TextView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_name);
-                    }
+                        profilePoint.setText("" + tempUserData.point);
+                        profileName.setText(tempUserData.name);
 
-                    /******************************* profile Img **********************************/
-                    //로그인한 회원 본인일시
-                    if(tempUserData.userID.equals(((FrameActivity)mContext).userData.userID)) {
-                        String mCurrentPhotoPath = Environment.getExternalStorageDirectory().toString() +
-                                "/save_folder" + "/" + tempUserData.getDecodedProfilePath();
-
-                        File f = new File(mCurrentPhotoPath);
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inSampleSize = 4;
-
-                        Bitmap bmp = BitmapFactory.decodeFile(f.getAbsolutePath(), options);
-                        if(bmp == null) {
-                            Log.d("bmp null", "a");
+                        profile[i + withNum].addView(memberProfileView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                        if(withNum >= 1){
+                            //동행인원의 프로필
+                            Glide.with(mContext).load(tempUserData.profilePath).override(100,100).into(profileImg[i + withNum]);
+                        }else {
+                            Glide.with(mContext).load(tempUserData.profilePath).override(100,100).into(profileImg[i + withNum]);
                         }
-                        if(profileImageView == null){
-                            Log.d("profileImageVIew", "a");
-                        }
-                        profileImageView.setImageBitmap(bmp);
                     }
-                    //다른 회원의 경우
-                    else {
-                        Glide.with(mContext).load(tempUserData.profilePath).into(profileImageView);
-                    }
-                    /******************************* profile Img END ******************************/
-
-                    profilePoint.setText("" + tempUserData.point);
-                    profileName.setText(tempUserData.name);
-
-                    profile[i].addView(memberProfileView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 }
 
                 //empty로 설정.
                 for(int i = currentRoomData.userNum; i < currentRoomData.maxUserNum; i++){
-                    profileStatus[i].setVisibility(View.VISIBLE);
+                    profile[i].setBackgroundResource(R.drawable.dialog_detail_member_empty);
                 }
 
                 //BLCOKED로 설정
                 for(int i = currentRoomData.maxUserNum; i < 4; i++){
-                    profileStatus[i].setVisibility(View.VISIBLE);
-                    profileStatus[i].setImageResource(R.drawable.dialog_detail_member_blocked);
+                    profile[i].setBackgroundResource(R.drawable.dialog_detail_member_blocked);
                 }
 
                 break;
@@ -181,6 +159,8 @@ class DialogViewPagerAdapter extends PagerAdapter {
         mViewPager.addView(view, position);
         return view;
     }
+
+
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
@@ -196,6 +176,5 @@ class DialogViewPagerAdapter extends PagerAdapter {
             currentItemNumber = mViewPager.getCurrentItem();
             viewPagerStatus[currentItemNumber].setImageResource(R.drawable.dialog_detail_selected_circle);
         }
-
     }
 }

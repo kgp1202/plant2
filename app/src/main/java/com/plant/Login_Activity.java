@@ -109,6 +109,7 @@ public class Login_Activity extends Activity implements View.OnClickListener{
             intent.putExtra("UserData", loginPHP.userData);
             intent.putExtra("RoomDataList", loginPHP.roomDataList);
             startActivity(intent);
+            finish();
         } else {
             //refuesd
         }

@@ -4,11 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
+
+import java.security.MessageDigest;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -40,7 +45,7 @@ public class Splash_Activity extends Activity {
     public void checkPastLogin(){
         SharedPreferences pref = getSharedPreferences("UserData", MODE_PRIVATE);
         isPastLogin = pref.getBoolean("isLogin", false);
-        Log.d("pastLogin", ""+isPastLogin);
+
         if(isPastLogin){
             /********* 보안문제 발생 가능************/
             UserData tempUserData = new UserData();
@@ -49,6 +54,8 @@ public class Splash_Activity extends Activity {
 
             loginPHP = new LoginPHP(this);
             loginPHP.execute(tempUserData);
+
+            finish();
         }
     }
 

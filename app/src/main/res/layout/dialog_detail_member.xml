@@ -50,68 +50,11 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:paddingRight="5dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/dialog_detail_member_profile1_status"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/dialog_detail_member_empty"
-                        android:visibility="gone"/>
-
-
-                    <!--<FrameLayout-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_weight="3.5"-->
-                        <!--android:foreground="@drawable/dialog_detail_member_ring">-->
-
-                        <!--<ImageView-->
-                            <!--android:id="@+id/dialog_detail_member_profile1_img"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="match_parent"-->
-                            <!--android:src="@drawable/dialog_detail_member_default"/>-->
-
-                    <!--</FrameLayout>-->
-
-                    <!--<LinearLayout-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_weight="5"-->
-                        <!--android:orientation="vertical">-->
-
-                        <!--<TextView-->
-                            <!--android:id="@+id/dialog_detail_member_profile1_point"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="0dp"-->
-                            <!--android:layout_weight="3"-->
-                            <!--android:text="111점"-->
-                            <!--android:textAlignment="viewEnd"-->
-                            <!--android:textSize="15dp"-->
-                            <!--android:textColor="@color/colorMainOrange"-->
-                            <!--android:layout_marginRight="20dp"/>-->
-
-                        <!--<TextView-->
-                            <!--android:id="@+id/dialog_detail_member_profile1_name"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="0dp"-->
-                            <!--android:layout_weight="4"-->
-                            <!--android:text="김근표"-->
-                            <!--android:textSize="21dp"-->
-                            <!--android:textAlignment="center"/>-->
-
-                    <!--</LinearLayout>-->
+                    android:orientation="horizontal"
+                    android:layout_marginRight="5dp">
 
                 </LinearLayout>
 
-                <!--<ImageView-->
-                    <!--android:id="@+id/dialog_detail_member_profile1_status"-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:src="@drawable/dialog_detail_member_empty"-->
-                    <!--android:paddingRight="5dp"-->
-                    <!--android:visibility="gone"/>-->
 
                 <LinearLayout
                     android:id="@+id/dialog_detail_member_profile2"
@@ -119,67 +62,11 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:paddingLeft="5dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/dialog_detail_member_profile2_status"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/dialog_detail_member_empty"
-                        android:visibility="gone"/>
-
-                    <!--<FrameLayout-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_weight="3.5"-->
-                        <!--android:foreground="@drawable/dialog_detail_member_ring">-->
-
-                        <!--<ImageView-->
-                            <!--android:id="@+id/dialog_detail_member_profile2_img"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="match_parent"-->
-                            <!--android:src="@drawable/dialog_detail_member_default"/>-->
-
-                    <!--</FrameLayout>-->
-
-                    <!--<LinearLayout-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_weight="5"-->
-                        <!--android:orientation="vertical">-->
-
-                        <!--<TextView-->
-                            <!--android:id="@+id/dialog_detail_member_profile2_point"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="0dp"-->
-                            <!--android:layout_weight="3"-->
-                            <!--android:text="111점"-->
-                            <!--android:textAlignment="viewEnd"-->
-                            <!--android:textSize="15dp"-->
-                            <!--android:textColor="@color/colorMainOrange"-->
-                            <!--android:layout_marginRight="20dp"/>-->
-
-                        <!--<TextView-->
-                            <!--android:id="@+id/dialog_detail_member_profile2_name"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="0dp"-->
-                            <!--android:layout_weight="4"-->
-                            <!--android:text="김근표"-->
-                            <!--android:textSize="21dp"-->
-                            <!--android:textAlignment="center"/>-->
-
-                    <!--</LinearLayout>-->
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="5dp">
 
                 </LinearLayout>
 
-                <!--<ImageView-->
-                    <!--android:id="@+id/dialog_detail_member_profile2_status"-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:src="@drawable/dialog_detail_member_empty"-->
-                    <!--android:paddingLeft="5dp"-->
-                    <!--android:visibility="gone"/>-->
             </LinearLayout>
 
             <LinearLayout
@@ -195,67 +82,10 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:paddingRight="5dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/dialog_detail_member_profile3_status"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/dialog_detail_member_empty"
-                        android:visibility="gone"/>
-
-                    <!--<FrameLayout-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_weight="3.5"-->
-                        <!--android:foreground="@drawable/dialog_detail_member_ring">-->
-
-                        <!--<ImageView-->
-                            <!--android:id="@+id/dialog_detail_member_profile3_img"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="match_parent"-->
-                            <!--android:src="@drawable/dialog_detail_member_default"/>-->
-
-                    <!--</FrameLayout>-->
-
-                    <!--<LinearLayout-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_weight="5"-->
-                        <!--android:orientation="vertical">-->
-
-                        <!--<TextView-->
-                            <!--android:id="@+id/dialog_detail_member_profile3_point"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="0dp"-->
-                            <!--android:layout_weight="3"-->
-                            <!--android:text="111점"-->
-                            <!--android:textAlignment="viewEnd"-->
-                            <!--android:textSize="15dp"-->
-                            <!--android:textColor="@color/colorMainOrange"-->
-                            <!--android:layout_marginRight="20dp"/>-->
-
-                        <!--<TextView-->
-                            <!--android:id="@+id/dialog_detail_member_profile3_name"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="0dp"-->
-                            <!--android:layout_weight="4"-->
-                            <!--android:text="김근표"-->
-                            <!--android:textSize="21dp"-->
-                            <!--android:textAlignment="center"/>-->
-
-                    <!--</LinearLayout>-->
+                    android:orientation="horizontal"
+                    android:layout_marginRight="5dp">
 
                 </LinearLayout>
-
-                <!--<ImageView-->
-                    <!--android:id="@+id/dialog_detail_member_profile3_status"-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:src="@drawable/dialog_detail_member_empty"-->
-                    <!--android:paddingRight="5dp"-->
-                    <!--android:visibility="gone"/>-->
 
                 <LinearLayout
                     android:id="@+id/dialog_detail_member_profile4"
@@ -263,67 +93,12 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:paddingLeft="5dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="5dp">
 
-                    <ImageView
-                        android:id="@+id/dialog_detail_member_profile4_status"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/dialog_detail_member_empty"
-                        android:visibility="gone"/>
-
-                    <!--<FrameLayout-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_weight="3.5"-->
-                        <!--android:foreground="@drawable/dialog_detail_member_ring">-->
-
-                        <!--<ImageView-->
-                            <!--android:id="@+id/dialog_detail_member_profile4_img"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="match_parent"-->
-                            <!--android:src="@drawable/dialog_detail_member_default"/>-->
-
-                    <!--</FrameLayout>-->
-
-                    <!--<LinearLayout-->
-                        <!--android:layout_width="0dp"-->
-                        <!--android:layout_height="match_parent"-->
-                        <!--android:layout_weight="5"-->
-                        <!--android:orientation="vertical">-->
-
-                        <!--<TextView-->
-                            <!--android:id="@+id/dialog_detail_member_profile4_point"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="0dp"-->
-                            <!--android:layout_weight="3"-->
-                            <!--android:text="111점"-->
-                            <!--android:textAlignment="viewEnd"-->
-                            <!--android:textSize="15dp"-->
-                            <!--android:textColor="@color/colorMainOrange"-->
-                            <!--android:layout_marginRight="20dp"/>-->
-
-                        <!--<TextView-->
-                            <!--android:id="@+id/dialog_detail_member_profile4_name"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="0dp"-->
-                            <!--android:layout_weight="4"-->
-                            <!--android:text="김근표"-->
-                            <!--android:textSize="21dp"-->
-                            <!--android:textAlignment="center"/>-->
-
-                    <!--</LinearLayout>-->
 
                 </LinearLayout>
 
-                <!--<ImageView-->
-                    <!--android:id="@+id/dialog_detail_member_profile4_status"-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:src="@drawable/dialog_detail_member_empty"-->
-                    <!--android:paddingLeft="5dp"-->
-                    <!--android:visibility="gone"/>-->
             </LinearLayout>
 
 

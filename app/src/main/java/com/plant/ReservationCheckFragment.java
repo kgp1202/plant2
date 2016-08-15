@@ -33,12 +33,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class ReservationCheckFragment extends Fragment{
+public class ReservationCheckFragment extends Fragment {
     View mainView;
     ListView reservation_listView;
     RoomListViewAdapter reservation_listView_adapter = new RoomListViewAdapter();
 
     ArrayList<RoomData> roomDataList;
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unbindDrawables(mainView);
+    }
+
+    private void unbindDrawables(View view) {
+        if (view.getBackground() != null) {
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup && !(view instanceof AdapterView)) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,12 +72,20 @@ public class ReservationCheckFragment extends Fragment{
         return mainView;
     }
 
-    public void init(){
+    @Override
+    public void onResume() {
+        super.onResume();
+        reservation_listView_adapter.notifyDataSetChanged();
+    }
+
+
+
+    public void init() {
         reservation_listView = (ListView) mainView.findViewById(R.id.reservation_check_listView);
 
         reservation_listView.setAdapter(reservation_listView_adapter);
-        roomDataList = ((FrameActivity)getActivity()).roomDataList;
-        reservation_listView_adapter.setList(roomDataList);
+        roomDataList = ((FrameActivity) getActivity()).reservationCheckListCache;
+        reservation_listView_adapter.setList(getActivity(), roomDataList);
         reservation_listView_adapter.notifyDataSetChanged();
 
         reservation_listView.setOnItemClickListener(new RoomDataListViewOnItemClickListener(getContext(),

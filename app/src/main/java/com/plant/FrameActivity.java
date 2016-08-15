@@ -41,20 +41,19 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
     AnimationDrawable frameAnimation;
     RelativeLayout addedView;
     ImageView wheel;
-    Fragment fragment;
-    /************************************************/
-
-    /***************** Fragment *********************/
-    Fragment indexFragment = null;
-    Fragment realTimeFragment = null;
-    Fragment reservationFragment = null;
-    Fragment reservationCheckFragment = null;
-    Fragment moreFragment = null;
     /************************************************/
 
     //UserData와 RoomData
     public UserData userData;
-    public ArrayList<RoomData> roomDataList;
+    public ArrayList<RoomData> reservationCheckListCache;
+    public ArrayList<RoomData> reservationListCache;
+
+    public int makeRoomCount = 0;
+
+    public int currentFragmentNumber;
+
+    FragmentManager fragmentManager;
+    Fragment fragment = null;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -81,7 +80,7 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
     public void init() {
         //intent를 통해서 넘어온 데이터
         userData = (UserData) getIntent().getSerializableExtra("UserData");
-        roomDataList = (ArrayList<RoomData>) getIntent().getSerializableExtra("RoomDataList");
+        reservationCheckListCache = (ArrayList<RoomData>) getIntent().getSerializableExtra("RoomDataList");
 
         mView = (RelativeLayout) findViewById(R.id.mView);
 
@@ -97,73 +96,49 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
         statusbar_conserve_confirm_btn.setOnClickListener(this);
         statusbar_more_btn.setOnClickListener(this);
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragmentReplace, new IndexFragment())
+        fragmentManager = getSupportFragmentManager();
+        fragment = new IndexFragment();
+        fragmentManager.beginTransaction()
+                .add(R.id.fragmentReplace, fragment)
                 .commit();
+
+        currentFragmentNumber = 0;
     }
 
     //클릭 되어졌던 이미지를 초기화
     public void initImage() {
-        statusbar_home_btn.setImageResource(R.drawable.statusbar_home_btn);
-        statusbar_realtime_btn.setImageResource(R.drawable.statusbar_realtime_btn);
-        statusbar_conserve_btn.setImageResource(R.drawable.statusbar_conserve_btn);
-        statusbar_conserve_confirm_btn.setImageResource(R.drawable.statusbar_conserve_confirm_btn);
-        statusbar_more_btn.setImageResource(R.drawable.statusbar_more_btn);
+        switch(currentFragmentNumber){
+            case 0: statusbar_home_btn.setImageResource(R.drawable.statusbar_home_btn);
+                break;
+            case 1: statusbar_realtime_btn.setImageResource(R.drawable.statusbar_realtime_btn);
+                break;
+            case 2:
+            case 4:statusbar_conserve_btn.setImageResource(R.drawable.statusbar_conserve_btn);
+                break;
+            case 3:statusbar_conserve_confirm_btn.setImageResource(R.drawable.statusbar_conserve_confirm_btn);
+                break;
+            case 5: statusbar_more_btn.setImageResource(R.drawable.statusbar_more_btn);
+                break;
+        }
     }
-    /************************************************************************************************/
 
-    /**
-     * Override from implements
-     ******************************************************************************************/
     @Override
     public void onClick(View v) {
-        initImage();
         switch (v.getId()) {
             case R.id.statusbar_home_btn:
-                statusbar_home_btn.setImageResource(R.drawable.statusbar_home_clicked_btn);
-                if(indexFragment == null){
-                    Log.d("Fragment Activity", "indexFragment make");
-                    indexFragment = new IndexFragment();
-                }
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentReplace, indexFragment)
-                        .commit();
+                makeChange(0);
                 break;
             case R.id.statusbar_realtime_btn:
-                statusbar_realtime_btn.setImageResource(R.drawable.statusbar_realtime_clicked_btn);
-                if(realTimeFragment == null){
-                    realTimeFragment = new RealTimeFragment();
-                }
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentReplace, realTimeFragment)
-                        .commit();
+                makeChange(1);
                 break;
             case R.id.statusbar_conserve_btn:
-                statusbar_conserve_btn.setImageResource(R.drawable.statusbar_conserve_clicked_btn);
-                if(reservationFragment == null){
-                    reservationFragment = new ReservationFragment();
-                }
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentReplace, new ReservationFragment())
-                        .commit();
+                makeChange(2);
                 break;
             case R.id.statusbar_conserve_confirm_btn:
-                statusbar_conserve_confirm_btn.setImageResource(R.drawable.statusbar_conserve_confirm_clicked_btn);
-                if(reservationCheckFragment == null){
-                    reservationCheckFragment = new ReservationCheckFragment();
-                }
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentReplace, reservationCheckFragment)
-                        .commit();
+                makeChange(3);
                 break;
             case R.id.statusbar_more_btn:
-                statusbar_more_btn.setImageResource(R.drawable.statusbar_more_clicked_btn);
-                if(moreFragment == null){
-                    moreFragment = new MoreFragment();
-                }
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentReplace, moreFragment)
-                        .commit();
+                makeChange(5);
                 break;
         }
     }
@@ -171,41 +146,61 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
     @Override
     public void makeChange(int number) {
         initImage();
+        currentFragmentNumber = number;
+        fragmentManager.beginTransaction().remove(fragment).commit();
+
         switch (number) {
+            case 0:
+                statusbar_home_btn.setImageResource(R.drawable.statusbar_home_clicked_btn);
+                fragment = new IndexFragment();
+                fragmentManager.beginTransaction()
+                        .add(R.id.fragmentReplace, fragment)
+                        .commit();
+                break;
             case 1:
                 statusbar_realtime_btn.setImageResource(R.drawable.statusbar_realtime_clicked_btn);
                 fragment = new RealTimeFragment();
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentReplace, fragment)
+                fragmentManager.beginTransaction()
+                        .add(R.id.fragmentReplace, fragment)
                         .commit();
                 break;
             case 2:
                 statusbar_conserve_btn.setImageResource(R.drawable.statusbar_conserve_clicked_btn);
                 fragment = new ReservationFragment();
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentReplace, fragment)
+                fragmentManager.beginTransaction()
+                        .add(R.id.fragmentReplace, fragment)
                         .commit();
                 break;
             case 3:
                 statusbar_conserve_confirm_btn.setImageResource(R.drawable.statusbar_conserve_confirm_clicked_btn);
                 fragment = new ReservationCheckFragment();
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentReplace, fragment)
+                fragmentManager.beginTransaction()
+                        .add(R.id.fragmentReplace, fragment)
                         .commit();
                 break;
             case 4:
                 statusbar_conserve_btn.setImageResource(R.drawable.statusbar_conserve_clicked_btn);
                 fragment = new ReservationMakeFragment();
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentReplace, fragment)
+                fragmentManager.beginTransaction()
+                        .add(R.id.fragmentReplace, fragment)
+                        .commit();
+                break;
+            case 5:
+                statusbar_more_btn.setImageResource(R.drawable.statusbar_more_clicked_btn);
+                fragment = new MoreFragment();
+                fragmentManager.beginTransaction()
+                        .add(R.id.fragmentReplace, fragment)
                         .commit();
                 break;
         }
     }
 
-    @Override
+    public void getResultFromThread(int input){
+        Log.d("in frame",input+"");
+    }
+
     public void makeDarker(boolean input) {
-        if (input) {//set view
+        if(input) {
             LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             addedView = (RelativeLayout) inflater.inflate(R.layout.queuing_layout, null);
             addedView.setOnTouchListener(this);
@@ -217,9 +212,12 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
             wheel.setBackgroundResource(R.drawable.wheel_list);
             frameAnimation = (AnimationDrawable) wheel.getBackground();
             frameAnimation.start();
-            myQueueTask=new QueueTask(this);
+
+            myQueueTask = new QueueTask(this);
+            myQueueTask.setRoomData(RealTimeFragment.realTimeRommData);
+            myQueueTask.setUserData(userData);
             myQueueTask.execute();
-        } else {
+        }else {
             frameAnimation.stop();
             mView.removeViewAt(1);
         }
@@ -235,16 +233,16 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
             case MotionEvent.ACTION_DOWN:
                 mThouchX = event.getX();
                 baseX = v.getX();
-                isMove=false;
+                isMove = false;
                 break;
             case MotionEvent.ACTION_UP:
                 if (isMove) {
-                    if (event.getRawX() - baseX > 200) {
+                    if (event.getRawX() - baseX > 300) {
+                        Log.d("asd", event.getRawX() - baseX + "");
                         myQueueTask.cancel(true);
                     } else
                         v.setX(0);
-                }
-                else
+                } else
                     v.setX(0);
                 break;
             case MotionEvent.ACTION_MOVE:

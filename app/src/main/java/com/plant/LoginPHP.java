@@ -117,6 +117,7 @@ public class LoginPHP extends AsyncTask<UserData, Void, String> {
             ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},0);
 
         }else {
+            Log.d("image path", " " + userData.profilePath);
             //User의 ProfilePath에 존재하는 이미지를 다운로드 받는다.
             ImageDownload imageDownload = new ImageDownload(mContext);
             imageDownload.execute(userData.profilePath);

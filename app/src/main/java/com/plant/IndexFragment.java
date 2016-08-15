@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -26,11 +27,35 @@ public class IndexFragment extends Fragment implements View.OnTouchListener{
     ImageView index_conserve_confirm_btn;
     Animation scale_touch_anim;
     View touched_view;
+    View mainView;
     /************************************************/
 
     /*functional************************************/
     FragmentChangeListener mCallback;
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("indexFragment", "destroy");
+        unbindDrawables(mainView);
+    }
+
+    private void unbindDrawables(View view){
+        if (view.getBackground() != null){
+            view.getBackground().setCallback(null);
+        }
+        if (view instanceof ViewGroup && !(view instanceof AdapterView)){
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++){
+                unbindDrawables(((ViewGroup) view).getChildAt(i));
+            }
+            ((ViewGroup) view).removeAllViews();
+        }
+    }
+
     /**********************************************/
+
+
+
 
     public IndexFragment(){}
 
@@ -43,6 +68,7 @@ public class IndexFragment extends Fragment implements View.OnTouchListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragement_index, container, false);
         init(rootView);
+        mainView = rootView;
         return rootView;
     }
 
