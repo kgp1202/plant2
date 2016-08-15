@@ -3,6 +3,7 @@ package com.plant;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
@@ -91,7 +92,7 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
                 break;
             case DIALOG_MODE_CHECK:
                 dialogDetailTopImg.setImageResource(R.drawable.dialog_detail_check_head);
-                dialogDetailJoinBtn.setImageResource(R.drawable.dialog_detail_check_out);
+                dialogDetailJoinBtn.setImageResource(R.drawable.dialog_detail_chating_join);
 
                 dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -143,10 +144,12 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
                     roomJoinDialog.show();
                 }
                 break;
-            //방 나가기 버튼(Check모드에서)
+            //채팅 방으로 이동(Check모드에서)
             case DIALOG_MODE_CHECK:
-
-
+                Intent intent = new Intent(mContext, ChatingActivity.class);
+                intent.putExtra("userData", ((FrameActivity)mContext).userData);
+                intent.putExtra("roomData", ((FrameActivity)mContext).userData);
+                mContext.startActivity(intent);
                 break;
         }
     }
