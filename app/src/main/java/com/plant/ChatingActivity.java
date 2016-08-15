@@ -18,11 +18,14 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.kakao.usermgmt.response.model.User;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -38,34 +41,49 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     ImageView sendBtn;
     ImageView backBtn;
     ImageView moreBtn;
+
+    RoomData myRoomData;
+    UserData myUserData;
+    ArrayList<UserData> participatedUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chating);
         Intent intent=getIntent();
-        RoomData temp=new RoomData();
-        /*
-        try {
-            temp.setRoomDataFromJson(new JSONObject(intent.getStringExtra("roomData")));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
-        init(temp);
+        myRoomData=(RoomData) intent.getSerializableExtra("roomData");
+        myUserData=(UserData)intent.getSerializableExtra("userData");
+        participatedUser=(ArrayList<UserData>)intent.getSerializableExtra("participated");
+        for(int i=0; i<participatedUser.size(); i++){
+            Log.d("test",participatedUser.get(i).userID);
+        }
+        init();
     }
-    void init(RoomData roomData){
-        if(roomData.roomID==-1){
+    void init(){
+        if(myRoomData.roomID==-1){
             Log.d("ERROR","No Room Data Input");
             finish();
         }
         else{
-            /*
-            time= roomData.startTime-Calendar.getInstance().getTimeInMillis();
-            SimpleDateFormat format = new SimpleDateFormat("dd일 hh:mm:ss");
-            String timeStr = format.format(new Date(time));
-            String result = timeStr.substring(0, 19);
-            */
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+            String timeStr="";
+            if(myRoomData.roomType==2){
+                String day="날";
+                time= myRoomData.startTime-Calendar.getInstance().getTimeInMillis();
+                if(time>=24*60*60*1000){
+                    day=(time/24*60*60*1000)+"날";
+                    time=time%24*60*60*1000;
+                }
+                timeStr=format.format(new Date(time)) ;
+                timeStr= timeStr.substring(0, 19);
+                timeStr=day+timeStr;
+            }
+            else{
+                time=1*60*1000;
+                timeStr=format.format(new Date(time)) ;
+            }
+
             chatingTimer=(TextView)findViewById(R.id.chatingTimer);
-            chatingTimer.setText("1231231231231231231212312123123123123123");
+            chatingTimer.setText(timeStr);
             textBody=(LinearLayout)findViewById(R.id.textBody);
             (sendBtn=(ImageView)findViewById(R.id.sendBtn)).setOnClickListener(this);
             (backBtn=(ImageView)findViewById(R.id.backBtn)).setOnClickListener(this);

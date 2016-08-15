@@ -25,6 +25,9 @@
         <activity
             android:name=".Login_Activity"
             android:theme="@style/LoginTheme" />
+
+        <activity
+            android:name=".ChatingActivity" />
         <activity android:name=".Kakao.KakaoSignUp" />
 
         <meta-data

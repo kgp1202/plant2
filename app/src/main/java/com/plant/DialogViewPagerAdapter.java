@@ -118,26 +118,27 @@ class DialogViewPagerAdapter extends PagerAdapter {
 
                 //profile을 설정.
                 for(int i = 0; i < itemClickListener.participateUserData.size(); i++) {
-                    for(int withNum = 0; withNum < itemClickListener.withNumber.get(i); withNum++){
                         View memberProfileView = inflater.inflate(R.layout.dialog_detail_member_exist, null);
 
+                        TextView number=(TextView)memberProfileView.findViewById(R.id.number);
                         TextView profilePoint = (TextView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_point);
                         TextView profileName = (TextView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_name);
-                        profileImg[i + withNum] = (ImageView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_img);
+                        profileImg[i] = (ImageView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_img);
 
                         UserData tempUserData = itemClickListener.participateUserData.get(i);
 
                         profilePoint.setText("" + tempUserData.point);
                         profileName.setText(tempUserData.name);
 
-                        profile[i + withNum].addView(memberProfileView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                        if(withNum >= 1){
+                        profile[i].addView(memberProfileView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                        if(itemClickListener.withNumber.get(i)>= 1){
                             //동행인원의 프로필
-                            Glide.with(mContext).load(tempUserData.profilePath).override(100,100).into(profileImg[i + withNum]);
+                            Glide.with(mContext).load(tempUserData.profilePath).override(100,100).into(profileImg[i]);
+                            number.setText((itemClickListener.withNumber.get(i))+"");
                         }else {
-                            Glide.with(mContext).load(tempUserData.profilePath).override(100,100).into(profileImg[i + withNum]);
+                            Glide.with(mContext).load(tempUserData.profilePath).override(100,100).into(profileImg[i]);
+                            number.setText("");
                         }
-                    }
                 }
 
                 //empty로 설정.

@@ -22,6 +22,9 @@
             android:src="@drawable/digital_timer"
             android:layout_height="match_parent" />
         <TextView
+            android:textColor="#ffffff"
+            android:gravity="center_vertical"
+            android:textSize="20sp"
             android:id="@+id/chatingTimer"
             android:layout_width="0dp"
             android:layout_weight="1"

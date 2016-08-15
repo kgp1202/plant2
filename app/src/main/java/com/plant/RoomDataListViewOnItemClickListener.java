@@ -3,6 +3,7 @@ package com.plant;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
@@ -32,7 +33,7 @@ import java.util.ArrayList;
 /**
  * Created by Kim on 2016-07-27.
  */
-public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemClickListener, View.OnClickListener{
+public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemClickListener{
     Context mContext;
     int mode;
 
@@ -83,7 +84,6 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
             }
         });
         dialogDetailJoinBtn = (ImageView) dialog.findViewById(R.id.dialog_detail_join_btn);
-        dialogDetailJoinBtn.setOnClickListener(this);
 
         switch(mode){
             case DIALOG_MODE_JOIN:
@@ -91,7 +91,7 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
                 break;
             case DIALOG_MODE_CHECK:
                 dialogDetailTopImg.setImageResource(R.drawable.dialog_detail_check_head);
-                dialogDetailJoinBtn.setImageResource(R.drawable.dialog_detail_check_out);
+                dialogDetailJoinBtn.setImageResource(R.drawable.dialog_detail_chating_join);
 
                 dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -105,51 +105,53 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
 
     }
 
-    //join버튼과 나가기 버튼
-    @Override
-    public void onClick(View v) {
-        switch(mode){
-            //참여하기 버튼(join 모드에서)
-            case DIALOG_MODE_JOIN:
-                //이미 참여 중인지 여부 판단
-                boolean isJoining = false;
-                for(int i = 0; i < participateUserData.size(); i++){
-                    if(participateUserData.get(i).userID.equals(((FrameActivity)mContext).userData.userID)){
-                        isJoining = true;
-                        break;
-                    }
-                }
-
-                if(isJoining){
-                    Toast.makeText(mContext, "이 방에는 이미 참여중입니다!", Toast.LENGTH_SHORT).show();
-                } else if(clickedItem.userNum == clickedItem.maxUserNum){
-                    Toast.makeText(mContext, "이 방은 정원이 가득 찼습니다!", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    //동행인원을 물어보는 다이얼로그 띄우기
-                    Dialog roomJoinDialog = new Dialog(mContext);
-                    roomJoinDialog.setContentView(R.layout.dialog_detail_roomjoin);
-                    roomJoinDialog.setCancelable(true);
-
-                    Button button1 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_one);
-                    Button button2 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_two);
-                    Button button3 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_three);
-
-                    RoomJoinDialogListener roomJoinDialogListener = new RoomJoinDialogListener(roomJoinDialog);
-                    button1.setOnClickListener(roomJoinDialogListener);
-                    button2.setOnClickListener(roomJoinDialogListener);
-                    button3.setOnClickListener(roomJoinDialogListener);
-
-                    roomJoinDialog.show();
-                }
-                break;
-            //방 나가기 버튼(Check모드에서)
-            case DIALOG_MODE_CHECK:
-
-
-                break;
-        }
-    }
+//    //join버튼과 나가기 버튼
+//    @Override
+//    public void onClick(View v) {
+//        switch(mode){
+//            //참여하기 버튼(join 모드에서)
+//            case DIALOG_MODE_JOIN:
+//                //이미 참여 중인지 여부 판단
+//                boolean isJoining = false;
+//                for(int i = 0; i < participateUserData.size(); i++){
+//                    if(participateUserData.get(i).userID.equals(((FrameActivity)mContext).userData.userID)){
+//                        isJoining = true;
+//                        break;
+//                    }
+//                }
+//
+//                if(isJoining){
+//                    Toast.makeText(mContext, "이 방에는 이미 참여중입니다!", Toast.LENGTH_SHORT).show();
+//                } else if(clickedItem.userNum == clickedItem.maxUserNum){
+//                    Toast.makeText(mContext, "이 방은 정원이 가득 찼습니다!", Toast.LENGTH_SHORT).show();
+//                }
+//                else {
+//                    //동행인원을 물어보는 다이얼로그 띄우기
+//                    Dialog roomJoinDialog = new Dialog(mContext);
+//                    roomJoinDialog.setContentView(R.layout.dialog_detail_roomjoin);
+//                    roomJoinDialog.setCancelable(true);
+//
+//                    Button button1 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_one);
+//                    Button button2 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_two);
+//                    Button button3 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_three);
+//
+//                    RoomJoinDialogListener roomJoinDialogListener = new RoomJoinDialogListener(roomJoinDialog);
+//                    button1.setOnClickListener(roomJoinDialogListener);
+//                    button2.setOnClickListener(roomJoinDialogListener);
+//                    button3.setOnClickListener(roomJoinDialogListener);
+//
+//                    roomJoinDialog.show();
+//                }
+//                break;
+//            //채팅 방으로 이동(Check모드에서)
+//            case DIALOG_MODE_CHECK:
+//                Intent intent = new Intent(mContext, ChatingActivity.class);
+//                intent.putExtra("userData", ((FrameActivity)mContext).userData);
+//                intent.putExtra("roomData", ((FrameActivity)mContext).roomData);
+//                mContext.startActivity(intent);
+//                break;
+//        }
+//    }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -162,6 +164,56 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
 
         mViewPagerAdapter.setListViewListener(this);
         mViewPagerAdapter.setRoomData(clickedItem);
+
+        dialog.findViewById(R.id.dialog_detail_join_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch(mode){
+                    //참여하기 버튼(join 모드에서)
+                    case DIALOG_MODE_JOIN:
+                        //이미 참여 중인지 여부 판단
+                        boolean isJoining = false;
+                        for(int i = 0; i < participateUserData.size(); i++){
+                            if(participateUserData.get(i).userID.equals(((FrameActivity)mContext).userData.userID)){
+                                isJoining = true;
+                                break;
+                            }
+                        }
+
+                        if(isJoining){
+                            Toast.makeText(mContext, "이 방에는 이미 참여중입니다!", Toast.LENGTH_SHORT).show();
+                        } else if(clickedItem.userNum == clickedItem.maxUserNum){
+                            Toast.makeText(mContext, "이 방은 정원이 가득 찼습니다!", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            //동행인원을 물어보는 다이얼로그 띄우기
+                            Dialog roomJoinDialog = new Dialog(mContext);
+                            roomJoinDialog.setContentView(R.layout.dialog_detail_roomjoin);
+                            roomJoinDialog.setCancelable(true);
+
+                            Button button1 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_one);
+                            Button button2 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_two);
+                            Button button3 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_three);
+
+                            RoomJoinDialogListener roomJoinDialogListener = new RoomJoinDialogListener(roomJoinDialog);
+                            button1.setOnClickListener(roomJoinDialogListener);
+                            button2.setOnClickListener(roomJoinDialogListener);
+                            button3.setOnClickListener(roomJoinDialogListener);
+
+                            roomJoinDialog.show();
+                        }
+                        break;
+                    //채팅 방으로 이동(Check모드에서)
+                    case DIALOG_MODE_CHECK:
+                        Intent intent = new Intent(mContext, ChatingActivity.class);
+                        intent.putExtra("userData", ((FrameActivity)mContext).userData);
+                        intent.putExtra("roomData", clickedItem);
+                        intent.putExtra("participated",participateUserData);
+                        mContext.startActivity(intent);
+                        break;
+                }
+            }
+        });
 
         dialog.show();
     }
@@ -267,4 +319,3 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
 
     }
 }
-
