@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -88,6 +89,7 @@ class DialogViewPagerAdapter extends PagerAdapter {
                         break;
                 }
                 ((TextView) view.findViewById(R.id.dialog_detail_dest_point_tv)).setText(currentRoomData.getDestPointToOutputForm());
+
                 ((TextView) view.findViewById(R.id.dialog_detail_bottom_userNumber)).setText(currentRoomData.userNum + " / " + currentRoomData.maxUserNum);
                 switch (currentRoomData.roomObject){
                     case RoomData.ROOM_OBJECT_CERTIFICATE:

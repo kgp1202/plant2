@@ -12,8 +12,9 @@
         android:background="@color/colorBackground"
         android:layout_width="0dp"
         android:layout_weight="1"
+        android:gravity="right"
         android:layout_height="wrap_content"
         android:textSize="30sp"
-        android:text="1231231231231231231231231231231212123123123123123" />
+        android:text="test" />
     >
 </LinearLayout>

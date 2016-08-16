@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -24,6 +25,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,11 +35,9 @@ import java.util.Random;
 
 public class ChatingActivity extends Activity implements View.OnClickListener{
     ViewGroup.LayoutParams params=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-    EditText inputContent;
     TextView chatingTimer;
-    LinearLayout textBody;
+    ListView textBody;
     EditText chatingContent;
-    ScrollView scroll;
     long time;
     ImageView sendBtn;
     ImageView backBtn;
@@ -45,6 +46,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     RoomData myRoomData;
     UserData myUserData;
     ArrayList<UserData> participatedUser;
+    ChatingListViewAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,9 +55,6 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
         myRoomData=(RoomData) intent.getSerializableExtra("roomData");
         myUserData=(UserData)intent.getSerializableExtra("userData");
         participatedUser=(ArrayList<UserData>)intent.getSerializableExtra("participated");
-        for(int i=0; i<participatedUser.size(); i++){
-            Log.d("test",participatedUser.get(i).userID);
-        }
         init();
     }
     void init(){
@@ -78,38 +77,45 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
                 timeStr=day+timeStr;
             }
             else{
-                time=1*60*1000;
-                timeStr=format.format(new Date(time)) ;
+                DateFormat sdFormat = new SimpleDateFormat("HH:mm:ss");
+                Date tempDate=new Date();
+                try {
+                    tempDate = sdFormat.parse("00:01:00");
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                timeStr=format.format(tempDate);
             }
 
             chatingTimer=(TextView)findViewById(R.id.chatingTimer);
             chatingTimer.setText(timeStr);
-            textBody=(LinearLayout)findViewById(R.id.textBody);
+            textBody=(ListView) findViewById(R.id.textBody);
             (sendBtn=(ImageView)findViewById(R.id.sendBtn)).setOnClickListener(this);
             (backBtn=(ImageView)findViewById(R.id.backBtn)).setOnClickListener(this);
             (moreBtn=(ImageView)findViewById(R.id.chatingMore)).setOnClickListener(this);
         }
-        scroll=(ScrollView)findViewById(R.id.scroll);
         chatingContent=(EditText)findViewById(R.id.chatingContents);
         chatingContent.setOnFocusChangeListener(new MyFocusChangeListener());
+        adapter=new ChatingListViewAdapter(this,myUserData);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sendBtn:
-                Random r=new Random();
-                if(r.nextBoolean()){
-                    textBody.addView(new MyTextView(this,"123123123123123123").getLayout());
+                String input=chatingContent.getText().toString();
+                chatingContent.setText("");
+                HttpRequest myRequest=new HttpRequest("http://plan-t.kr/chating/insertChating.php");
+                JSONObject json=new JSONObject();
+                try{
+                    json.put("userID",myUserData.userID);
+                    json.put("roomID",myRoomData.roomID);
+                    json.put("content",input);
+                }catch (Exception e){
+                    e.getStackTrace();
                 }
-                else
-                    textBody.addView(new OtherTextView(this,"12312312312312312312").getLayout());
-                scroll.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        scroll.fullScroll(View.FOCUS_DOWN);
-                    }
-                });
+                myRequest.makeQuery(json);
+                new Thread(myRequest).start();
                 break;
             case R.id.backBtn:
                 finish();
