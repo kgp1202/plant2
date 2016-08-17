@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,10 +22,12 @@ import android.widget.TextView;
 
 import com.kakao.usermgmt.response.model.User;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
 public class ChatingActivity extends Activity implements View.OnClickListener{
     ViewGroup.LayoutParams params=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -46,6 +50,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     RoomData myRoomData;
     UserData myUserData;
     ArrayList<UserData> participatedUser;
+    ArrayList<Integer> withNumber;
     ChatingListViewAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +60,10 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
         myRoomData=(RoomData) intent.getSerializableExtra("roomData");
         myUserData=(UserData)intent.getSerializableExtra("userData");
         participatedUser=(ArrayList<UserData>)intent.getSerializableExtra("participated");
+        withNumber=(ArrayList<Integer>)intent.getSerializableExtra("withNumber");
         init();
+        initData();
+        textBody.setAdapter(adapter);
     }
     void init(){
         if(myRoomData.roomID==-1){
@@ -96,9 +104,44 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
         }
         chatingContent=(EditText)findViewById(R.id.chatingContents);
         chatingContent.setOnFocusChangeListener(new MyFocusChangeListener());
-        adapter=new ChatingListViewAdapter(this,myUserData);
     }
+    void initData(){
+        adapter=new ChatingListViewAdapter(this,myUserData);
+        try {
+            String getData= new getFirstData().execute("http://www.plan-t.kr/chating/getFirstChating.php?roomID=476").get();
+            JSONObject myJsonObject;
+            try {
+                myJsonObject=new JSONObject(getData);
+                for(int i=0; i<myJsonObject.length(); i++){
+                    JSONObject obj=new JSONObject(myJsonObject.getString((i+1)+""));
+                    int num=getUserDataFromParticipates(obj.getString("userID"));
+                    UserData temp=participatedUser.get(num);
+                    String content= URLDecoder.decode(obj.getString("content"),"euc-kr");
+                    obj.remove("content");
+                    obj.put("content",content);
+                    obj.put("profile",temp.profilePath);
+                    obj.put("userNum",withNumber.get(num));
+                    obj.put("name",temp.name);
+                    adapter.myJsonObjectList.add(obj);
+                   // Log.d("obj",obj.toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+    int getUserDataFromParticipates(String ID){
+        for(int i=0; i<participatedUser.size(); i++){
+            if(participatedUser.get(i).userID.equals(ID))
+                return i;
+        }
+        return 0;
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -131,6 +174,21 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
                 InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
+        }
+    }
+    class getFirstData extends AsyncTask<String,String,String>{
+        @Override
+        protected String doInBackground(String... params) {
+            String returnV="";
+            HttpRequest httpRequest=new HttpRequest(params[0]);
+            new Thread(httpRequest).start();
+            while(!httpRequest.isFinish){};
+            returnV=httpRequest.line;
+            return returnV;
+        }
+        @Override
+        protected void onPostExecute(String params){
+            Log.d("getFromChating",params);
         }
     }
 }

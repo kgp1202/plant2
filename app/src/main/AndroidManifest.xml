@@ -27,7 +27,9 @@
             android:theme="@style/LoginTheme" />
 
         <activity
-            android:name=".ChatingActivity" />
+            android:name=".ChatingActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            />
         <activity android:name=".Kakao.KakaoSignUp" />
 
         <meta-data
@@ -35,6 +37,7 @@
             android:value="@string/key" />
 
         <activity android:name=".FrameActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:windowSoftInputMode="adjustNothing"/>
 
         <!-- [naveroauthlogin][start] 네이버아이디로로그인을 사용하기 위해서 넣어줘야하는 부분 -->

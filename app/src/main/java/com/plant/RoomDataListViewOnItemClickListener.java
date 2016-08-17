@@ -174,6 +174,7 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
                         intent.putExtra("userData", ((FrameActivity)mContext).userData);
                         intent.putExtra("roomData", clickedItem);
                         intent.putExtra("participated",participateUserData);
+                        intent.putExtra("withNumber",withNumber);
                         mContext.startActivity(intent);
                     }
                 });
