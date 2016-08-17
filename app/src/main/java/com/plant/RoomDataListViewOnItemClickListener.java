@@ -9,7 +9,10 @@ import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
+import android.text.Layout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -17,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -33,7 +37,7 @@ import java.util.ArrayList;
 /**
  * Created by Kim on 2016-07-27.
  */
-public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemClickListener, View.OnClickListener{
+public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemClickListener{
     Context mContext;
     int mode;
 
@@ -84,14 +88,20 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
             }
         });
         dialogDetailJoinBtn = (ImageView) dialog.findViewById(R.id.dialog_detail_join_btn);
-        dialogDetailJoinBtn.setOnClickListener(this);
 
         switch(mode){
             case DIALOG_MODE_JOIN:
 
                 break;
             case DIALOG_MODE_CHECK:
+                LinearLayout dialog_detail_bottom_layout = (LinearLayout) dialog.findViewById(R.id.dialog_detail_bottom_layout);
+
                 dialogDetailTopImg.setImageResource(R.drawable.dialog_detail_check_head);
+                LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LinearLayout test = (LinearLayout) inflater.inflate(R.layout.dialog_detail_out_button, null);
+                dialog_detail_bottom_layout.removeAllViews();
+                dialog_detail_bottom_layout.addView(test);
+
                 dialogDetailJoinBtn.setImageResource(R.drawable.dialog_detail_chating_join);
 
                 dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -106,54 +116,6 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
 
     }
 
-    //join버튼과 나가기 버튼
-    @Override
-    public void onClick(View v) {
-        switch(mode){
-            //참여하기 버튼(join 모드에서)
-            case DIALOG_MODE_JOIN:
-                //이미 참여 중인지 여부 판단
-                boolean isJoining = false;
-                for(int i = 0; i < participateUserData.size(); i++){
-                    if(participateUserData.get(i).userID.equals(((FrameActivity)mContext).userData.userID)){
-                        isJoining = true;
-                        break;
-                    }
-                }
-
-                if(isJoining){
-                    Toast.makeText(mContext, "이 방에는 이미 참여중입니다!", Toast.LENGTH_SHORT).show();
-                } else if(clickedItem.userNum == clickedItem.maxUserNum){
-                    Toast.makeText(mContext, "이 방은 정원이 가득 찼습니다!", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    //동행인원을 물어보는 다이얼로그 띄우기
-                    Dialog roomJoinDialog = new Dialog(mContext);
-                    roomJoinDialog.setContentView(R.layout.dialog_detail_roomjoin);
-                    roomJoinDialog.setCancelable(true);
-
-                    Button button1 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_one);
-                    Button button2 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_two);
-                    Button button3 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_three);
-
-                    RoomJoinDialogListener roomJoinDialogListener = new RoomJoinDialogListener(roomJoinDialog);
-                    button1.setOnClickListener(roomJoinDialogListener);
-                    button2.setOnClickListener(roomJoinDialogListener);
-                    button3.setOnClickListener(roomJoinDialogListener);
-
-                    roomJoinDialog.show();
-                }
-                break;
-            //채팅 방으로 이동(Check모드에서)
-            case DIALOG_MODE_CHECK:
-                Intent intent = new Intent(mContext, ChatingActivity.class);
-                intent.putExtra("userData", ((FrameActivity)mContext).userData);
-                intent.putExtra("roomData", ((FrameActivity)mContext).userData);
-                mContext.startActivity(intent);
-                break;
-        }
-    }
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         clickedItem = (RoomData)parent.getAdapter().getItem(position);
@@ -165,6 +127,66 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
 
         mViewPagerAdapter.setListViewListener(this);
         mViewPagerAdapter.setRoomData(clickedItem);
+
+        switch(mode){
+            case DIALOG_MODE_JOIN:
+                dialog.findViewById(R.id.dialog_detail_join_btn).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //이미 참여 중인지 여부 판단
+                        boolean isJoining = false;
+                        for(int i = 0; i < participateUserData.size(); i++){
+                            if(participateUserData.get(i).userID.equals(((FrameActivity)mContext).userData.userID)){
+                                isJoining = true;
+                                break;
+                            }
+                        }
+
+                        if(isJoining){
+                            Toast.makeText(mContext, "이 방에는 이미 참여중입니다!", Toast.LENGTH_SHORT).show();
+                        } else if(clickedItem.userNum == clickedItem.maxUserNum){
+                            Toast.makeText(mContext, "이 방은 정원이 가득 찼습니다!", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            //동행인원을 물어보는 다이얼로그 띄우기
+                            Dialog roomJoinDialog = new Dialog(mContext);
+                            roomJoinDialog.setContentView(R.layout.dialog_detail_roomjoin);
+                            roomJoinDialog.setCancelable(true);
+
+                            Button button1 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_one);
+                            Button button2 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_two);
+                            Button button3 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_three);
+
+                            RoomJoinDialogListener roomJoinDialogListener = new RoomJoinDialogListener(roomJoinDialog);
+                            button1.setOnClickListener(roomJoinDialogListener);
+                            button2.setOnClickListener(roomJoinDialogListener);
+                            button3.setOnClickListener(roomJoinDialogListener);
+
+                            roomJoinDialog.show();
+                        }
+                    }
+                });
+                break;
+            case DIALOG_MODE_CHECK:
+                dialog.findViewById(R.id.dialog_detail_chating_join).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(mContext, ChatingActivity.class);
+                        intent.putExtra("userData", ((FrameActivity)mContext).userData);
+                        intent.putExtra("roomData", clickedItem);
+                        intent.putExtra("participated",participateUserData);
+                        mContext.startActivity(intent);
+                    }
+                });
+                dialog.findViewById(R.id.dialog_detail_out).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("out", "a");
+                    }
+                });
+
+                break;
+        }
 
         dialog.show();
     }

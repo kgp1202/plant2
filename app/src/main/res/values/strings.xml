@@ -1,14 +1,12 @@
 <resources>
     <string name="app_name">PlanT</string>
     <string name="key">9f4b6112faa1c0130cbd34f797df9035</string>
-
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="user_name_prompt">Choo</string>
     <string-array name="user_name_array">
-        <item>동행 인원</item>
+        <item></item>
         <item>없음</item>
         <item>2</item>
         <item>3</item>
-        <item>4</item>
     </string-array>
 </resources>

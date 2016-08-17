@@ -13,9 +13,12 @@ import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.Layout;
 import android.text.method.KeyListener;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -49,6 +52,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.zip.Inflater;
 
+import me.everything.android.ui.overscroll.IOverScrollDecor;
+import me.everything.android.ui.overscroll.IOverScrollStateListener;
+import me.everything.android.ui.overscroll.IOverScrollUpdateListener;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
+import me.everything.android.ui.overscroll.VerticalOverScrollBounceEffectDecorator;
+import me.everything.android.ui.overscroll.adapters.AbsListViewOverScrollDecorAdapter;
+import me.everything.android.ui.overscroll.adapters.RecyclerViewOverScrollDecorAdapter;
+
 public class ReservationFragment extends Fragment implements AbsListView.OnScrollListener{
     Context mContext;
 
@@ -56,6 +67,8 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
     ListView listView;
     EditText searchEditText;
     LinearLayout parentLayout;
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     RoomListViewAdapter listViewAdapter = new RoomListViewAdapter();
     ArrayList<RoomData> roomDataList = new ArrayList<RoomData>();
@@ -65,7 +78,6 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("ReservationFragment", "onDestroy");
         unbindDrawables(mainView);
         roomDataList = null;
         searchEditText = null;
@@ -107,6 +119,8 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
     }
 
     public void init() {
+        swipeRefreshLayout = (SwipeRefreshLayout) mainView.findViewById(R.id.swipeRefreshLayout);
+
         ImageView btn = (ImageView) mainView.findViewById(R.id.reservationAddBtn);
         listView = (ListView) mainView.findViewById(R.id.reservationList);
         searchEditText = (EditText) mainView.findViewById(R.id.search_editText);
@@ -118,7 +132,7 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
         //Get last items
         if(((FrameActivity)mContext).reservationListCache == null) {
             GetRoomDataPHP getRoomDataPHP = new GetRoomDataPHP();
-            getRoomDataPHP.execute((long)0);
+            getRoomDataPHP.execute((long)0, (long)0);
         }else {
             roomDataList = ((FrameActivity)mContext).reservationListCache;
         }
@@ -160,15 +174,46 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
                 }
             }
         });
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorOrange);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                RefreshRoomDataPHP refreshRoomDataPHP = new RefreshRoomDataPHP(swipeRefreshLayout);
+                long toRoomID = roomDataList.get(0).roomID;
+                refreshRoomDataPHP.execute((long)0, toRoomID);
+                Log.d("refresh", "start" + toRoomID);
+            }
+        });
+    }
+
+    class RefreshRoomDataPHP extends GetRoomDataPHP{
+        SwipeRefreshLayout mRefreshLayout;
+
+        public RefreshRoomDataPHP(SwipeRefreshLayout swipeRefreshLayout){
+            mRefreshLayout = swipeRefreshLayout;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<RoomData> resultRoomDataList) {
+            for(int i = 0; i < resultRoomDataList.size(); i++){
+                roomDataList.add(0, resultRoomDataList.get(i));
+                Log.d("refresh", " " + resultRoomDataList.get(i).roomID);
+            }
+            listViewAdapter.notifyDataSetChanged();
+            Log.d("refresh", "end");
+            mRefreshLayout.setRefreshing(false);
+        }
     }
 
     /***************************** onScrollListner ************************************/
     boolean lastItemVisibleFlag = false;
-    boolean flag_loading = false;
+    boolean firstItemVisibleFlag = false;
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         //현재 화면에 보이는 첫번째 리스트 아이템의 번호(firstVisibleItem) + 현재 화면에 보이는 리스트 아이템의 갯수(visibleItemCount)가 리스트 전체의 갯수(totalItemCount) -1 보다 크거나 같을때
         lastItemVisibleFlag = (totalItemCount > 0) && (firstVisibleItem + visibleItemCount >= totalItemCount);
+        firstItemVisibleFlag = (totalItemCount > 0) && (firstVisibleItem == 1);
     }
 
     @Override
@@ -178,7 +223,9 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
         if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastItemVisibleFlag) {
             GetRoomDataPHP getRoomDataPHP2 = new GetRoomDataPHP();
             long lastRoomID = roomDataList.get(roomDataList.size() - 1).roomID;
-            getRoomDataPHP2.execute(lastRoomID);
+            getRoomDataPHP2.execute(lastRoomID, (long)0);
+        }else if(scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastItemVisibleFlag){
+            Log.d("listview", "up");
         }
     }
     /***************************** onScrollListner end ************************************/
@@ -232,15 +279,18 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
 
     /***************************** GetRoomDataPHP*******************************************/
     //pageNum를 입력으로 받아서 해당 데이터를 roomDataList에 추가해준다.
-    private class GetRoomDataPHP extends AsyncTask<Long, Void, Void>{
+    private class GetRoomDataPHP extends AsyncTask<Long, Void, ArrayList<RoomData>>{
         public static final String GetRoomDataURL = "http://www.plan-t.kr/getRoomData.php";
 
         @Override
-        protected Void doInBackground(Long... params) {
-            long from = params[0];
+        protected ArrayList<RoomData> doInBackground(Long... params) {
+            long fromRoomID = params[0];
+            long toRoomID = params[1];
 
+            ArrayList<RoomData> resultRoomDataList = new ArrayList<RoomData>();
             try {
-                URL url = new URL(GetRoomDataURL + "?from=" + from);
+                Log.d("getRoomData", "?from=" + fromRoomID + "&to=" + toRoomID);
+                URL url = new URL(GetRoomDataURL + "?from=" + fromRoomID + "&to=" + toRoomID);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
@@ -253,7 +303,7 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
                         String line = br.readLine();
                         if (line == null)
                             break;
-                        roomDataList.add(new Gson().fromJson(line, RoomData.class));
+                        resultRoomDataList.add(new Gson().fromJson(line, RoomData.class));
                     }
                     br.close();
                 }
@@ -265,11 +315,15 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
                 e.printStackTrace();
             }
 
-            return null;
+            return resultRoomDataList;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
+        protected void onPostExecute(ArrayList<RoomData> resultRoomDataList) {
+            for(int i = 0; i < resultRoomDataList.size(); i++){
+                roomDataList.add(resultRoomDataList.get(i));
+            }
+
             listViewAdapter.notifyDataSetChanged();
             ((FrameActivity)getActivity()).reservationListCache = (ArrayList<RoomData>) roomDataList.clone();
         }

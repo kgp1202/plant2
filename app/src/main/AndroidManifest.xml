@@ -31,7 +31,8 @@
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/key" />
 
-        <activity android:name=".FrameActivity" />
+        <activity android:name=".FrameActivity"
+            android:windowSoftInputMode="adjustNothing"/>
 
         <!-- [naveroauthlogin][start] 네이버아이디로로그인을 사용하기 위해서 넣어줘야하는 부분 -->
         <activity android:name="com.nhn.android.naverlogin.ui.OAuthLoginActivity"

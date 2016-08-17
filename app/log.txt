@@ -1,3 +1,10 @@
+2016-08-16
+프로필 사진 변경시 처리
+목적지 검색
+ReservationMakeFragment withNumberSpinner 배경화면
+dialog 방 생성중에 진행중 표시
+listview 순서 엉망*
+
 2016-08-11
 Room Infomation 다이얼로그에서 동그라미 벗어남*
 Room InfoMation 다이얼로그에서 멤버 순서 변경

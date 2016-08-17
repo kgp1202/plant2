@@ -1,6 +1,7 @@
 package com.plant;
 
 import android.os.AsyncTask;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -114,6 +115,7 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         (goal_btn[2] = (ImageView) mainView.findViewById(R.id.goal_btn2)).setOnClickListener(goalListener);
         send_btn = (ImageView) mainView.findViewById(R.id.send_btn);
 
+        
         destination_editText.setOnEditorActionListener(this);
         destination_editText.setOnFocusChangeListener(this);
         comment_editText.setOnFocusChangeListener(this);
@@ -138,9 +140,117 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 destination_editText.clearFocus();
+                flag = true;
                 return false;
             }
         });
+
+        WithNumSpinAdapter test = new WithNumSpinAdapter();
+        withNumSpin.setAdapter(test);
+    }
+
+    private boolean flag = false;
+
+    private class WithNumSpinAdapter implements SpinnerAdapter {
+        ArrayList<String> spinnerItemList = new ArrayList<String>();
+        TextView spinnerTextview;
+
+        public WithNumSpinAdapter(){
+            spinnerItemList.add("");
+            spinnerItemList.add("없음");
+            spinnerItemList.add("1");
+            spinnerItemList.add("2");
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+//            if(position == 0){
+//                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//                convertView = inflater.inflate(R.layout.fragment_reservation_make_spinner_item, parent, false);
+//
+//
+//                ImageView imageView = new ImageView(getContext());
+//                imageView.setImageResource(R.drawable.reservation_withnumber_image);
+//
+//
+//            }
+            if(convertView == null){
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.fragment_reservation_make_spinner_item, parent, false);
+
+                spinnerTextview = (TextView) convertView.findViewById(R.id.fragment_reservation_make_spinner_textview);
+            }
+            spinnerTextview.setText(spinnerItemList.get(position));
+
+            return convertView;
+        }
+
+        @Override
+        public void registerDataSetObserver(DataSetObserver observer) {
+
+        }
+
+        @Override
+        public void unregisterDataSetObserver(DataSetObserver observer) {
+
+        }
+
+        @Override
+        public int getCount() {
+            return spinnerItemList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return spinnerItemList.get(position - 1);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return false;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(android.R.layout.simple_spinner_item, parent, false);
+
+            TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
+            tv.setText(spinnerItemList.get(position));
+//            if(position == 0 && flag == true){
+//                tv.setText("없음");
+//            }
+//            else if(position == 0){
+//                tv.setText("");
+//            }
+//            else {
+//                String data = spinnerItemList.get(position + 1);
+//                if (null != data) {
+//                    tv.setText(data);
+//                }
+//            }
+            return convertView;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return 1;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 1;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return spinnerItemList.isEmpty();
+        }
     }
 
     private class AutoCompletePHP extends AsyncTask<Void, Void, String[]>{
@@ -154,7 +264,6 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
                 HttpURLConnection conn = (HttpURLConnection) autoCompleteObj.openConnection();
                 conn.setDoOutput(true);
                 conn.setConnectTimeout(2000);
-
 
                 int count = 0;
                 if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
