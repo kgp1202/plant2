@@ -14,84 +14,108 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import com.kakao.usermgmt.response.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
 public class ChatingActivity extends Activity implements View.OnClickListener{
     ViewGroup.LayoutParams params=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-    EditText inputContent;
     TextView chatingTimer;
-    LinearLayout textBody;
+    ListView textBody;
     EditText chatingContent;
-    ScrollView scroll;
     long time;
     ImageView sendBtn;
     ImageView backBtn;
     ImageView moreBtn;
+
+    RoomData myRoomData;
+    UserData myUserData;
+    ArrayList<UserData> participatedUser;
+    ChatingListViewAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chating);
         Intent intent=getIntent();
-        RoomData temp=new RoomData();
-        /*
-        try {
-            temp.setRoomDataFromJson(new JSONObject(intent.getStringExtra("roomData")));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
-        init(temp);
+        myRoomData=(RoomData) intent.getSerializableExtra("roomData");
+        myUserData=(UserData)intent.getSerializableExtra("userData");
+        participatedUser=(ArrayList<UserData>)intent.getSerializableExtra("participated");
+        init();
     }
-    void init(RoomData roomData){
-        if(roomData.roomID==-1){
+    void init(){
+        if(myRoomData.roomID==-1){
             Log.d("ERROR","No Room Data Input");
             finish();
         }
         else{
-            /*
-            time= roomData.startTime-Calendar.getInstance().getTimeInMillis();
-            SimpleDateFormat format = new SimpleDateFormat("dd일 hh:mm:ss");
-            String timeStr = format.format(new Date(time));
-            String result = timeStr.substring(0, 19);
-            */
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+            String timeStr="";
+            if(myRoomData.roomType==2){
+                String day="날";
+                time= myRoomData.startTime-Calendar.getInstance().getTimeInMillis();
+                if(time>=24*60*60*1000){
+                    day=(time/24*60*60*1000)+"날";
+                    time=time%24*60*60*1000;
+                }
+                timeStr=format.format(new Date(time)) ;
+                timeStr= timeStr.substring(0, 19);
+                timeStr=day+timeStr;
+            }
+            else{
+                DateFormat sdFormat = new SimpleDateFormat("HH:mm:ss");
+                Date tempDate=new Date();
+                try {
+                    tempDate = sdFormat.parse("00:01:00");
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                timeStr=format.format(tempDate);
+            }
+
             chatingTimer=(TextView)findViewById(R.id.chatingTimer);
-            chatingTimer.setText("1231231231231231231212312123123123123123");
-            textBody=(LinearLayout)findViewById(R.id.textBody);
+            chatingTimer.setText(timeStr);
+            textBody=(ListView) findViewById(R.id.textBody);
             (sendBtn=(ImageView)findViewById(R.id.sendBtn)).setOnClickListener(this);
             (backBtn=(ImageView)findViewById(R.id.backBtn)).setOnClickListener(this);
             (moreBtn=(ImageView)findViewById(R.id.chatingMore)).setOnClickListener(this);
         }
-        scroll=(ScrollView)findViewById(R.id.scroll);
         chatingContent=(EditText)findViewById(R.id.chatingContents);
         chatingContent.setOnFocusChangeListener(new MyFocusChangeListener());
+        adapter=new ChatingListViewAdapter(this,myUserData);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sendBtn:
-                Random r=new Random();
-                if(r.nextBoolean()){
-                    textBody.addView(new MyTextView(this,"123123123123123123").getLayout());
+                String input=chatingContent.getText().toString();
+                chatingContent.setText("");
+                HttpRequest myRequest=new HttpRequest("http://plan-t.kr/chating/insertChating.php");
+                JSONObject json=new JSONObject();
+                try{
+                    json.put("userID",myUserData.userID);
+                    json.put("roomID",myRoomData.roomID);
+                    json.put("content",input);
+                }catch (Exception e){
+                    e.getStackTrace();
                 }
-                else
-                    textBody.addView(new OtherTextView(this,"12312312312312312312").getLayout());
-                scroll.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        scroll.fullScroll(View.FOCUS_DOWN);
-                    }
-                });
+                myRequest.makeQuery(json);
+                new Thread(myRequest).start();
                 break;
             case R.id.backBtn:
                 finish();

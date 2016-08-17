@@ -9,6 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,7 +76,7 @@ public class RoomListViewAdapter extends BaseAdapter {
         }
         RoomData temp=list.get(position);
         DateFormat sdFormat = new SimpleDateFormat("yyyyMMdd");
-        String dateStr = sdFormat.format(temp.startTime);
+        String dateStr =sdFormat.format(temp.startTime);
         myHolder.date.setText(dateStr);
 
         switch (temp.roomObject){
@@ -112,6 +114,13 @@ public class RoomListViewAdapter extends BaseAdapter {
         if(temp.startingPoint==1) myHolder.startingPoint.setText("후문");
         else if(temp.startingPoint==3) myHolder.startingPoint.setText("정문");
 
+
+        URLDecoder decoder=new URLDecoder();
+        try {
+            temp.setDestPoint(decoder.decode(temp.destPoint,"euc-kr"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         myHolder.destination.setText(temp.destPoint);
         //TextView textView = (TextView) convertView.findViewById(R.id.room_data);
         //textView.setText(list.get(position).getRoomDataJSONString());

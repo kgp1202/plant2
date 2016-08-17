@@ -49,6 +49,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.zip.Inflater;
 
@@ -295,7 +296,7 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
                 conn.setRequestMethod("GET");
-                conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+                //conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
 
                 if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
                     BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
@@ -303,7 +304,12 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
                         String line = br.readLine();
                         if (line == null)
                             break;
-                        resultRoomDataList.add(new Gson().fromJson(line, RoomData.class));
+
+                        //url encode를 한글로 바꿈
+                        RoomData roomData=new Gson().fromJson(line, RoomData.class);
+                        URLDecoder decoder=new URLDecoder();
+                        roomData.setDestPoint(decoder.decode(roomData.destPoint,"euc-kr"));
+                        resultRoomDataList.add(roomData);
                     }
                     br.close();
                 }

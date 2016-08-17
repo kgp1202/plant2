@@ -94,15 +94,14 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
 
                 break;
             case DIALOG_MODE_CHECK:
-                LinearLayout dialog_detail_bottom_layout = (LinearLayout) dialog.findViewById(R.id.dialog_detail_bottom_layout);
-
                 dialogDetailTopImg.setImageResource(R.drawable.dialog_detail_check_head);
+
+                LinearLayout dialog_detail_bottom_layout = (LinearLayout) dialog.findViewById(R.id.dialog_detail_bottom_layout);
+                dialog_detail_bottom_layout.removeAllViews();
+
                 LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 LinearLayout test = (LinearLayout) inflater.inflate(R.layout.dialog_detail_out_button, null);
-                dialog_detail_bottom_layout.removeAllViews();
                 dialog_detail_bottom_layout.addView(test);
-
-                dialogDetailJoinBtn.setImageResource(R.drawable.dialog_detail_chating_join);
 
                 dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -112,9 +111,8 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
                 });
                 break;
         }
-
-
     }
+
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -127,6 +125,7 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
 
         mViewPagerAdapter.setListViewListener(this);
         mViewPagerAdapter.setRoomData(clickedItem);
+
 
         switch(mode){
             case DIALOG_MODE_JOIN:
@@ -187,7 +186,6 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
 
                 break;
         }
-
         dialog.show();
     }
 
@@ -292,4 +290,3 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
 
     }
 }
-
