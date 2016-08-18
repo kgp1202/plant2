@@ -38,7 +38,7 @@ public class HttpRequest extends Thread {
             conn.setDoInput(true);
             conn.setDoInput(true);
             conn.setRequestMethod("POST");
-            conn.setConnectTimeout(2000);
+            conn.setConnectTimeout(7000);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "application/json");
         } catch (MalformedURLException e) {

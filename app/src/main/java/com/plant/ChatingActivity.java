@@ -52,6 +52,9 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     ArrayList<UserData> participatedUser;
     ArrayList<Integer> withNumber;
     ChatingListViewAdapter adapter;
+
+    getData myChatingThread;
+    int id=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +66,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
         withNumber=(ArrayList<Integer>)intent.getSerializableExtra("withNumber");
         init();
         initData();
+        threadStart();
         textBody.setAdapter(adapter);
     }
     void init(){
@@ -113,7 +117,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
             try {
                 myJsonObject=new JSONObject(getData);
                 for(int i=0; i<myJsonObject.length(); i++){
-                    JSONObject obj=new JSONObject(myJsonObject.getString((i+1)+""));
+                    JSONObject obj=new JSONObject(myJsonObject.getString((id+1)+""));
                     int num=getUserDataFromParticipates(obj.getString("userID"));
                     UserData temp=participatedUser.get(num);
                     String content= URLDecoder.decode(obj.getString("content"),"euc-kr");
@@ -123,6 +127,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
                     obj.put("userNum",withNumber.get(num));
                     obj.put("name",temp.name);
                     adapter.myJsonObjectList.add(obj);
+                    id++;
                    // Log.d("obj",obj.toString());
                 }
             } catch (Exception e) {
@@ -134,6 +139,10 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+    }
+    void threadStart(){
+        myChatingThread= new getData();
+        myChatingThread.execute();
     }
     int getUserDataFromParticipates(String ID){
         for(int i=0; i<participatedUser.size(); i++){
@@ -190,5 +199,55 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
         protected void onPostExecute(String params){
             Log.d("getFromChating",params);
         }
+    }
+    class getData extends AsyncTask<Void,String,String>{
+        boolean endActivity=false;
+        @Override
+        protected String doInBackground(Void a[]) {
+            String returnV="";
+            while(!endActivity){
+                HttpRequest httpRequest=new HttpRequest("http://www.plan-t.kr/chating/getChating.php?roomID="+myRoomData.roomID+"&ID="+id);
+                new Thread(httpRequest).start();
+                while(!httpRequest.isFinish){};
+                publishProgress(httpRequest.line);
+                returnV=httpRequest.line;
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return returnV;
+        }
+        @Override
+        protected void onProgressUpdate(String ...params){
+            JSONObject myJsonObject;
+            try {
+                myJsonObject=new JSONObject(params[0]);
+                for(int i=0; i<myJsonObject.length(); i++){
+                    JSONObject obj=new JSONObject(myJsonObject.getString((id+1)+""));
+                    int num=getUserDataFromParticipates(obj.getString("userID"));
+                    UserData temp=participatedUser.get(num);
+                    String content= URLDecoder.decode(obj.getString("content"),"euc-kr");
+                    obj.remove("content");
+                    obj.put("content",content);
+                    obj.put("profile",temp.profilePath);
+                    obj.put("userNum",withNumber.get(num));
+                    obj.put("name",temp.name);
+                    adapter.myJsonObjectList.add(obj);
+                    adapter.notifyDataSetChanged();
+                    id++;
+                    // Log.d("obj",obj.toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        myChatingThread.endActivity=true;
     }
 }
