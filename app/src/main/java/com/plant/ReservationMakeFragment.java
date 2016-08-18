@@ -1,5 +1,6 @@
 package com.plant;
 
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -63,7 +64,6 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
     RoomData roomData = new RoomData();
     View mainView;
-    Spinner withNumSpin;
     int year;
     int month;
     int day;
@@ -74,6 +74,7 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
     LinearLayout parentLayout;
     AutoCompleteTextView destination_editText;
     EditText comment_editText;
+    ReservationMakeFragmentSpinner withNumSpin;
     ImageView onetwoWay_btn[] = new ImageView[2];
     ImageView goal_btn[] = new ImageView[3];
     TextView reservation_make_month_textView;
@@ -101,7 +102,7 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         parentLayout = (LinearLayout) mainView.findViewById(R.id.fragment_reservation_make_parent);
         destination_editText = (AutoCompleteTextView) mainView.findViewById(R.id.destination_editText);
         comment_editText = (EditText) mainView.findViewById(R.id.comment_editText);
-        withNumSpin = (Spinner) mainView.findViewById(R.id.UserNumSpin);
+        withNumSpin = (ReservationMakeFragmentSpinner) mainView.findViewById(R.id.UserNumSpin);
         reservation_make_month_textView = (TextView) mainView.findViewById(R.id.reservation_make_month_textView);
         reservation_make_day_textView = (TextView) mainView.findViewById(R.id.reservation_make_day_textView);
         reservation_make_hour_textView = (TextView) mainView.findViewById(R.id.reservation_make_hour_textView);
@@ -140,23 +141,19 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 destination_editText.clearFocus();
-                flag = true;
                 return false;
             }
         });
 
-        WithNumSpinAdapter test = new WithNumSpinAdapter();
-        withNumSpin.setAdapter(test);
+        withNumSpin.setAdapter(new WithNumSpinAdapter());
     }
 
-    private boolean flag = false;
 
     private class WithNumSpinAdapter implements SpinnerAdapter {
         ArrayList<String> spinnerItemList = new ArrayList<String>();
         TextView spinnerTextview;
 
         public WithNumSpinAdapter(){
-            spinnerItemList.add("");
             spinnerItemList.add("없음");
             spinnerItemList.add("1");
             spinnerItemList.add("2");
@@ -164,16 +161,6 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
         @Override
         public View getDropDownView(int position, View convertView, ViewGroup parent) {
-//            if(position == 0){
-//                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//                convertView = inflater.inflate(R.layout.fragment_reservation_make_spinner_item, parent, false);
-//
-//
-//                ImageView imageView = new ImageView(getContext());
-//                imageView.setImageResource(R.drawable.reservation_withnumber_image);
-//
-//
-//            }
             if(convertView == null){
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.fragment_reservation_make_spinner_item, parent, false);
@@ -202,7 +189,7 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
         @Override
         public Object getItem(int position) {
-            return spinnerItemList.get(position - 1);
+            return spinnerItemList.get(position);
         }
 
         @Override
@@ -222,18 +209,7 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
             TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
             tv.setText(spinnerItemList.get(position));
-//            if(position == 0 && flag == true){
-//                tv.setText("없음");
-//            }
-//            else if(position == 0){
-//                tv.setText("");
-//            }
-//            else {
-//                String data = spinnerItemList.get(position + 1);
-//                if (null != data) {
-//                    tv.setText(data);
-//                }
-//            }
+
             return convertView;
         }
 

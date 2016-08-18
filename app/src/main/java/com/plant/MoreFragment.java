@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.nhn.android.naverlogin.OAuthLogin;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
 
@@ -77,8 +78,6 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
         int memberExistW = profileImg.getMeasuredWidth();
 
         Log.d("DialogViewPagerAdapter", "ImageView => " + memberExistH + " " + memberExistW);
-
-
 
         profileImg.setImageBitmap(bmp);
     }

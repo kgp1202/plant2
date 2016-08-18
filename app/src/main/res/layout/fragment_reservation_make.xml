@@ -48,13 +48,12 @@
                     android:layout_marginBottom="3px"
                     android:layout_marginTop="3px"/>
 
-            <Spinner
+            <com.plant.ReservationMakeFragmentSpinner
                 android:id="@+id/UserNumSpin"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
-                android:background="@drawable/reservation_withnumber_image"
-                android:entries="@array/user_name_array"/>
+                android:dropDownVerticalOffset="20dp"/>
 
         </LinearLayout>
 

@@ -44,4 +44,5 @@ dependencies {
     compile 'com.android.support:support-v4:23.4.0'
     compile 'uk.co.chrisjenx:calligraphy:2.0.0'
     compile 'me.everything:overscroll-decor-android:1.0.3'
+    compile 'com.wang.avi:library:2.1.2'
 }

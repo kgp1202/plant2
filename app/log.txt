@@ -1,9 +1,10 @@
 2016-08-16
 프로필 사진 변경시 처리
 목적지 검색
-ReservationMakeFragment withNumberSpinner 배경화면
 dialog 방 생성중에 진행중 표시
-listview 순서 엉망*
+php 들어갈 때 마다 인터넷 연결 확인
+ReservationMakeFragment withNumberSpinner 배경화면 ******* 재확인 필요
+TextView 다른곳 선택시 키보드 없애기
 
 2016-08-11
 Room Infomation 다이얼로그에서 동그라미 벗어남*

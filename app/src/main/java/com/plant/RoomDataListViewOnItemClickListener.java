@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -116,6 +117,13 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//        LayoutInflater inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        RelativeLayout addedView = (RelativeLayout) inflater.inflate(R.layout.loading_view, null);
+//        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+//        addedView.setLayoutParams(layoutParams);
+//
+//        ((FrameActivity)mContext).mView.addView(addedView);
+
         clickedItem = (RoomData)parent.getAdapter().getItem(position);
 
         //참여하고 있는 userData를 얻어온다.

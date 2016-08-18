@@ -55,6 +55,8 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
     FragmentManager fragmentManager;
     Fragment fragment = null;
 
+    boolean isDoBackground = false;
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
