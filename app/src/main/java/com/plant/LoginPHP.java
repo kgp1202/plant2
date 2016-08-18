@@ -113,7 +113,7 @@ public class LoginPHP extends AsyncTask<UserData, Void, String> {
         //권한을 물어본다.
         int permissionCheck = ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if(permissionCheck == PackageManager.PERMISSION_DENIED){
-            Log.d("ImageDownload", "Permission Denied");
+            //Log.d("ImageDownload", "Permission Denied");
             ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},0);
 
         }else {

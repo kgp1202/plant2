@@ -78,7 +78,10 @@ public class HttpRequest extends Thread {
                 //Log.d("httpRequest","done");
                 line="";
                 BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
-                line=br.readLine();
+                String temp2;
+                while((temp2=br.readLine())!=null){
+                    line+=temp2;
+                }
                 Log.d("readLine",line);
             }
         } catch (IOException e) {

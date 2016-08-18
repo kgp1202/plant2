@@ -22,7 +22,7 @@
     <style name="splashScreenTheme" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar">
          <item name="android:windowBackground">@drawable/splash</item>
     </style>
-    <style name="LoginTheme" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+    <style name="LoginTheme" parent="@android:style/Theme.NoTitleBar.Fullscreen">
         <item name="android:windowBackground">@drawable/login</item>
     </style>
 </resources>
