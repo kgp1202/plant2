@@ -108,7 +108,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     void initData(){
         adapter=new ChatingListViewAdapter(this,myUserData);
         try {
-            String getData= new getFirstData().execute("http://www.plan-t.kr/chating/getFirstChating.php?roomID=476").get();
+            String getData= new getFirstData().execute("http://www.plan-t.kr/chating/getFirstChating.php?roomID="+myRoomData.roomID).get();
             JSONObject myJsonObject;
             try {
                 myJsonObject=new JSONObject(getData);

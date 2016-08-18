@@ -127,6 +127,7 @@ public class ChatingListViewAdapter extends BaseAdapter {
             container.addView(name);
         }
     };
+
     int getPXfromDP(int value){
         Resources r = context.getResources();
         float px = value* r.getDisplayMetrics().density;
