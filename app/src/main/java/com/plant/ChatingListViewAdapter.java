@@ -57,7 +57,7 @@ public class ChatingListViewAdapter extends BaseAdapter {
         if(convertView==null){
             holder=new MyTextHolder(context);
             convertView=new LinearLayout(context);
-            convertView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+            convertView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT));
             convertView.setTag(holder);
         }
         else{
@@ -107,7 +107,6 @@ public class ChatingListViewAdapter extends BaseAdapter {
         ProfileRelativeLayout(Context myContext){
             container=new RelativeLayout(myContext);
             container.setLayoutParams(new RelativeLayout.LayoutParams(getPXfromDP(60),getPXfromDP(80)));
-
 
             //container2.setForeground(ContextCompat.getDrawable(context,R.drawable.dialog_detail_member_ring));
             LayoutInflater inflater=(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
