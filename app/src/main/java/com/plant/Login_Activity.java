@@ -68,21 +68,6 @@ public class Login_Activity extends Activity implements View.OnClickListener{
     private SessionCallback callback;
 
     public void init(){
-        //UI를 정의하기 전에 SharedPreference를 이용해서
-        //기존에 UserData가 존재하면 이 정보를 통해서 로그인.
-        /*SharedPreferences pref = getSharedPreferences("UserData", MODE_PRIVATE);
-        Boolean pasteIsLogin = pref.getBoolean("isLogin", false);
-        Log.d("pastLogin", ""+pasteIsLogin);
-        if(pasteIsLogin){
-            *//********* 보안문제 발생 가능************//*
-            UserData tempUserData = new UserData();
-            tempUserData.userID = pref.getString("userID", "");
-            tempUserData.loginFrom = pref.getInt("loginFrom", 0);
-
-            LoginPHP loginPHP = new LoginPHP();
-            loginPHP.execute(tempUserData);
-        }*/
-
         btnFB=(ImageView)findViewById(R.id.btnFB);
         btnNAV = (OAuthLoginButton) findViewById(R.id.btnNAV);
         btnKKO=(com.plant.Kakao.KakaoBtnLayout)findViewById(R.id.btnKKO);

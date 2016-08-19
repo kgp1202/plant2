@@ -1,10 +1,14 @@
+리스트뷰 터치시 색변경
+
+
 2016-08-16
 프로필 사진 변경시 처리
 목적지 검색
-dialog 방 생성중에 진행중 표시
-php 들어갈 때 마다 인터넷 연결 확인
-ReservationMakeFragment withNumberSpinner 배경화면 ******* 재확인 필요
 TextView 다른곳 선택시 키보드 없애기
+검색기능
+php 들어갈 때 마다 인터넷 연결 확인 ***************** InternetCheck함수 확인.
+ReservationMakeFragment withNumberSpinner 배경화면 ******* 재확인 필요
+
 
 2016-08-11
 Room Infomation 다이얼로그에서 동그라미 벗어남*
