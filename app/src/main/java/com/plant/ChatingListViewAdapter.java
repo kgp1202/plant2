@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.zip.Inflater;
@@ -54,29 +56,62 @@ public class ChatingListViewAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         MyTextHolder holder;
-        if(convertView==null){
-            holder=new MyTextHolder(context);
-            convertView=new LinearLayout(context);
-            convertView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT));
+        if(convertView==null) {
+            holder = new MyTextHolder();
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = (LinearLayout) inflater.inflate(R.layout.chating_row, parent, false);
+            holder.profileLayout = (LinearLayout) convertView.findViewById(R.id.others);
+            holder.content=(TextView)convertView.findViewById(R.id.content);
+            holder.profile=(ImageView)holder.profileLayout.findViewById(R.id.profile);
+            holder.name=(TextView)holder.profileLayout.findViewById(R.id.name);
+            holder.number=(TextView)holder.profileLayout.findViewById(R.id.number);
+            holder.contentContainer=(LinearLayout)convertView.findViewById(R.id.contentContainer);
+            holder.marginLayout=(LinearLayout)convertView.findViewById(R.id.marginLayout);
+            holder.beforeID="";
             convertView.setTag(holder);
         }
         else{
             holder=(MyTextHolder) convertView.getTag();
         }
-        ((LinearLayout)convertView).removeAllViews();
         try{
             JSONObject temp=myJsonObjectList.get(position);
             holder.content.setText(temp.getString("content"));
-            if(!temp.getString("userID").equals(myData.userID)){
-                Glide.with(context).load(temp.getString("profile")).override(getPXfromDP(60),getPXfromDP(50)).into(holder.profile.profile);
-                holder.profile.number.setText(temp.getInt("userNum")+"");
-                holder.profile.name.setText(temp.getString("name"));
-                ((LinearLayout) convertView).addView(holder.profile.container);
-                ((LinearLayout) convertView).setGravity(Gravity.LEFT);
+            if(position==0){
+                holder.beforeID="";
             }
-            else
+            else{
+                holder.beforeID=myJsonObjectList.get(position-1).getString("userID");
+            }
+            if(!temp.getString("userID").equals(myData.userID)){
+                holder.number.setText(temp.getInt("userNum")+"");
+                holder.name.setText(temp.getString("name"));
+                if(temp.getString("userID").equals(holder.beforeID)){
+                    holder.number.setVisibility(View.INVISIBLE);
+                    holder.name.setVisibility(View.INVISIBLE);
+                    holder.profile.setVisibility(View.INVISIBLE);
+                    LinearLayout.LayoutParams p=(LinearLayout.LayoutParams)holder.marginLayout.getLayoutParams();
+                    p.leftMargin=getPXfromDP(60);
+                }
+                else{
+                    holder.number.setVisibility(View.VISIBLE);
+                    holder.name.setVisibility(View.VISIBLE);
+                    holder.profile.setVisibility(View.VISIBLE);
+                    Glide.with(context).load(temp.getString("profile")).override(getPXfromDP(60),getPXfromDP(50)).into(holder.profile);
+                }
+                holder.profileLayout.setVisibility(View.VISIBLE);
+                ((LinearLayout) convertView).setGravity(Gravity.LEFT);
+                holder.contentContainer.setBackground(ContextCompat.getDrawable(context,R.drawable.other_chating));
+                holder.content.setTextColor(Color.BLACK);
+            }
+            else{
                 ((LinearLayout) convertView).setGravity(Gravity.RIGHT);
-            ((LinearLayout) convertView).addView(holder.content);
+                holder.profileLayout.setVisibility(View.INVISIBLE);
+                holder.contentContainer.setBackground(ContextCompat.getDrawable(context,R.drawable.my_chating));
+                holder.content.setTextColor(Color.WHITE);
+                LinearLayout.LayoutParams p=(LinearLayout.LayoutParams)holder.marginLayout.getLayoutParams();
+                p.leftMargin=getPXfromDP(10);
+            }
+            holder.content.setText(temp.getString("content"));
         }
         catch (Exception e){
             e.printStackTrace();
@@ -86,47 +121,15 @@ public class ChatingListViewAdapter extends BaseAdapter {
     }
 
     class MyTextHolder{
-        ProfileRelativeLayout profile;
-        TextView content;
-        MyTextHolder(Context myContext){
-            content=new TextView(myContext);
-            content.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT));
-            content.setMaxWidth(getPXfromDP(200));
-            content.setTextColor(Color.parseColor("#000000"));
-            content.setTextSize(30);
-
-            profile=new ProfileRelativeLayout(myContext);
-        }
-    };
-    class ProfileRelativeLayout{
-        RelativeLayout container;
-        RelativeLayout container2;
+        LinearLayout profileLayout;
+        LinearLayout contentContainer;
+        LinearLayout marginLayout;
         ImageView profile;
         TextView name;
         TextView number;
-        ProfileRelativeLayout(Context myContext){
-            container=new RelativeLayout(myContext);
-            container.setLayoutParams(new RelativeLayout.LayoutParams(getPXfromDP(60),getPXfromDP(80)));
-
-            //container2.setForeground(ContextCompat.getDrawable(context,R.drawable.dialog_detail_member_ring));
-            LayoutInflater inflater=(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            container2=(RelativeLayout) inflater.inflate(R.layout.chating_container2,null);
-            profile=(ImageView) container2.findViewById(R.id.profile);
-            number=(TextView)container2.findViewById(R.id.number);
-            container2.setId(View.generateViewId());
-
-            name=new TextView(myContext);
-            RelativeLayout.LayoutParams p2=new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,getPXfromDP(30));
-            p2.addRule(RelativeLayout.BELOW,container2.getId());
-            name.setLayoutParams(p2);
-            name.setTextSize(20);
-            name.setTextColor(Color.parseColor("#000000"));
-
-            container.addView(container2);
-            container.addView(name);
-        }
-    };
-
+        TextView content;
+        String beforeID;
+    }
     int getPXfromDP(int value){
         Resources r = context.getResources();
         float px = value* r.getDisplayMetrics().density;
