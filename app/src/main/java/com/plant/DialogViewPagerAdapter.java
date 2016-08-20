@@ -130,7 +130,7 @@ class DialogViewPagerAdapter extends PagerAdapter {
                         profileName.setText(tempUserData.name);
 
                         //동행인원의 프로필
-                        Glide.with(mContext).load(tempUserData.profilePath).override(100,100).into(profileImg);
+                        Glide.with(mContext).load(tempUserData.thumbnailPath).override(100,100).into(profileImg);
                         number.setText((itemClickListener.withNumber.get(i))+"");
 
                         profile[count++].addView(memberProfileView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

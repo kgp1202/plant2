@@ -242,6 +242,7 @@ public class Login_Activity extends Activity implements View.OnClickListener{
                 tempUserData.loginFrom= com.plant.UserData.KAKAO;
                 tempUserData.name=userProfile.getNickname();
                 tempUserData.profilePath=userProfile.getProfileImagePath();
+                tempUserData.thumbnailPath = userProfile.getThumbnailImagePath();
                 redirectMainActivity(tempUserData); // 로그인 성공시 MainActivity로
             }
         });

@@ -13,6 +13,13 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 
+import com.bumptech.glide.Glide;
+import com.kakao.auth.Session;
+import com.kakao.kakaotalk.KakaoTalkService;
+import com.kakao.kakaotalk.callback.TalkResponseCallback;
+import com.kakao.kakaotalk.response.KakaoTalkProfile;
+import com.kakao.network.ErrorResult;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -22,16 +29,36 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class Splash_Activity extends Activity {
     LoginPHP loginPHP;
     boolean isPastLogin;
+    private UserData pastLoginUserData;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_splash_);
 
-        checkPastLogin();
+        mContext = this;
 
-        if(!isPastLogin) {
+        //과거 로그인 여부를 확인.
+        SharedPreferences pref = getSharedPreferences("UserData", MODE_PRIVATE);
+        isPastLogin = pref.getBoolean("isLogin", false);
+
+        if(isPastLogin){
+            /********* 보안문제 발생 가능************/
+            pastLoginUserData = new UserData();
+            pastLoginUserData.userID = pref.getString("userID", "");
+            pastLoginUserData.loginFrom = pref.getInt("loginFrom", 0);
+
+            //카카오톡으로 로그인 시 프로필 정보 갱신.
+            if(pastLoginUserData.loginFrom == UserData.KAKAO){
+                Log.d("session", " " + Session.getCurrentSession().checkState());
+                updateProfile();
+            }else {
+                loginPHP = new LoginPHP(this);
+                loginPHP.execute(pastLoginUserData);
+                finish();
+            }
+        }else {
             int secondsDelayed = 1;
             new Handler().postDelayed(new Runnable() {
                 public void run() {
@@ -42,38 +69,60 @@ public class Splash_Activity extends Activity {
         }
     }
 
-    public void checkPastLogin(){
-        SharedPreferences pref = getSharedPreferences("UserData", MODE_PRIVATE);
-        isPastLogin = pref.getBoolean("isLogin", false);
 
-        if(isPastLogin){
-            /********* 보안문제 발생 가능************/
-            UserData tempUserData = new UserData();
-            tempUserData.userID = pref.getString("userID", "");
-            tempUserData.loginFrom = pref.getInt("loginFrom", 0);
+    private void updateProfile() {
+        KakaoTalkService.requestProfile(new TalkResponseCallback<KakaoTalkProfile>(){
 
-            loginPHP = new LoginPHP(this);
-            loginPHP.execute(tempUserData);
+            @Override
+            public void onSuccess(KakaoTalkProfile talkProfile) {
+                pastLoginUserData.name = talkProfile.getNickName();
+                pastLoginUserData.profilePath = talkProfile.getProfileImageUrl();
+                pastLoginUserData.thumbnailPath = talkProfile.getThumbnailUrl();
+                Log.d("update success", " " + pastLoginUserData.getUserDataJSONString());
 
-            finish();
-        }
+                loginPHP = new LoginPHP(mContext);
+                loginPHP.execute(pastLoginUserData);
+                finish();
+            }
+
+            @Override
+            public void onSessionClosed(ErrorResult errorResult) {
+                Log.d("a", "onSessionClosed");
+
+                int secondsDelayed = 1;
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        startActivity(new Intent(Splash_Activity.this, Login_Activity.class));
+                        finish();
+                    }
+                }, secondsDelayed * 500);
+            }
+
+            @Override
+            public void onNotSignedUp() {
+                Log.d("a", "onNotSignedUp");
+            }
+
+            @Override
+            public void onNotKakaoTalkUser() {
+                Log.d("a", "onNotKakaoTalkUser");
+            }
+        });
     }
 
-
-    /********** 권한 설정 다이얼로그 결과 ***************/
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            //granted
-            //User의 ProfilePath에 존재하는 이미지를 다운로드 받는다.
-
-            //Go to FrameActivity!!
-            Intent intent=new Intent(this,FrameActivity.class);
-            intent.putExtra("UserData", loginPHP.userData);
-            intent.putExtra("RoomDataList", loginPHP.roomDataList);
-            startActivity(intent);
-        } else {
-            //refuesd
-        }
-    }
+//    /********** 권한 설정 다이얼로그 결과 ***************/
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+//        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//            Log.d("a","c");
+//            //Go to FrameActivity!!
+//            Intent intent=new Intent(this,FrameActivity.class);
+//            intent.putExtra("UserData", loginPHP.userData);
+//            intent.putExtra("RoomDataList", loginPHP.roomDataList);
+//            startActivity(intent);
+//        } else {
+//            Log.d("a","a");
+//            //refuesd
+//        }
+//    }
 }

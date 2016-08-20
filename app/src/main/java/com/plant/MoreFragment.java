@@ -17,6 +17,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.kakao.kakaotalk.KakaoTalkService;
+import com.kakao.kakaotalk.callback.TalkResponseCallback;
+import com.kakao.kakaotalk.response.KakaoTalkProfile;
+import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.nhn.android.naverlogin.OAuthLogin;
@@ -67,19 +72,46 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
         total.setText(userData.getUserDataJSONString());
 
         /**************** Profile Img 설정 *************************/
+
+
         String savePath = Environment.getExternalStorageDirectory().toString() + SAVE_FOLDER + "/" + userData.getDecodedProfilePath();
         File f = new File(savePath);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 4;
         Bitmap bmp = BitmapFactory.decodeFile(f.getAbsolutePath(), options);
 
-        profileImg.measure(View.MeasureSpec.AT_MOST , View.MeasureSpec.AT_MOST );
-        int memberExistH = profileImg.getMeasuredHeight();
-        int memberExistW = profileImg.getMeasuredWidth();
+        Glide.with(mContext).load(userData.profilePath).into(profileImg);
+        //updateProfile();
+    }
 
-        Log.d("DialogViewPagerAdapter", "ImageView => " + memberExistH + " " + memberExistW);
+    private void updateProfile() {
+        KakaoTalkService.requestProfile(new TalkResponseCallback<KakaoTalkProfile>(){
 
-        profileImg.setImageBitmap(bmp);
+            @Override
+            public void onSuccess(KakaoTalkProfile talkProfile) {
+                final String nickName = talkProfile.getNickName();
+                final String profileImageURL = talkProfile.getProfileImageUrl();
+                final String thumbnailURL = talkProfile.getThumbnailUrl();
+                final String countryISO = talkProfile.getCountryISO();
+
+                Glide.with(mContext).load(profileImageURL).into(profileImg);
+            }
+
+            @Override
+            public void onSessionClosed(ErrorResult errorResult) {
+
+            }
+
+            @Override
+            public void onNotSignedUp() {
+
+            }
+
+            @Override
+            public void onNotKakaoTalkUser() {
+
+            }
+        });
     }
 
     @Override
