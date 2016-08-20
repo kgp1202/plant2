@@ -21,6 +21,7 @@ public class UserData implements Serializable {
     public int point;
     public String name;
     public String profilePath;
+    public String thumbnailPath;
     public JSONObject getUserDataJson(){
         Gson makeString=new Gson();
         JSONObject returnV=null;
@@ -42,6 +43,7 @@ public class UserData implements Serializable {
         this.userID=temp.userID;
         this.loginFrom=temp.loginFrom;
         this.profilePath=temp.profilePath;
+        this.thumbnailPath=temp.thumbnailPath;
         this.point=temp.point;
         this.reserveRoomID=temp.reserveRoomID;
         this.point=temp.point;
@@ -50,4 +52,5 @@ public class UserData implements Serializable {
     public String getDecodedProfilePath(){
         return profilePath.replace('/', '_');
     }
+    public String getDecodeThumbnailPath() {return thumbnailPath.replace('/', '_');}
 }

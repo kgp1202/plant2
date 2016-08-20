@@ -89,6 +89,7 @@ public class LoginPHP extends AsyncTask<UserData, Void, String> {
         {
             e.printStackTrace();
         }
+        //Log.d("loginPHP", " " + jsonResult);
         return jsonResult.toString();
     }
 
@@ -109,20 +110,11 @@ public class LoginPHP extends AsyncTask<UserData, Void, String> {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        //권한을 물어본다.
-        int permissionCheck = ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if(permissionCheck == PackageManager.PERMISSION_DENIED){
-            ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},0);
 
-        }else {
-            Log.d("image path", " " + userData.profilePath);
-
-            //Go to FrameActivity!!
-            Intent intent=new Intent(mContext,FrameActivity.class);
-            intent.putExtra("UserData", userData);
-            intent.putExtra("RoomDataList", roomDataList);
-            mContext.startActivity(intent);
-        }
+        Intent intent=new Intent(mContext,FrameActivity.class);
+        intent.putExtra("UserData", userData);
+        intent.putExtra("RoomDataList", roomDataList);
+        mContext.startActivity(intent);
     }
 }
 /************* Login.php로 연결 END ***********************/

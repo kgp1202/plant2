@@ -165,8 +165,10 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
         searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                Log.d("onEditorAction", "actionId" + actionId + " " + EditorInfo.IME_ACTION_SEARCH);
                 switch (actionId) {
                     case EditorInfo.IME_ACTION_SEARCH:
+                        Log.d("onEditorAction", "a");
                         SearchPHP searchPHP = new SearchPHP();
                         searchPHP.execute(searchEditText.getText().toString());
 
@@ -259,6 +261,7 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
             StringBuilder jsonResult = new StringBuilder();
             try {
                 URL url = new URL(SearchURL + "?destPoint=" + destPoint);
+                Log.d("SearchPHP destPoint", " " + destPoint);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
@@ -289,6 +292,10 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            for(int i = 0; i < roomDataList.size(); i++){
+                Log.d("search result", " " + roomDataList.get(i).roomID);
+            }
+
             listViewAdapter.notifyDataSetChanged();
             listView.setOnScrollListener(null);
         }
@@ -348,24 +355,19 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
                 return;
             }
             else {
+                for(int i = 0; i < resultRoomDataList.size(); i++){
+                    Log.d("GetRoomDataPHP result", "" + resultRoomDataList.get(i).roomID);
+                }
+
                 if((((FrameActivity) mContext).reservationListCache) == null){
                     ((FrameActivity) mContext).reservationListCache = new ArrayList<RoomData>();
                 }
-
-                for(int i = 0; i < resultRoomDataList.size(); i++){
-                    ((FrameActivity) mContext).reservationListCache.add(resultRoomDataList.get(i));
+                if(roomDataList == null){
+                    return;
                 }
-
-                if(roomDataList != null){
-//                    roomDataList = (ArrayList<RoomData>) ((FrameActivity) getActivity()).reservationListCache.clone();
-//                    listViewAdapter.notifyDataSetChanged();
-                    Log.d("complete", "a");
-                    for(int i = 0; i < resultRoomDataList.size(); i++){
-                        roomDataList.add(resultRoomDataList.get(i));
-                    }
-                    listViewAdapter.notifyDataSetChanged();
-
-                }
+                ((FrameActivity) mContext).reservationListCache.addAll(resultRoomDataList);
+                roomDataList.addAll(resultRoomDataList);
+                listViewAdapter.notifyDataSetChanged();
 
                 ((FrameActivity)mContext).isDoBackground = false;
             }
