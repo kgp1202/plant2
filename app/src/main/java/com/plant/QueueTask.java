@@ -36,6 +36,7 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
+        roomID=0;
             /*Queue를 잡는다**********************/
         HttpRequest myRequest = new HttpRequest("http://plan-t.kr/queue/userMatching.php");
 

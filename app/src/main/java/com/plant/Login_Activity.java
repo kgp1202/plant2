@@ -84,10 +84,6 @@ public class Login_Activity extends Activity implements View.OnClickListener{
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            //granted
-            //User의 ProfilePath에 존재하는 이미지를 다운로드 받는다.
-            ImageDownload imageDownload = new ImageDownload(this);
-            imageDownload.execute(loginPHP.userData.profilePath);
 
             //Go to FrameActivity!!
             Intent intent=new Intent(this,FrameActivity.class);
