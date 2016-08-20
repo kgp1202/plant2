@@ -3,6 +3,7 @@ package com.plant;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
@@ -21,13 +22,11 @@ import java.util.concurrent.ExecutionException;
  */
 public class FindUserDataFromRoomData extends AsyncTask<String, Void, ArrayList<UserData>> {
     public static final String SearchURL = "http://www.plan-t.kr/findUserDataFromRoomData.php";
-    private ArrayList<UserData> userDataList = new ArrayList<UserData>();
-    private ArrayList<Integer> withNumber = new ArrayList<Integer>();
-    RoomDataListViewOnItemClickListener parent;
+    public ArrayList<UserData> participateUserData = new ArrayList<UserData>();
+    public ArrayList<Integer> withNumber = new ArrayList<Integer>();
+    public boolean isComplete = false;
 
-    public FindUserDataFromRoomData(RoomDataListViewOnItemClickListener input) {
-        parent = input;
-    }
+    public FindUserDataFromRoomData() {    }
 
     @Override
     protected ArrayList<UserData> doInBackground(String... params) {
@@ -48,7 +47,7 @@ public class FindUserDataFromRoomData extends AsyncTask<String, Void, ArrayList<
                     if (line == null)
                         break;
                     //jsonResult.append(line + "\n");
-                    userDataList.add(new Gson().fromJson(line, UserData.class));
+                    participateUserData.add(new Gson().fromJson(line, UserData.class));
                     line = br.readLine();
                     withNumber.add(Integer.parseInt(line));
                 }
@@ -61,9 +60,11 @@ public class FindUserDataFromRoomData extends AsyncTask<String, Void, ArrayList<
             e.printStackTrace();
         }
 
-        parent.userDataLodingComplete = true;
-        parent.participateUserData = userDataList;
-        parent.withNumber = withNumber;
-        return userDataList;
+        for(int i = 0; i < participateUserData.size(); i++){
+            Log.d("findUserData", " " + participateUserData.get(i).userID + " " + withNumber.get(i));
+        }
+
+        isComplete = true;
+        return participateUserData;
     }
 }

@@ -43,6 +43,12 @@ public class LoginPHP extends AsyncTask<UserData, Void, String> {
         mContext = context;
     }
 
+
+    @Override
+    protected void onPreExecute() {
+        Log.d("a", " " + InternetCheck.isInternetAvailable());
+    }
+
     @Override
     protected String doInBackground(UserData... tempUserData) {
         //tempUserData을 json형식으로 login,php에 접속하여 정보 존재 여부를 확인후 로그인 혹은 정보 생성
@@ -110,7 +116,6 @@ public class LoginPHP extends AsyncTask<UserData, Void, String> {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         Intent intent=new Intent(mContext,FrameActivity.class);
         intent.putExtra("UserData", userData);
         intent.putExtra("RoomDataList", roomDataList);

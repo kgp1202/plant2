@@ -39,6 +39,8 @@ public class Splash_Activity extends Activity {
 
         mContext = this;
 
+        Log.d("a"," " + InternetCheck.isInternetAvailable() + " " + InternetCheck.isNetworkConnected(mContext));
+
         //과거 로그인 여부를 확인.
         SharedPreferences pref = getSharedPreferences("UserData", MODE_PRIVATE);
         isPastLogin = pref.getBoolean("isLogin", false);

@@ -165,10 +165,8 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
         searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                Log.d("onEditorAction", "actionId" + actionId + " " + EditorInfo.IME_ACTION_SEARCH);
-                switch (actionId) {
+                switch (v.getImeOptions()) {
                     case EditorInfo.IME_ACTION_SEARCH:
-                        Log.d("onEditorAction", "a");
                         SearchPHP searchPHP = new SearchPHP();
                         searchPHP.execute(searchEditText.getText().toString());
 

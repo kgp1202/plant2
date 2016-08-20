@@ -123,7 +123,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
                     String content= URLDecoder.decode(obj.getString("content"),"euc-kr");
                     obj.remove("content");
                     obj.put("content",content);
-                    obj.put("profile",temp.profilePath);
+                    obj.put("profile",temp.thumbnailPath);
                     obj.put("userNum",withNumber.get(num));
                     obj.put("name",temp.name);
                     adapter.myJsonObjectList.add(obj);

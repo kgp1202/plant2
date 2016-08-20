@@ -36,7 +36,6 @@ class DialogViewPagerAdapter extends PagerAdapter {
     private LayoutInflater inflater;
     private int currentItemNumber;
     private ViewPager mViewPager;
-    private RoomDataListViewOnItemClickListener itemClickListener;
 
     private RoomData currentRoomData;
 
@@ -50,6 +49,7 @@ class DialogViewPagerAdapter extends PagerAdapter {
     //ImageView profileImg[] = new ImageView[4];
 
     private TextView dialogDetailComment;
+    private FindUserDataFromRoomData findUserDataFromRoomData;
 
     ImageView viewPagerStatus[] = new ImageView[3];
 
@@ -104,16 +104,16 @@ class DialogViewPagerAdapter extends PagerAdapter {
                 break;
             case 1:
                 //dialog_detail_member에 들어갈 프로필을 inflate 해준다.
-                while(!itemClickListener.userDataLodingComplete){ }    //데이터 로딩이 완료되면
+                while(!findUserDataFromRoomData.isComplete){ }    //데이터 로딩이 완료되면
 
-                for(int i = 0; i < itemClickListener.participateUserData.size(); i++){
-                    Log.d("aa", " " + itemClickListener.participateUserData.get(i).userID + " " + itemClickListener.withNumber.get(i));
+                for(int i = 0; i < findUserDataFromRoomData.participateUserData.size(); i++){
+                    Log.d("aa", " " + findUserDataFromRoomData.participateUserData.get(i).userID + " " + findUserDataFromRoomData.withNumber.get(i));
                 }
 
                 //profile을 설정.
                 int count = 0;
-                for(int i = 0; i < itemClickListener.participateUserData.size(); i++) {
-                    for(int j = 0; j < itemClickListener.withNumber.get(i); j++){
+                for(int i = 0; i < findUserDataFromRoomData.participateUserData.size(); i++) {
+                    for(int j = 0; j < findUserDataFromRoomData.withNumber.get(i); j++){
                         profile[count].setBackground(null);
                         profile[count].removeAllViews();
 
@@ -124,14 +124,19 @@ class DialogViewPagerAdapter extends PagerAdapter {
                         TextView profileName = (TextView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_name);
                         ImageView profileImg = (ImageView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_img);
 
-                        UserData tempUserData = itemClickListener.participateUserData.get(i);
+                        UserData tempUserData = findUserDataFromRoomData.participateUserData.get(i);
+                        Log.d("a", " " + tempUserData.thumbnailPath);
 
                         profilePoint.setText("" + tempUserData.point);
                         profileName.setText(tempUserData.name);
 
                         //동행인원의 프로필
-                        Glide.with(mContext).load(tempUserData.thumbnailPath).override(100,100).into(profileImg);
-                        number.setText((itemClickListener.withNumber.get(i))+"");
+                        if(tempUserData.thumbnailPath.equals("")){
+                            Glide.with(mContext).load(R.drawable.profile_thumbnail_default).into(profileImg);
+                        }else {
+                            Glide.with(mContext).load(tempUserData.thumbnailPath).into(profileImg);
+                        }
+                        number.setText((findUserDataFromRoomData.withNumber.get(i))+"");
 
                         profile[count++].addView(memberProfileView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                     }
@@ -157,8 +162,8 @@ class DialogViewPagerAdapter extends PagerAdapter {
         }
     }
 
-    public void setListViewListener(RoomDataListViewOnItemClickListener listener){
-        itemClickListener = listener;
+    public void setFindUserDataFromRoomData(FindUserDataFromRoomData findUserDataFromRoomData){
+        this.findUserDataFromRoomData = findUserDataFromRoomData;
     }
 
     @Override
