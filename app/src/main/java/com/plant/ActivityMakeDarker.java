@@ -7,5 +7,5 @@ package com.plant;
  */
 public interface ActivityMakeDarker {
     void makeDarker(boolean input);
-    void getResultFromThread(int input);
+    void getResultFromThread(RoomData input);
 }

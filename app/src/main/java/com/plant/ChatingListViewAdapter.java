@@ -96,7 +96,10 @@ public class ChatingListViewAdapter extends BaseAdapter {
                     holder.number.setVisibility(View.VISIBLE);
                     holder.name.setVisibility(View.VISIBLE);
                     holder.profile.setVisibility(View.VISIBLE);
-                    Glide.with(context).load(temp.getString("profile")).override(getPXfromDP(60),getPXfromDP(50)).into(holder.profile);
+                    if(!temp.getString("profile").equals(""))
+                        Glide.with(context).load(temp.getString("profile")).override(getPXfromDP(60),getPXfromDP(50)).into(holder.profile);
+                    else
+                        Glide.with(context).load(R.drawable.profile_thumbnail_default).override(getPXfromDP(60),getPXfromDP(50)).into(holder.profile);
                 }
                 holder.profileLayout.setVisibility(View.VISIBLE);
                 ((LinearLayout) convertView).setGravity(Gravity.LEFT);

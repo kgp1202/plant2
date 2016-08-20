@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 public class ChatingActivity extends Activity implements View.OnClickListener{
@@ -54,6 +57,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     ChatingListViewAdapter adapter;
 
     getData myChatingThread;
+    boolean end=false;
     int id=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,30 +79,9 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
             finish();
         }
         else{
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-            String timeStr="";
-            if(myRoomData.roomType==2){
-                String day="날";
-                time= myRoomData.startTime-Calendar.getInstance().getTimeInMillis();
-                if(time>=24*60*60*1000){
-                    day=(time/24*60*60*1000)+"날";
-                    time=time%24*60*60*1000;
-                }
-                timeStr=format.format(new Date(time)) ;
-                timeStr= timeStr.substring(0, 19);
-                timeStr=day+timeStr;
-            }
-            else{
-                DateFormat sdFormat = new SimpleDateFormat("HH:mm:ss");
-                Date tempDate=new Date();
-                try {
-                    tempDate = sdFormat.parse("00:01:00");
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                timeStr=format.format(tempDate);
-            }
-
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss + dd일");
+            Date d=new Date(myRoomData.startTime-Calendar.getInstance().getTimeInMillis());
+            String timeStr=format.format(d);
             chatingTimer=(TextView)findViewById(R.id.chatingTimer);
             chatingTimer.setText(timeStr);
             textBody=(ListView) findViewById(R.id.textBody);
@@ -123,7 +106,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
                     String content= URLDecoder.decode(obj.getString("content"),"euc-kr");
                     obj.remove("content");
                     obj.put("content",content);
-                    obj.put("profile",temp.profilePath);
+                    obj.put("profile",temp.thumbnailPath);
                     obj.put("userNum",withNumber.get(num));
                     obj.put("name",temp.name);
                     adapter.myJsonObjectList.add(obj);
@@ -143,6 +126,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     void threadStart(){
         myChatingThread= new getData();
         myChatingThread.execute();
+        timeStart();
     }
     int getUserDataFromParticipates(String ID){
         for(int i=0; i<participatedUser.size(); i++){
@@ -201,11 +185,10 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
         }
     }
     class getData extends AsyncTask<Void,String,String>{
-        boolean endActivity=false;
         @Override
         protected String doInBackground(Void a[]) {
             String returnV="";
-            while(!endActivity){
+            while(!end){
                 HttpRequest httpRequest=new HttpRequest("http://www.plan-t.kr/chating/getChating.php?roomID="+myRoomData.roomID+"&ID="+id);
                 new Thread(httpRequest).start();
                 while(!httpRequest.isFinish){};
@@ -245,9 +228,39 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
 
         }
     }
+
+    private TimerTask second;
+    private final Handler handler = new Handler();
+    long timer_sec;
+    Timer timer = new Timer();
+    public void timeStart() {
+        second = new TimerTask() {
+            @Override
+            public void run() {
+                Log.i("Test", "Timer start");
+                Update();
+                timer_sec=myRoomData.startTime-Calendar.getInstance().getTimeInMillis();
+            }
+        };
+        timer.schedule(second, 0, 1000);
+    }
+
+    protected void Update() {
+        Runnable updater = new Runnable() {
+            public void run() {
+                if(timer_sec<=0){
+                    finish();
+                }
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss + dd일");
+                chatingTimer.setText(format.format(timer_sec));
+            }
+        };
+        handler.post(updater);
+    }
     @Override
     public void onDestroy(){
         super.onDestroy();
-        myChatingThread.endActivity=true;
+        end=true;
+        timer.cancel();
     }
 }
