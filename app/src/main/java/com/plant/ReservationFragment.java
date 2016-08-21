@@ -132,15 +132,9 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
                 RoomDataListViewOnItemClickListener.DIALOG_MODE_JOIN));
 
 
-        //Get last items
-        if(((FrameActivity)mContext).reservationListCache == null) {
-            Log.d("null", "a");
-            GetRoomDataPHP getRoomDataPHP = new GetRoomDataPHP();
-            getRoomDataPHP.execute((long)0, (long)0);
-        }else {
-            roomDataList = (ArrayList<RoomData>) ((FrameActivity)mContext).reservationListCache.clone();
-            refreshRoomDataList();
-        }
+
+        GetRoomDataPHP getRoomDataPHP = new GetRoomDataPHP();
+        getRoomDataPHP.execute((long)0, (long)0);
 
         listViewAdapter.setList(getActivity(), roomDataList);
         listView.setAdapter(listViewAdapter);
@@ -205,23 +199,11 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
 
         @Override
         protected void onPostExecute(ArrayList<RoomData> resultRoomDataList) {
-            for(int i = 0; i < resultRoomDataList.size(); i++){
-                ((FrameActivity)mContext).reservationListCache.add(0, resultRoomDataList.get(i));
-                Log.d("cache", " " + resultRoomDataList.get(i).roomID);
-            }
-
             if(roomDataList != null){
-                for(int i = 0; i < resultRoomDataList.size(); i++){
-                    roomDataList.add(0, resultRoomDataList.get(i));
-                    Log.d("roomDataList", " " + resultRoomDataList.get(i).roomID);
-                }
-
-
+                roomDataList.addAll(resultRoomDataList);
                 listViewAdapter.notifyDataSetChanged();
+                mRefreshLayout.setRefreshing(false);
             }
-
-            Log.d("refresh end", " ");
-            mRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -348,27 +330,29 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
 
         @Override
         protected void onPostExecute(ArrayList<RoomData> resultRoomDataList) {
-            if(resultRoomDataList == null){
-                Log.d("fail", "a");
-                return;
-            }
-            else {
-                for(int i = 0; i < resultRoomDataList.size(); i++){
-                    Log.d("GetRoomDataPHP result", "" + resultRoomDataList.get(i).roomID);
-                }
-
-                if((((FrameActivity) mContext).reservationListCache) == null){
-                    ((FrameActivity) mContext).reservationListCache = new ArrayList<RoomData>();
-                }
-                if(roomDataList == null){
-                    return;
-                }
-                ((FrameActivity) mContext).reservationListCache.addAll(resultRoomDataList);
+            if(roomDataList != null){
                 roomDataList.addAll(resultRoomDataList);
                 listViewAdapter.notifyDataSetChanged();
-
-                ((FrameActivity)mContext).isDoBackground = false;
             }
+
+
+//            if(resultRoomDataList == null){
+//                return;
+//            }
+//            else {
+//
+//                if((((FrameActivity) mContext).reservationListCache) == null){
+//                    ((FrameActivity) mContext).reservationListCache = new ArrayList<RoomData>();
+//                }
+//                if(roomDataList == null){
+//                    return;
+//                }
+//                ((FrameActivity) mContext).reservationListCache.addAll(resultRoomDataList);
+//                roomDataList.addAll(resultRoomDataList);
+//                listViewAdapter.notifyDataSetChanged();
+//
+//                ((FrameActivity)mContext).isDoBackground = false;
+//            }
         }
     }
     /***************************** GetRoomDataPHP end***************************************/

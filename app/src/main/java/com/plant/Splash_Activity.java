@@ -111,20 +111,4 @@ public class Splash_Activity extends Activity {
             }
         });
     }
-
-//    /********** 권한 설정 다이얼로그 결과 ***************/
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//            Log.d("a","c");
-//            //Go to FrameActivity!!
-//            Intent intent=new Intent(this,FrameActivity.class);
-//            intent.putExtra("UserData", loginPHP.userData);
-//            intent.putExtra("RoomDataList", loginPHP.roomDataList);
-//            startActivity(intent);
-//        } else {
-//            Log.d("a","a");
-//            //refuesd
-//        }
-//    }
 }

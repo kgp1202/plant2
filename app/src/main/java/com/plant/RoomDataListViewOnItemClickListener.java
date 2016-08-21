@@ -44,6 +44,10 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
     int mode;
 
     RoomDataDialog dialog = null;
+
+    public static final int DIALOG_MODE_JOIN = 1;
+    public static final int DIALOG_MODE_CHECK = 2;
+
     public RoomData clickedItem;
 
     public RoomDataListViewOnItemClickListener(Context context, int dialog_mode){

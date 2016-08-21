@@ -118,7 +118,7 @@ public class LoginPHP extends AsyncTask<UserData, Void, String> {
         }
         Intent intent=new Intent(mContext,FrameActivity.class);
         intent.putExtra("UserData", userData);
-        intent.putExtra("RoomDataList", roomDataList);
+        //intent.putExtra("RoomDataList", roomDataList);
         mContext.startActivity(intent);
     }
 }

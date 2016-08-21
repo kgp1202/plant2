@@ -45,8 +45,8 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
 
     //UserData와 RoomData
     public UserData userData;
-    public ArrayList<RoomData> reservationCheckListCache;
-    public ArrayList<RoomData> reservationListCache;
+    //public ArrayList<RoomData> reservationCheckListCache;
+    //public ArrayList<RoomData> reservationListCache;
 
     public int makeRoomCount = 0;
 
@@ -82,7 +82,7 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
     public void init() {
         //intent를 통해서 넘어온 데이터
         userData = (UserData) getIntent().getSerializableExtra("UserData");
-        reservationCheckListCache = (ArrayList<RoomData>) getIntent().getSerializableExtra("RoomDataList");
+       // reservationCheckListCache = (ArrayList<RoomData>) getIntent().getSerializableExtra("RoomDataList");
 
         mView = (RelativeLayout) findViewById(R.id.mView);
 

@@ -367,8 +367,8 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            ((FrameActivity) getActivity()).reservationCheckListCache.add(0, roomData);
-            ((FrameActivity) getActivity()).reservationListCache.add(0, roomData);
+//            ((FrameActivity) getActivity()).reservationCheckListCache.add(0, roomData);
+//            ((FrameActivity) getActivity()).reservationListCache.add(0, roomData);
             ((FrameActivity) getActivity()).makeChange(3);
             ((FrameActivity) getActivity()).makeRoomCount++;
         }
