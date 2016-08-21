@@ -44,8 +44,13 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
         HttpRequest myRequest = new HttpRequest("http://plan-t.kr/queue/userMatching.php");
         myRequest.makeQuery(userData.getUserDataJson());
         myRequest.makeQuery(roomData.getRoomDataJson());
-        new Thread(myRequest).start();
-        while (!myRequest.isFinish) {}
+        Thread t=new Thread(myRequest);
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         do {
             try {
                 Thread.sleep(300);
