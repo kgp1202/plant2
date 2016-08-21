@@ -6,6 +6,8 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.net.URLDecoder;
+
 /**
  * Created by angks on 2016-05-25.
  */
@@ -40,14 +42,10 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... params) {
             /*Queue를 잡는다**********************/
         HttpRequest myRequest = new HttpRequest("http://plan-t.kr/queue/userMatching.php");
-
         myRequest.makeQuery(userData.getUserDataJson());
         myRequest.makeQuery(roomData.getRoomDataJson());
         new Thread(myRequest).start();
-        while (!myRequest.isFinish) {
-        }
-
-
+        while (!myRequest.isFinish) {}
         do {
             try {
                 Thread.sleep(300);
@@ -57,6 +55,7 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
                 }
                 JSONObject json=new JSONObject(myRequest.line);
                 matchingR.setRoomDataFromJson(json);
+                matchingR.destPoint=URLDecoder.decode(matchingR.destPoint,"euc-kr");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -91,6 +90,7 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
         }
         isFinish=true;
         myTrigger.makeDarker(false);
+        matchingR.roomID=-1;
         myTrigger.getResultFromThread(matchingR);
     }
 };
