@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 /**
  * Created by angks on 2016-05-25.
  */
@@ -12,7 +14,7 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     RoomData roomData = new RoomData();
     UserData userData = new UserData();
     boolean isFinish;
-    int roomID;
+    RoomData matchingR=new RoomData();
     public boolean isSucess;
     boolean isCancellable = false;
 
@@ -36,7 +38,6 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-        roomID=0;
             /*Queue를 잡는다**********************/
         HttpRequest myRequest = new HttpRequest("http://plan-t.kr/queue/userMatching.php");
 
@@ -54,7 +55,8 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
                 new Thread(myRequest).start();
                 while (!myRequest.isFinish) {
                 }
-                roomID = Integer.parseInt(myRequest.line);
+                JSONObject json=new JSONObject(myRequest.line);
+                matchingR.setRoomDataFromJson(json);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -69,10 +71,9 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void params) {
         super.onPostExecute(params);
-        Log.d("room", roomID + "");
         isFinish=true;
         myTrigger.makeDarker(false);
-        myTrigger.getResultFromThread(roomID);
+        myTrigger.getResultFromThread(matchingR);
     }
 
     @Override
@@ -85,14 +86,11 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
         ;
         if (myThread.line.equals(false)) {
             Log.d("onCancelled", "failed");
-
-            //방이 이미 잡힘
         } else {
             Log.d("onCancelled", "success");
-            roomID=-1;
         }
         isFinish=true;
         myTrigger.makeDarker(false);
-        myTrigger.getResultFromThread(roomID);
+        myTrigger.getResultFromThread(matchingR);
     }
 };

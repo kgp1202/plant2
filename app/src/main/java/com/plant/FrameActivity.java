@@ -197,8 +197,8 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
         }
     }
 
-    public void getResultFromThread(int input){
-        Log.d("in frame",input+"");
+    public void getResultFromThread(RoomData tempR){
+        //reservationCheckListCache.add(0, tempR);
     }
 
     public void makeDarker(boolean input) {
