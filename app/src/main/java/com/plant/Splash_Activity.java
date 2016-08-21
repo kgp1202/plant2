@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,8 +40,6 @@ public class Splash_Activity extends Activity {
         setContentView(R.layout.activity_splash_);
 
         mContext = this;
-
-        Log.d("a"," " + InternetCheck.isInternetAvailable() + " " + InternetCheck.isNetworkConnected(mContext));
 
         //과거 로그인 여부를 확인.
         SharedPreferences pref = getSharedPreferences("UserData", MODE_PRIVATE);

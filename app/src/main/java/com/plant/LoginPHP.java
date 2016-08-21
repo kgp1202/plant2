@@ -116,7 +116,6 @@ public class LoginPHP extends AsyncTask<UserData, Void, String> {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         Intent intent=new Intent(mContext,FrameActivity.class);
         intent.putExtra("UserData", userData);
         //intent.putExtra("RoomDataList", roomDataList);

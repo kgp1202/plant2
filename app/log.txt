@@ -2,8 +2,8 @@
 
 2016-08-16
 방 나가기
+httpRequest == internetcheck
 TextView 다른곳 선택시 키보드 없애기
-php 들어갈 때 마다 인터넷 연결 확인 ***************** InternetCheck함수 확인.
 ReservationMakeFragment withNumberSpinner 배경화면 ******* 재확인 필요
 
 2016-08-11

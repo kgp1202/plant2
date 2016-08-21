@@ -296,7 +296,7 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
                     if(withNumSpin.getSelectedItem().equals("없음")){
                         roomData.userNum = 1;
                     }else {
-                        roomData.userNum = Integer.parseInt((String)withNumSpin.getSelectedItem());
+                        roomData.userNum = Integer.parseInt((String)withNumSpin.getSelectedItem()) + 1;
                     }
                     roomData.roomType = RoomData.ROOM_TYPE_RESERVE;
                     roomData.setDestPoint(destination_editText.getText().toString());
