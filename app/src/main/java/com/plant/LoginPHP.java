@@ -33,78 +33,92 @@ import java.util.ArrayList;
 //입력으로 UserData를 Parameter로 입력받아서 execute를 하면
 //login.php로 연결하여 결과를 전역변수인 userData에 넣어준다.
 // 그리고 그 값을 sharedPreference를 통해서
-public class LoginPHP extends AsyncTask<UserData, Void, String> {
+public class LoginPHP extends AsyncTask<UserData, Void, Void> {
     private String loginURL = "http://plan-t.kr/login.php";
     public UserData userData = new UserData();
     public ArrayList<RoomData> roomDataList = new ArrayList<RoomData>();
     private Context mContext;
 
+    HttpRequest loginRequest;
+
     public LoginPHP(Context context){
         mContext = context;
     }
 
-
     @Override
-    protected void onPreExecute() {
-        Log.d("a", " " + InternetCheck.isInternetAvailable());
-    }
-
-    @Override
-    protected String doInBackground(UserData... tempUserData) {
-        //tempUserData을 json형식으로 login,php에 접속하여 정보 존재 여부를 확인후 로그인 혹은 정보 생성
-        StringBuilder jsonResult = new StringBuilder();
-        try {
-            URL loginObj = new URL(loginURL);
-            HttpURLConnection conn = (HttpURLConnection) loginObj.openConnection();
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Accept", "application/json");
-            conn.setConnectTimeout(2000);
-
-            OutputStream outputStream = conn.getOutputStream();
-            outputStream.write(tempUserData[0].getUserDataJSONString().getBytes());
-            outputStream.flush();
-
-            if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
-                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                boolean isUserData = true;
-                while ( true ) {
-                    if(isUserData) {
-                        String line = br.readLine();
-                        if (line == null)
-                            break;
-                        jsonResult.append(line + "\n");
-                        isUserData = false;
-                    } else {
-                        String line = br.readLine();
-                        if ( line == null )
-                            break;
-                        jsonResult.append(line + "\n");
-                        RoomData tempRoomData = new Gson().fromJson(line, RoomData.class);
-                        roomDataList.add(tempRoomData);
-                    }
-                }
-                br.close();
+    protected Void doInBackground(UserData... tempUserData) {
+        loginRequest = new HttpRequest(mContext, loginURL);
+        loginRequest.makeQuery(tempUserData[0].getUserDataJson());
+        Thread t = new Thread(loginRequest);
+        if(loginRequest.isInternetConnected()){
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            conn.disconnect();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
         }
-        //Log.d("loginPHP", " " + jsonResult);
-        return jsonResult.toString();
+
+        return null;
+
+//        //tempUserData을 json형식으로 login,php에 접속하여 정보 존재 여부를 확인후 로그인 혹은 정보 생성
+//        StringBuilder jsonResult = new StringBuilder();
+//        try {
+//            URL loginObj = new URL(loginURL);
+//            HttpURLConnection conn = (HttpURLConnection) loginObj.openConnection();
+//            conn.setDoInput(true);
+//            conn.setDoOutput(true);
+//            conn.setRequestMethod("POST");
+//            conn.setRequestProperty("Content-Type", "application/json");
+//            conn.setRequestProperty("Accept", "application/json");
+//            conn.setConnectTimeout(2000);
+//
+//            OutputStream outputStream = conn.getOutputStream();
+//            outputStream.write(tempUserData[0].getUserDataJSONString().getBytes());
+//            outputStream.flush();
+//
+//            if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
+//                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+//                boolean isUserData = true;
+//                while ( true ) {
+//                    if(isUserData) {
+//                        String line = br.readLine();
+//                        if (line == null)
+//                            break;
+//                        jsonResult.append(line + "\n");
+//                        isUserData = false;
+//                    } else {
+//                        String line = br.readLine();
+//                        if ( line == null )
+//                            break;
+//                        jsonResult.append(line + "\n");
+//                        RoomData tempRoomData = new Gson().fromJson(line, RoomData.class);
+//                        roomDataList.add(tempRoomData);
+//                    }
+//                }
+//                br.close();
+//            }
+//            conn.disconnect();
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (IOException e)
+//        {
+//            e.printStackTrace();
+//        }
+//        //Log.d("loginPHP", " " + jsonResult);
+//        return jsonResult.toString();
     }
 
-    protected void onPostExecute(String jsonResult) {
-        //Set userData by using jsonResult
-        try {
-            userData.setUserDataFromJson(new JSONObject(jsonResult));
-            Log.d("after", userData.getUserDataJSONString());
+    protected void onPostExecute(Void params) {
+        String[] lines = loginRequest.requestResult.split(System.getProperty("line.separator"));
 
+        try {
+            userData.setUserDataFromJson(new JSONObject(lines[0]));
+
+            for(int i = 1; i < lines.length; i++){
+                RoomData tempRoomData = new Gson().fromJson(lines[0], RoomData.class);
+                roomDataList.add(tempRoomData);
+            }
             //SharedPreference에 userID와 loginFrom저장
             SharedPreferences preferences ;
             SharedPreferences pref = mContext.getSharedPreferences("UserData", mContext.MODE_PRIVATE);
@@ -120,6 +134,27 @@ public class LoginPHP extends AsyncTask<UserData, Void, String> {
         intent.putExtra("UserData", userData);
         //intent.putExtra("RoomDataList", roomDataList);
         mContext.startActivity(intent);
+
+//        //Set userData by using jsonResult
+//        try {
+//            userData.setUserDataFromJson(new JSONObject(jsonResult));
+//            Log.d("after", userData.getUserDataJSONString());
+//
+//            //SharedPreference에 userID와 loginFrom저장
+//            SharedPreferences preferences ;
+//            SharedPreferences pref = mContext.getSharedPreferences("UserData", mContext.MODE_PRIVATE);
+//            SharedPreferences.Editor editor = pref.edit();
+//            editor.putBoolean("isLogin", true);
+//            editor.putString("userID", userData.userID);
+//            editor.putInt("loginFrom", userData.loginFrom);
+//            editor.commit();
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        Intent intent=new Intent(mContext,FrameActivity.class);
+//        intent.putExtra("UserData", userData);
+//        //intent.putExtra("RoomDataList", roomDataList);
+//        mContext.startActivity(intent);
     }
 }
 /************* Login.php로 연결 END ***********************/

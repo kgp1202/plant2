@@ -1,5 +1,6 @@
 package com.plant;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
@@ -26,9 +27,12 @@ public class HttpRequest extends Thread {
     public boolean isFinish;
     String query="";
     JSONObject object=new JSONObject();
-    public String line="";
+    public String requestResult="";
     URL url;
-    public HttpRequest(String inputUrl){
+    Context mContext;
+
+    public HttpRequest(Context context, String inputUrl){
+        mContext = context;
         uriExi=false;
         isFinish=false;
         Log.d("url",inputUrl);
@@ -61,32 +65,44 @@ public class HttpRequest extends Thread {
             }
         }
     }
+
+    public Boolean isInternetConnected(){
+        if(InternetFailDIalog.checkInternetConnection(mContext) == false) {
+            Log.d("Internet fail", "conetect X");
+            InternetFailDIalog internetFailDIalog = new InternetFailDIalog(mContext);
+            internetFailDIalog.show();
+
+            return false;
+        }else { return true; }
+    }
+
     @Override
     public void run(){
-        try {
-            if(uriExi){
-                query=object.toString();
-                OutputStream os=conn.getOutputStream();
-                BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
-                writer.write(query);
-                writer.flush();
-                writer.close();
-                os.close();
-            }
-            conn.connect();
-            if(conn.getResponseCode()==HttpURLConnection.HTTP_OK){
-                //Log.d("httpRequest","done");
-                line="";
-                BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream(),"UTF-8"));
-                String temp2;
-                while((temp2=br.readLine())!=null){
-                    line+=temp2;
+            try {
+                if (uriExi) {
+                    query = object.toString();
+                    OutputStream os = conn.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                    writer.write(query);
+                    writer.flush();
+                    writer.close();
+                    os.close();
                 }
-                Log.d("readLine",line);
+                conn.connect();
+                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    //Log.d("httpRequest","done");
+                    requestResult = "";
+                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+                    String temp2;
+                    while ((temp2 = br.readLine()) != null) {
+                        requestResult += temp2;
+                    }
+                    Log.d("request Result", requestResult);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        isFinish=true;
+            isFinish = true;
+
     }
 }

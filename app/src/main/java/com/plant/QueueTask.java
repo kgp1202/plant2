@@ -1,6 +1,7 @@
 package com.plant;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -12,6 +13,7 @@ import java.net.URLDecoder;
  * Created by angks on 2016-05-25.
  */
 class QueueTask extends AsyncTask<Void, Void, Void> {
+    Context mContext;
     ActivityMakeDarker myTrigger;
     RoomData roomData = new RoomData();
     UserData userData = new UserData();
@@ -20,7 +22,8 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     public boolean isSucess;
     boolean isCancellable = false;
 
-    public QueueTask(ActivityMakeDarker input) {
+    public QueueTask(Context context, ActivityMakeDarker input) {
+        mContext = context;
         myTrigger = input;
     }
 
@@ -41,7 +44,7 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
             /*Queue를 잡는다**********************/
-        HttpRequest myRequest = new HttpRequest("http://plan-t.kr/queue/userMatching.php");
+        HttpRequest myRequest = new HttpRequest(mContext, "http://plan-t.kr/queue/userMatching.php");
         myRequest.makeQuery(userData.getUserDataJson());
         myRequest.makeQuery(roomData.getRoomDataJson());
         new Thread(myRequest).start();
@@ -49,17 +52,17 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
         do {
             try {
                 Thread.sleep(300);
-                myRequest = new HttpRequest("http://plan-t.kr/queue/checkMatching.php?ID=" + userData.userID);
+                myRequest = new HttpRequest(mContext, "http://plan-t.kr/queue/checkMatching.php?ID=" + userData.userID);
                 new Thread(myRequest).start();
                 while (!myRequest.isFinish) {
                 }
-                JSONObject json=new JSONObject(myRequest.line);
+                JSONObject json=new JSONObject(myRequest.requestResult);
                 matchingR.setRoomDataFromJson(json);
                 matchingR.destPoint=URLDecoder.decode(matchingR.destPoint,"euc-kr");
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } while ((myRequest.line.equals("false")) && (!isCancelled()));
+        } while ((myRequest.requestResult.equals("false")) && (!isCancelled()));
         /*************************************/
         //if(myRequest.line.equals("sucess")){
         //   isSucess=true;
@@ -78,12 +81,12 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     @Override
     public void onCancelled(Void params) {
         super.onCancelled(params);
-        HttpRequest myThread = new HttpRequest("http://plan-t.kr/queue/cancellableCheck.php?ID=" + userData.userID);
+        HttpRequest myThread = new HttpRequest(mContext, "http://plan-t.kr/queue/cancellableCheck.php?ID=" + userData.userID);
         new Thread(myThread).start();
         while (!myThread.isFinish) {
         }
         ;
-        if (myThread.line.equals(false)) {
+        if (myThread.requestResult.equals(false)) {
             Log.d("onCancelled", "failed");
         } else {
             Log.d("onCancelled", "success");

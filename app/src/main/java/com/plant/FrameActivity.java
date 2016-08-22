@@ -32,6 +32,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class FrameActivity extends FragmentActivity implements View.OnClickListener, FragmentChangeListener, ActivityMakeDarker, View.OnTouchListener {
     QueueTask myQueueTask;
+    Context mContext;
 
     /* view ****************************************/
     RelativeLayout mView;
@@ -68,6 +69,7 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mContext = this;
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setDefaultFontPath("fonts/NanumGothicBold.ttf")
                 .setFontAttrId(R.attr.fontPath)
@@ -236,7 +238,7 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
             frameAnimation = (AnimationDrawable) wheel.getBackground();
             frameAnimation.start();
 
-            myQueueTask = new QueueTask(this);
+            myQueueTask = new QueueTask(mContext, this);
             myQueueTask.setRoomData(RealTimeFragment.realTimeRommData);
             myQueueTask.setUserData(userData);
             myQueueTask.execute();

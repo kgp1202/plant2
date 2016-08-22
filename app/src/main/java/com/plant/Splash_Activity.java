@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.kakao.auth.Session;
@@ -73,42 +74,54 @@ public class Splash_Activity extends Activity {
 
 
     private void updateProfile() {
-        KakaoTalkService.requestProfile(new TalkResponseCallback<KakaoTalkProfile>(){
+        if (InternetFailDIalog.checkInternetConnection(this) == false) {
+            final InternetFailDIalog internetFailDIalog = new InternetFailDIalog(this);
+            internetFailDIalog.okButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    internetFailDIalog.dismiss();
+                    finish();
+                }
+            });
+            internetFailDIalog.show();
+        } else {
+            KakaoTalkService.requestProfile(new TalkResponseCallback<KakaoTalkProfile>() {
 
-            @Override
-            public void onSuccess(KakaoTalkProfile talkProfile) {
-                pastLoginUserData.name = talkProfile.getNickName();
-                pastLoginUserData.profilePath = talkProfile.getProfileImageUrl();
-                pastLoginUserData.thumbnailPath = talkProfile.getThumbnailUrl();
-                Log.d("update success", " " + pastLoginUserData.getUserDataJSONString());
+                @Override
+                public void onSuccess(KakaoTalkProfile talkProfile) {
+                    pastLoginUserData.name = talkProfile.getNickName();
+                    pastLoginUserData.profilePath = talkProfile.getProfileImageUrl();
+                    pastLoginUserData.thumbnailPath = talkProfile.getThumbnailUrl();
+                    Log.d("update success", " " + pastLoginUserData.getUserDataJSONString());
 
-                loginPHP = new LoginPHP(mContext);
-                loginPHP.execute(pastLoginUserData);
-                finish();
-            }
+                    loginPHP = new LoginPHP(mContext);
+                    loginPHP.execute(pastLoginUserData);
+                    finish();
+                }
 
-            @Override
-            public void onSessionClosed(ErrorResult errorResult) {
-                Log.d("a", "onSessionClosed");
+                @Override
+                public void onSessionClosed(ErrorResult errorResult) {
+                    Log.d("a", "onSessionClosed");
 
-                int secondsDelayed = 1;
-                new Handler().postDelayed(new Runnable() {
-                    public void run() {
-                        startActivity(new Intent(Splash_Activity.this, Login_Activity.class));
-                        finish();
-                    }
-                }, secondsDelayed * 500);
-            }
+                    int secondsDelayed = 1;
+                    new Handler().postDelayed(new Runnable() {
+                        public void run() {
+                            startActivity(new Intent(Splash_Activity.this, Login_Activity.class));
+                            finish();
+                        }
+                    }, secondsDelayed * 500);
+                }
 
-            @Override
-            public void onNotSignedUp() {
-                Log.d("a", "onNotSignedUp");
-            }
+                @Override
+                public void onNotSignedUp() {
+                    Log.d("a", "onNotSignedUp");
+                }
 
-            @Override
-            public void onNotKakaoTalkUser() {
-                Log.d("a", "onNotKakaoTalkUser");
-            }
-        });
+                @Override
+                public void onNotKakaoTalkUser() {
+                    Log.d("a", "onNotKakaoTalkUser");
+                }
+            });
+        }
     }
 }

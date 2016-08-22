@@ -41,6 +41,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 public class ChatingActivity extends Activity implements View.OnClickListener{
+    Context mContext;
     ViewGroup.LayoutParams params=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
     TextView chatingTimer;
     ListView textBody;
@@ -62,6 +63,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
         setContentView(R.layout.activity_chating);
         Intent intent=getIntent();
         myRoomData=(RoomData) intent.getSerializableExtra("roomData");
@@ -141,7 +143,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
             case R.id.sendBtn:
                 String input=chatingContent.getText().toString();
                 chatingContent.setText("");
-                HttpRequest myRequest=new HttpRequest("http://plan-t.kr/chating/insertChating.php");
+                HttpRequest myRequest=new HttpRequest(this, "http://plan-t.kr/chating/insertChating.php");
                 JSONObject json=new JSONObject();
                 try{
                     json.put("userID",myUserData.userID);
@@ -173,10 +175,10 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
         @Override
         protected String doInBackground(String... params) {
             String returnV="";
-            HttpRequest httpRequest=new HttpRequest(params[0]);
+            HttpRequest httpRequest=new HttpRequest(mContext, params[0]);
             new Thread(httpRequest).start();
             while(!httpRequest.isFinish){};
-            returnV=httpRequest.line;
+            returnV=httpRequest.requestResult;
             return returnV;
         }
         @Override
@@ -189,11 +191,11 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
         protected String doInBackground(Void a[]) {
             String returnV="";
             while(!end){
-                HttpRequest httpRequest=new HttpRequest("http://www.plan-t.kr/chating/getChating.php?roomID="+myRoomData.roomID+"&ID="+id);
+                HttpRequest httpRequest=new HttpRequest(mContext, "http://www.plan-t.kr/chating/getChating.php?roomID="+myRoomData.roomID+"&ID="+id);
                 new Thread(httpRequest).start();
                 while(!httpRequest.isFinish){};
-                publishProgress(httpRequest.line);
-                returnV=httpRequest.line;
+                publishProgress(httpRequest.requestResult);
+                returnV=httpRequest.requestResult;
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

@@ -46,6 +46,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -192,15 +193,27 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
 
     class RefreshRoomDataPHP extends GetRoomDataPHP{
         SwipeRefreshLayout mRefreshLayout;
+        HttpRequest RefreshRoomDataReqeust;
 
         public RefreshRoomDataPHP(SwipeRefreshLayout swipeRefreshLayout){
             mRefreshLayout = swipeRefreshLayout;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<RoomData> resultRoomDataList) {
+        protected void onPostExecute(Void aVoid) {
             if(roomDataList != null){
-                roomDataList.addAll(resultRoomDataList);
+                String[] lines = getRoomDataRequest.requestResult.split(System.getProperty("line.separator"));
+                for(int i = 0; i < lines.length; i++){
+                    if(lines[i].equals("")) break;
+                    RoomData roomData=new Gson().fromJson(lines[i], RoomData.class);
+                    URLDecoder decoder=new URLDecoder();
+                    try {
+                        roomData.setDestPoint(decoder.decode(roomData.destPoint,"euc-kr"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    roomDataList.add(roomData);
+                }
                 listViewAdapter.notifyDataSetChanged();
                 mRefreshLayout.setRefreshing(false);
             }
@@ -234,106 +247,162 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
     /***************************** SearchPHP **********************************************/
     public class SearchPHP extends  AsyncTask<String, Void, Void>{
         public static final String SearchURL = "http://www.plan-t.kr/search.php";
+        HttpRequest searchRequest;
 
         @Override
         protected Void doInBackground(String... params) {
             String destPoint = params[0];
-            StringBuilder jsonResult = new StringBuilder();
-            try {
-                URL url = new URL(SearchURL + "?destPoint=" + destPoint);
-                Log.d("SearchPHP destPoint", " " + destPoint);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-
-                roomDataList.clear();
-                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                    while ( true ) {
-                        String line = br.readLine();
-                        if (line == null)
-                            break;
-                        jsonResult.append(line + "\n");
-                        roomDataList.add(new Gson().fromJson(line, RoomData.class));
-                    }
-                    br.close();
+            searchRequest = new HttpRequest(mContext, SearchURL + "?destPoint=" + destPoint);
+            Thread t = new Thread(searchRequest);
+            if(searchRequest.isInternetConnected()){
+                t.start();
+                try {
+                    t.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                conn.disconnect();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
             }
+
             return null;
+
+//            String destPoint = params[0];
+//            StringBuilder jsonResult = new StringBuilder();
+//            try {
+//                URL url = new URL(SearchURL + "?destPoint=" + destPoint);
+//                Log.d("SearchPHP destPoint", " " + destPoint);
+//                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//                conn.setDoInput(true);
+//                conn.setDoOutput(true);
+//                conn.setRequestMethod("GET");
+//                conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+//
+//                roomDataList.clear();
+//                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
+//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+//                    while ( true ) {
+//                        String line = br.readLine();
+//                        if (line == null)
+//                            break;
+//                        jsonResult.append(line + "\n");
+//                        roomDataList.add(new Gson().fromJson(line, RoomData.class));
+//                    }
+//                    br.close();
+//                }
+//                conn.disconnect();
+//            } catch (MalformedURLException e) {
+//                e.printStackTrace();
+//            } catch (IOException e)
+//            {
+//                e.printStackTrace();
+//            }
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            for(int i = 0; i < roomDataList.size(); i++){
-                Log.d("search result", " " + roomDataList.get(i).roomID);
-            }
+            if(roomDataList != null){
+                String[] lines = searchRequest.requestResult.split(System.getProperty("line.separator"));
 
-            listViewAdapter.notifyDataSetChanged();
-            listView.setOnScrollListener(null);
+                roomDataList.clear();
+                for(int i = 0; i < lines.length; i++) {
+                    if(lines[i].equals("")) break;
+                    roomDataList.add(new Gson().fromJson(lines[i], RoomData.class));
+                }
+                listViewAdapter.notifyDataSetChanged();
+                listView.setOnScrollListener(null);
+            }
+//
+//            for(int i = 0; i < roomDataList.size(); i++){
+//                Log.d("search result", " " + roomDataList.get(i).roomID);
+//            }
+//
+//            listViewAdapter.notifyDataSetChanged();
+//            listView.setOnScrollListener(null);
         }
     }
     /***************************** SearchPHP end*******************************************/
 
     /***************************** GetRoomDataPHP*******************************************/
     //pageNum를 입력으로 받아서 해당 데이터를 roomDataList에 추가해준다.
-    private class GetRoomDataPHP extends AsyncTask<Long, Void, ArrayList<RoomData>>{
+    private class GetRoomDataPHP extends AsyncTask<Long, Void, Void>{
         public static final String GetRoomDataURL = "http://www.plan-t.kr/getRoomData.php";
+        HttpRequest getRoomDataRequest;
 
         @Override
-        protected ArrayList<RoomData> doInBackground(Long... params) {
+        protected Void doInBackground(Long... params) {
             long fromRoomID = params[0];
             long toRoomID = params[1];
-
-            ArrayList<RoomData> resultRoomDataList = new ArrayList<RoomData>();
-            try {
-                Log.d("getRoomData", "?from=" + fromRoomID + "&to=" + toRoomID);
-                URL url = new URL(GetRoomDataURL + "?from=" + fromRoomID + "&to=" + toRoomID);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                conn.setRequestMethod("GET");
-                //conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-
-                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                    while ( true ) {
-                        String line = br.readLine();
-                        if (line == null)
-                            break;
-
-                        //url encode를 한글로 바꿈
-                        RoomData roomData=new Gson().fromJson(line, RoomData.class);
-                        URLDecoder decoder=new URLDecoder();
-                        roomData.setDestPoint(decoder.decode(roomData.destPoint,"euc-kr"));
-                        resultRoomDataList.add(roomData);
-                    }
-                    br.close();
+            getRoomDataRequest = new HttpRequest(mContext, GetRoomDataURL + "?from=" + fromRoomID + "&to=" + toRoomID);
+            Thread t = new Thread(getRoomDataRequest);
+            if(getRoomDataRequest.isInternetConnected()){
+                t.start();
+                try {
+                    t.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                conn.disconnect();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
             }
 
-            return resultRoomDataList;
+            return null;
+
+//            ArrayList<RoomData> resultRoomDataList = new ArrayList<RoomData>();
+//            try {
+//                Log.d("getRoomData", "?from=" + fromRoomID + "&to=" + toRoomID);
+//                URL url = new URL(GetRoomDataURL + "?from=" + fromRoomID + "&to=" + toRoomID);
+//                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//                conn.setDoInput(true);
+//                conn.setDoOutput(true);
+//                conn.setRequestMethod("GET");
+//                //conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+//
+//                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
+//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+//                    while ( true ) {
+//                        String line = br.readLine();
+//                        if (line == null)
+//                            break;
+//
+//                        //url encode를 한글로 바꿈
+//                        RoomData roomData=new Gson().fromJson(line, RoomData.class);
+//                        URLDecoder decoder=new URLDecoder();
+//                        roomData.setDestPoint(decoder.decode(roomData.destPoint,"euc-kr"));
+//                        resultRoomDataList.add(roomData);
+//                    }
+//                    br.close();
+//                }
+//                conn.disconnect();
+//            } catch (MalformedURLException e) {
+//                e.printStackTrace();
+//            } catch (IOException e)
+//            {
+//                e.printStackTrace();
+//            }
+//
+//            return resultRoomDataList;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<RoomData> resultRoomDataList) {
+        protected void onPostExecute(Void avoid) {
             if(roomDataList != null){
-                roomDataList.addAll(resultRoomDataList);
+                String[] lines = getRoomDataRequest.requestResult.split(System.getProperty("line.separator"));
+                for(int i = 0; i < lines.length; i++){
+                    if(lines[i].equals("")) break;
+                    RoomData roomData=new Gson().fromJson(lines[i], RoomData.class);
+                    URLDecoder decoder=new URLDecoder();
+                    try {
+                        roomData.setDestPoint(decoder.decode(roomData.destPoint,"euc-kr"));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    roomDataList.add(roomData);
+                }
                 listViewAdapter.notifyDataSetChanged();
             }
+
+
+//            if(roomDataList != null){
+//                roomDataList.addAll(resultRoomDataList);
+//                listViewAdapter.notifyDataSetChanged();
+//            }
 
 
 //            if(resultRoomDataList == null){

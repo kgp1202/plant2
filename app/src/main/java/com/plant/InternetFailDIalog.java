@@ -14,8 +14,7 @@ import android.widget.Button;
 public class InternetFailDIalog extends Dialog implements View.OnClickListener{
     Context mContext;
 
-    Button exitButton;
-    Button retryButton;
+    Button okButton;
 
     public InternetFailDIalog(Context context) {
         super(context);
@@ -23,10 +22,8 @@ public class InternetFailDIalog extends Dialog implements View.OnClickListener{
         mContext = context;
         setContentView(R.layout.dialog_internet_fail);
 
-        exitButton = (Button) findViewById(R.id.dialog_internet_fail_exit);
-        retryButton = (Button) findViewById(R.id.dialog_internet_fail_retry);
-        exitButton.setOnClickListener(this);
-        retryButton.setOnClickListener(this);
+        okButton = (Button)findViewById(R.id.dialog_internet_fail_ok_button);
+        okButton.setOnClickListener(this);
     }
 
    public static boolean checkInternetConnection(Context mContext){
@@ -38,13 +35,7 @@ public class InternetFailDIalog extends Dialog implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        switch(v.getId()){
-            case R.id.dialog_internet_fail_exit:
-                Log.d("exit", "A");
-                break;
-            case R.id.dialog_internet_fail_retry:
-                Log.d("retry", "A");
-                break;
-        }
+        Log.d("internet okButton", "onClick");
+        dismiss();
     }
 }

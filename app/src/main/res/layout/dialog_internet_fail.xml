@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:text="@string/internet_fail_alarm"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5"/>
@@ -15,15 +16,8 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/dialog_internet_fail_exit"
-            android:text="종료"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
-
-        <Button
-            android:id="@+id/dialog_internet_fail_retry"
-            android:text="다시 시도"
+            android:id="@+id/dialog_internet_fail_ok_button"
+            android:text="확인"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>

@@ -3,6 +3,7 @@
     <string name="key">9f4b6112faa1c0130cbd34f797df9035</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="user_name_prompt">Choo</string>
+    <string name="internet_fail_alarm">네트워크가 연결되어 있지 않습니다.</string>
     <string-array name="user_name_array">
         <item></item>
         <item>없음</item>

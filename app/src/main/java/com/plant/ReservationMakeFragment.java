@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.zip.Inflater;
 
 public class ReservationMakeFragment extends Fragment implements View.OnClickListener, TextView.OnEditorActionListener, View.OnFocusChangeListener {
+    Context mContext;
 
     RoomData roomData = new RoomData();
     View mainView;
@@ -95,6 +96,8 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
     }
 
     public void init() {
+        mContext = getContext();
+
         AutoCompletePHP autoCompletePHP = new AutoCompletePHP();
         autoCompletePHP.execute();
 
@@ -229,43 +232,58 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         }
     }
 
-    private class AutoCompletePHP extends AsyncTask<Void, Void, String[]>{
+    private class AutoCompletePHP extends AsyncTask<Void, Void, Void>{
         private final String autoCompleteURL = "http://plan-t.kr/autoComplete.php";
+        private HttpRequest autoCompleteRequest;
 
         @Override
-        protected String[] doInBackground(Void... params) {
-            String arr[] = null;
-            try {
-                URL autoCompleteObj = new URL(autoCompleteURL);
-                HttpURLConnection conn = (HttpURLConnection) autoCompleteObj.openConnection();
-                conn.setDoOutput(true);
-                conn.setConnectTimeout(2000);
-
-                int count = 0;
-                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                    String resultNum = br.readLine();
-                    arr = new String[Integer.parseInt(resultNum)];
-                    while ( true ) {
-                        String line = br.readLine();
-                        if (line == null)
-                            break;
-                        arr[count++] = line;
-                    }
-                    br.close();
+        protected Void doInBackground(Void... params) {
+            autoCompleteRequest = new HttpRequest(mContext, autoCompleteURL);
+            Thread t = new Thread(autoCompleteRequest);
+            if(autoCompleteRequest.isInternetConnected()){
+                t.start();
+                try {
+                    t.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                conn.disconnect();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
             }
-            return arr;
+
+            return null;
+//
+//            String arr[] = null;
+//            try {
+//                URL autoCompleteObj = new URL(autoCompleteURL);
+//                HttpURLConnection conn = (HttpURLConnection) autoCompleteObj.openConnection();
+//                conn.setDoOutput(true);
+//                conn.setConnectTimeout(2000);
+//
+//                int count = 0;
+//                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
+//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+//                    String resultNum = br.readLine();
+//                    arr = new String[Integer.parseInt(resultNum)];
+//                    while ( true ) {
+//                        String line = br.readLine();
+//                        if (line == null)
+//                            break;
+//                        arr[count++] = line;
+//                    }
+//                    br.close();
+//                }
+//                conn.disconnect();
+//            } catch (MalformedURLException e) {
+//                e.printStackTrace();
+//            } catch (IOException e)
+//            {
+//                e.printStackTrace();
+//            }
+//            return arr;
         }
 
         @Override
-        protected void onPostExecute(String[] strings) {
+        protected void onPostExecute(Void avoid) {
+            String[] strings = autoCompleteRequest.requestResult.split(System.getProperty("line.separator"));
             ArrayAdapter<String> adWord = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, strings);
             destination_editText.setAdapter(adWord);
         }
@@ -328,41 +346,55 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
     public class MakeRoomPHP extends AsyncTask<RoomData, Void, Void> {
         String makeRoomURL = "http://plan-t.kr/makeRoom.php";
+        HttpRequest makeRoomRequest;
 
         @Override
         protected Void doInBackground(RoomData... params) {
-            try {
-                URL loginObj = new URL(makeRoomURL);
-                HttpURLConnection conn = (HttpURLConnection) loginObj.openConnection();
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setRequestProperty("Accept", "application/json");
-
-                OutputStream outputStream = conn.getOutputStream();
-                outputStream.write(params[0].getRoomDataJSONString().getBytes());
-                outputStream.flush();
-
-                int result = conn.getResponseCode();
-                if ( result == HttpURLConnection.HTTP_OK ) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                    while ( true ) {
-                        String line = br.readLine();
-                        if ( line == null )
-                            break;
-                        roomData.roomID = Long.parseLong(line);
-                    }
-                    br.close();
+            makeRoomRequest = new HttpRequest(mContext, makeRoomURL);
+            makeRoomRequest.makeQuery(params[0].getRoomDataJson());
+            Thread t = new Thread(makeRoomRequest);
+            if(makeRoomRequest.isInternetConnected()){
+                t.start();
+                try {
+                    t.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (ProtocolException e) {
-                e.printStackTrace();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+
             return null;
+//            try {
+//                URL loginObj = new URL(makeRoomURL);
+//                HttpURLConnection conn = (HttpURLConnection) loginObj.openConnection();
+//                conn.setDoInput(true);
+//                conn.setDoOutput(true);
+//                conn.setRequestMethod("POST");
+//                conn.setRequestProperty("Content-Type", "application/json");
+//                conn.setRequestProperty("Accept", "application/json");
+//
+//                OutputStream outputStream = conn.getOutputStream();
+//                outputStream.write(params[0].getRoomDataJSONString().getBytes());
+//                outputStream.flush();
+//
+//                int result = conn.getResponseCode();
+//                if ( result == HttpURLConnection.HTTP_OK ) {
+//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+//                    while ( true ) {
+//                        String line = br.readLine();
+//                        if ( line == null )
+//                            break;
+//                        roomData.roomID = Long.parseLong(line);
+//                    }
+//                    br.close();
+//                }
+//            } catch (ProtocolException e) {
+//                e.printStackTrace();
+//            } catch (MalformedURLException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            return null;
         }
 
         @Override

@@ -2,7 +2,6 @@
 
 2016-08-16
 방 나가기
-httpRequest == internetcheck
 TextView 다른곳 선택시 키보드 없애기
 ReservationMakeFragment withNumberSpinner 배경화면 ******* 재확인 필요
 

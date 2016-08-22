@@ -193,73 +193,76 @@ public class RoomDataDialog extends Dialog {
             }
 
             //roomJoin.php를 통해서 데이터베이스 업데이트.
-            RoomJoinPHP roomJoinPHP = new RoomJoinPHP(roomData, ((FrameActivity)mContext).userData, number);
-            roomJoinPHP.execute();
+            RoomJoinPHP roomJoinPHP = new RoomJoinPHP();
+            roomJoinPHP.execute("" + roomData.roomID, ((FrameActivity)mContext).userData.userID, "" + number);
 
             roomJoinDialog.dismiss();
         }
     }
 
-    private class RoomJoinPHP extends AsyncTask<Void, Void, Integer> {
+    private class RoomJoinPHP extends AsyncTask<String, Void, Void> {
         private static final int ROOM_JOIN_SUCCESS = 0;
         private static final int ROOM_JOIN_FAIL = 1;
 
         private final static String roomJoinURL = "http://plan-t.kr/roomJoin.php";
-
-        RoomData joinRoomData;
-        UserData joinUserData;
-        int number;
-
-        public RoomJoinPHP(RoomData roomData, UserData userData, int withNumber){
-            joinRoomData = roomData;
-            joinUserData = userData;
-            number = withNumber;
-        }
+        private HttpRequest roomJoinRequest;
 
         @Override
-        protected Integer doInBackground(Void... params) {
-            int result = 0;
-            //StringBuilder jsonResult = new StringBuilder();
-            try {
-                URL urlTemp = new URL(roomJoinURL + "?userID=" + joinUserData.userID + "&roomID=" + joinRoomData.roomID + "&number=" + number);
-                HttpURLConnection conn = (HttpURLConnection) urlTemp.openConnection();
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+        protected Void doInBackground(String... params) {
+            String roomID = params[0];
+            String userID = params[1];
+            String number = params[2];
 
-                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                    while ( true ) {
-                        String line = br.readLine();
-                        if (line == null)
-                            break;
-                        result = Integer.parseInt(line);
-                    }
-                    br.close();
+            roomJoinRequest = new HttpRequest(mContext, roomJoinURL + "?userID=" + userID + "&roomID=" + roomID + "&number=" + number);
+            Thread t = new Thread(roomJoinRequest);
+            if(roomJoinRequest.isInternetConnected()){
+                t.start();
+                try {
+                    t.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                conn.disconnect();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e)
-            {
-                e.printStackTrace();
             }
 
-            return result;
+            return null;
+
+//            int result = 0;
+//            //StringBuilder jsonResult = new StringBuilder();
+//            try {
+//                URL urlTemp = new URL(roomJoinURL + "?userID=" + joinUserData.userID + "&roomID=" + joinRoomData.roomID + "&number=" + number);
+//                HttpURLConnection conn = (HttpURLConnection) urlTemp.openConnection();
+//                conn.setDoInput(true);
+//                conn.setDoOutput(true);
+//                conn.setRequestMethod("GET");
+//                conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+//
+//                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
+//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+//                    while ( true ) {
+//                        String line = br.readLine();
+//                        if (line == null)
+//                            break;
+//                        result = Integer.parseInt(line);
+//                    }
+//                    br.close();
+//                }
+//                conn.disconnect();
+//            } catch (MalformedURLException e) {
+//                e.printStackTrace();
+//            } catch (IOException e)
+//            {
+//                e.printStackTrace();
+//            }
+//
+//            return result;
         }
 
         @Override
-        protected void onPostExecute(Integer integer) {
-            if(integer == ROOM_JOIN_SUCCESS){
+        protected void onPostExecute(Void avoid) {
+            if(Integer.parseInt(roomJoinRequest.requestResult) == ROOM_JOIN_SUCCESS){
                 dismiss();
-
-                //회원이 가지고 있는 정보도 없데이트
-                //FragmentActivity에 있는 RoomdataList를 업데이트
-                roomData.userNum += number;
-
                 ((FrameActivity) mContext).makeChange(3);
-            } else if(integer == ROOM_JOIN_FAIL){
+            } else if(Integer.parseInt(roomJoinRequest.requestResult) == ROOM_JOIN_FAIL){
                 Toast.makeText(mContext, "해당 방의 최대 참여 가능 유저의 수를 초과합니다.", Toast.LENGTH_SHORT).show();
             }
         }
