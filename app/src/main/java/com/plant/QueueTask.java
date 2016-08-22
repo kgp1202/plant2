@@ -2,6 +2,7 @@ package com.plant;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -38,12 +39,30 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        isFinish = false;
+        isFinish=false;
+        if(userData.point<0){
+            AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+            alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();     //닫기
+                }
+            });
+            alert.setMessage("패널티로인해 "+-1*userData.point*30+"초 지연됩니다.");
+            alert.show();
+        }
     }
 
     @Override
     protected Void doInBackground(Void... params) {
             /*Queue를 잡는다**********************/
+        if(userData.point<0){
+            try {
+                Thread.sleep(-1*userData.point*30*1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         HttpRequest myRequest = new HttpRequest(mContext, "http://plan-t.kr/queue/userMatching.php");
         myRequest.makeQuery(userData.getUserDataJson());
         myRequest.makeQuery(roomData.getRoomDataJson());
@@ -58,10 +77,10 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
             try {
                 Thread.sleep(300);
                 myRequest = new HttpRequest(mContext, "http://plan-t.kr/queue/checkMatching.php?ID=" + userData.userID);
-                new Thread(myRequest).start();
-                while (!myRequest.isFinish) {
-                }
-                JSONObject json = new JSONObject(myRequest.requestResult);
+                Thread t2=new Thread(myRequest);
+                t2.start();
+                t2.join();
+                JSONObject json=new JSONObject(myRequest.requestResult);
                 matchingR.setRoomDataFromJson(json);
                 matchingR.destPoint = URLDecoder.decode(matchingR.destPoint, "euc-kr");
             } catch (Exception e) {

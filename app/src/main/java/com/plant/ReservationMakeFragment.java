@@ -60,7 +60,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.zip.Inflater;
 
-public class ReservationMakeFragment extends Fragment implements View.OnClickListener, TextView.OnEditorActionListener, View.OnFocusChangeListener {
+public class ReservationMakeFragment extends Fragment implements View.OnClickListener, TextView.OnEditorActionListener {
     Context mContext;
 
     RoomData roomData = new RoomData();
@@ -121,11 +121,6 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         (goal_btn[2] = (ImageView) mainView.findViewById(R.id.goal_btn2)).setOnClickListener(goalListener);
         send_btn = (ImageView) mainView.findViewById(R.id.send_btn);
 
-        
-//        destination_editText.setOnEditorActionListener(this);
-//        destination_editText.setOnFocusChangeListener(this);
-        comment_editText.setOnFocusChangeListener(this);
-
         //현재 시간을 입력한다.
         GregorianCalendar calendar = new GregorianCalendar();
         year = calendar.get(Calendar.YEAR);
@@ -142,13 +137,6 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         dayLaout.setOnClickListener(this);
         timeLayout.setOnClickListener(this);
         send_btn.setOnClickListener(this);
-//        withNumSpin.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                destination_editText.clearFocus();
-//                return false;
-//            }
-//        });
 
         withNumSpin.setAdapter(new WithNumSpinAdapter());
     }
@@ -209,10 +197,12 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(android.R.layout.simple_spinner_item, parent, false);
+            withNumSpin.setBackgroundResource(R.drawable.reservation_withnumber_image_background);
 
-            TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.fragment_reservation_make_spinner_item, parent, false);
+
+            TextView tv = (TextView) convertView.findViewById(R.id.fragment_reservation_make_spinner_textview);
             tv.setText(spinnerItemList.get(position));
 
             return convertView;
@@ -265,10 +255,15 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         switch (v.getId()) {
             case R.id.dayLayout:
                 DatePickerDialog datePickerDialog = (DatePickerDialog) YearMonthDayPicker();
+                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                datePickerDialog.setTitle("날짜 설정");
                 datePickerDialog.show();
+
                 break;
             case R.id.timeLayout:
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, timePickerListener, hour, minute, false);
+                timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                timePickerDialog.setTitle("시간 설정");
                 timePickerDialog.show();
                 break;
             case R.id.send_btn:
@@ -306,14 +301,6 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
             destination_editText.clearFocus();
         }
         return false;
-    }
-
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        if(!hasFocus){
-            InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        }
     }
 
     public class MakeRoomPHP extends AsyncTask<RoomData, Void, Void> {

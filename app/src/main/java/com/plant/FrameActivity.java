@@ -286,7 +286,29 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
                 }
             });
         }
-
+        else{
+            switch(view.getId()){
+                case R.id.search_editText:
+                case R.id.destination_editText:
+                    view.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            ((Activity)mContext).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+                            return false;
+                        }
+                    });
+                    break;
+                case R.id.comment_editText:
+                    view.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            ((Activity)mContext).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+                            return false;
+                        }
+                    });
+                    break;
+            }
+        }
         //If a layout container, iterate over children and seed recursion.
         if (view instanceof ViewGroup) {
             for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {

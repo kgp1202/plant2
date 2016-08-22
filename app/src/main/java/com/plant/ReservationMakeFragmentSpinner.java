@@ -98,8 +98,11 @@ public class ReservationMakeFragmentSpinner extends Spinner {
                         (TextView) ((LayoutInflater)getContext().getSystemService(
                                 Context.LAYOUT_INFLATER_SERVICE)).inflate(
                                 android.R.layout.simple_spinner_item,parent,false);
-                v.setText("동행인원");
+                v.setText("");
+                v.setBackgroundResource(R.drawable.reservation_withnumber_image_default);
                 return v;
+            } else {
+                convertView.setBackground(null);
             }
             return obj.getView(position,convertView,parent);
         }

@@ -27,12 +27,6 @@ import com.kakao.kakaotalk.callback.TalkResponseCallback;
 import com.kakao.kakaotalk.response.KakaoTalkProfile;
 import com.kakao.network.ErrorResult;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
-
 public class Splash_Activity extends Activity {
     LoginPHP loginPHP;
     boolean isPastLogin;
@@ -107,7 +101,7 @@ public class Splash_Activity extends Activity {
 
                     loginPHP = new LoginPHP(mContext);
                     loginPHP.execute(pastLoginUserData);
-                    finish();
+                    //finish();
                 }
 
                 @Override

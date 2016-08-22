@@ -14,10 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -102,7 +104,6 @@ public class ReservationCheckFragment extends Fragment {
 
     public class FindParticipateRoomData extends AsyncTask<String, Void, ArrayList<RoomData>> {
         private String findParticipateURL = "http://plan-t.kr/findParticipateRoomData.php";
-        private Context mContext;
 
         @Override
         protected ArrayList<RoomData> doInBackground(String... userIDInput) {
@@ -141,8 +142,18 @@ public class ReservationCheckFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<RoomData> resultRoomData) {
             if(roomDataList != null){
-                roomDataList.addAll(resultRoomData);
-                reservation_listView_adapter.notifyDataSetChanged();
+                if(roomDataList.size() == 0){
+                    LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    View v = inflater.inflate(R.layout.fragment_reservation_check_no_room, null);
+                    RelativeLayout r = (RelativeLayout)mainView.findViewById(R.id.fragment_reservation_check_frame);
+                    r.removeAllViews();
+                    r.addView(v, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+                    //reservation_listView.setBackgroundResource(R.drawable.reservation_no_room);
+                }else {
+                    reservation_listView.setBackground(null);
+                    roomDataList.addAll(resultRoomData);
+                    reservation_listView_adapter.notifyDataSetChanged();
+                }
             }
         }
     }

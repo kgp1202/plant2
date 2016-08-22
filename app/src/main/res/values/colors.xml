@@ -8,4 +8,5 @@
     <color name="colorStatusBar">#77361a</color>
     <color name="colorBackground">#dfdfdf</color>
     <color name="colorReserveText">#888888</color>
+    <color name="colorNoRoom">#dddddd</color>
 </resources>

@@ -58,53 +58,6 @@ public class LoginPHP extends AsyncTask<UserData, Void, Void> {
         }
 
         return null;
-
-//        //tempUserData을 json형식으로 login,php에 접속하여 정보 존재 여부를 확인후 로그인 혹은 정보 생성
-//        StringBuilder jsonResult = new StringBuilder();
-//        try {
-//            URL loginObj = new URL(loginURL);
-//            HttpURLConnection conn = (HttpURLConnection) loginObj.openConnection();
-//            conn.setDoInput(true);
-//            conn.setDoOutput(true);
-//            conn.setRequestMethod("POST");
-//            conn.setRequestProperty("Content-Type", "application/json");
-//            conn.setRequestProperty("Accept", "application/json");
-//            conn.setConnectTimeout(2000);
-//
-//            OutputStream outputStream = conn.getOutputStream();
-//            outputStream.write(tempUserData[0].getUserDataJSONString().getBytes());
-//            outputStream.flush();
-//
-//            if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
-//                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-//                boolean isUserData = true;
-//                while ( true ) {
-//                    if(isUserData) {
-//                        String line = br.readLine();
-//                        if (line == null)
-//                            break;
-//                        jsonResult.append(line + "\n");
-//                        isUserData = false;
-//                    } else {
-//                        String line = br.readLine();
-//                        if ( line == null )
-//                            break;
-//                        jsonResult.append(line + "\n");
-//                        RoomData tempRoomData = new Gson().fromJson(line, RoomData.class);
-//                        roomDataList.add(tempRoomData);
-//                    }
-//                }
-//                br.close();
-//            }
-//            conn.disconnect();
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        } catch (IOException e)
-//        {
-//            e.printStackTrace();
-//        }
-//        //Log.d("loginPHP", " " + jsonResult);
-//        return jsonResult.toString();
     }
 
     protected void onPostExecute(Void params) {
@@ -132,27 +85,7 @@ public class LoginPHP extends AsyncTask<UserData, Void, Void> {
         intent.putExtra("UserData", userData);
         //intent.putExtra("RoomDataList", roomDataList);
         mContext.startActivity(intent);
-
-//        //Set userData by using jsonResult
-//        try {
-//            userData.setUserDataFromJson(new JSONObject(jsonResult));
-//            Log.d("after", userData.getUserDataJSONString());
-//
-//            //SharedPreference에 userID와 loginFrom저장
-//            SharedPreferences preferences ;
-//            SharedPreferences pref = mContext.getSharedPreferences("UserData", mContext.MODE_PRIVATE);
-//            SharedPreferences.Editor editor = pref.edit();
-//            editor.putBoolean("isLogin", true);
-//            editor.putString("userID", userData.userID);
-//            editor.putInt("loginFrom", userData.loginFrom);
-//            editor.commit();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        Intent intent=new Intent(mContext,FrameActivity.class);
-//        intent.putExtra("UserData", userData);
-//        //intent.putExtra("RoomDataList", roomDataList);
-//        mContext.startActivity(intent);
+        ((Splash_Activity)mContext).finish();
     }
 }
 /************* Login.php로 연결 END ***********************/

@@ -39,7 +39,7 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
     /***************** UI ***********************/
     View rootView;
     Button logout_btn;
-    TextView total;
+    TextView point;
     ImageView profileImg;
 
     @Override
@@ -61,57 +61,20 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
     public void init(){
         /************************* UI ****************************/
         logout_btn = (Button) rootView.findViewById(R.id.logout_btn);
-        total = (TextView) rootView.findViewById(R.id.total);
-        profileImg = (ImageView) rootView.findViewById(R.id.more_profile_iv);
+        point=(TextView)rootView.findViewById(R.id.myPoint);
+        profileImg = (ImageView) rootView.findViewById(R.id.profile);
 
         logout_btn.setOnClickListener(this);
+
 
         /**************** UserData 받아오기 ************************/
         FrameActivity frameActivity = (FrameActivity) getActivity();
         userData = frameActivity.userData;
-        total.setText(userData.getUserDataJSONString());
-
+        point.setText("포인트 : "+userData.point+"");
         /**************** Profile Img 설정 *************************/
+        if(!userData.profilePath.equals(""))
+            Glide.with(mContext).load(userData.profilePath).into(profileImg);
 
-
-        String savePath = Environment.getExternalStorageDirectory().toString() + SAVE_FOLDER + "/" + userData.getDecodedProfilePath();
-        File f = new File(savePath);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 4;
-        Bitmap bmp = BitmapFactory.decodeFile(f.getAbsolutePath(), options);
-
-        Glide.with(mContext).load(userData.profilePath).into(profileImg);
-        //updateProfile();
-    }
-
-    private void updateProfile() {
-        KakaoTalkService.requestProfile(new TalkResponseCallback<KakaoTalkProfile>(){
-
-            @Override
-            public void onSuccess(KakaoTalkProfile talkProfile) {
-                final String nickName = talkProfile.getNickName();
-                final String profileImageURL = talkProfile.getProfileImageUrl();
-                final String thumbnailURL = talkProfile.getThumbnailUrl();
-                final String countryISO = talkProfile.getCountryISO();
-
-                Glide.with(mContext).load(profileImageURL).into(profileImg);
-            }
-
-            @Override
-            public void onSessionClosed(ErrorResult errorResult) {
-
-            }
-
-            @Override
-            public void onNotSignedUp() {
-
-            }
-
-            @Override
-            public void onNotKakaoTalkUser() {
-
-            }
-        });
     }
 
     @Override
