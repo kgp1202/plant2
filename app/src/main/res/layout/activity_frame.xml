@@ -16,6 +16,7 @@
             android:layout_height="wrap_content">
 
             <LinearLayout
+                android:id="@+id/activity_frame_menubar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorStatusBar"

@@ -97,7 +97,8 @@ public class RoomDataDialog extends Dialog {
 
         //참여하고 있는 userData를 얻어온다.
         final FindUserDataFromRoomData findUserDataFromRoomData = new FindUserDataFromRoomData();
-        findUserDataFromRoomData.execute(Long.toString(roomData.roomID));
+        if(HttpRequest.isInternetConnected(mContext))
+            findUserDataFromRoomData.execute(Long.toString(roomData.roomID));
 
         mViewPagerAdapter.setRoomData(roomData);
         mViewPagerAdapter.setFindUserDataFromRoomData(findUserDataFromRoomData);
@@ -161,7 +162,7 @@ public class RoomDataDialog extends Dialog {
                         if(roomData.roomType == RoomData.ROOM_TYPE_REALTIME){
                             request=new HttpRequest(mContext, "http://plan-t.kr/outRoomRealTime.php?userID="+myUser.userID+"&roomID="+roomData.roomID);
                             Thread t=new Thread(request);
-                            if(request.isInternetConnected() == true){
+                            if(request.isInternetConnected(mContext) == true){
                                 t.start();
                                 try {
                                     t.join();
@@ -173,7 +174,7 @@ public class RoomDataDialog extends Dialog {
                         }else {
                             request=new HttpRequest(mContext, "http://plan-t.kr/outRoom.php?userID="+myUser.userID+"&roomID="+roomData.roomID);
                             Thread t=new Thread(request);
-                            if(request.isInternetConnected() == true){
+                            if(request.isInternetConnected(mContext) == true){
                                 t.start();
                                 try {
                                     t.join();
@@ -216,7 +217,11 @@ public class RoomDataDialog extends Dialog {
 
             //roomJoin.php를 통해서 데이터베이스 업데이트.
             RoomJoinPHP roomJoinPHP = new RoomJoinPHP();
-            roomJoinPHP.execute("" + roomData.roomID, ((FrameActivity)mContext).userData.userID, "" + number);
+            if(HttpRequest.isInternetConnected(getContext()))
+                roomJoinPHP.execute("" + roomData.roomID, ((FrameActivity)mContext).userData.userID, "" + number);
+            else {
+                //인터넷 연결이 안되어 있을 떄의 처리.
+            }
 
             roomJoinDialog.dismiss();
         }
@@ -237,7 +242,7 @@ public class RoomDataDialog extends Dialog {
 
             roomJoinRequest = new HttpRequest(mContext, roomJoinURL + "?userID=" + userID + "&roomID=" + roomID + "&number=" + number);
             Thread t = new Thread(roomJoinRequest);
-            if(roomJoinRequest.isInternetConnected()){
+            if(roomJoinRequest.isInternetConnected(mContext)){
                 t.start();
                 try {
                     t.join();

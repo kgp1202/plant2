@@ -18,7 +18,7 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     RoomData roomData = new RoomData();
     UserData userData = new UserData();
     boolean isFinish;
-    RoomData matchingR=new RoomData();
+    RoomData matchingR = new RoomData();
     public boolean isSucess;
     boolean isCancellable = false;
 
@@ -38,7 +38,7 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        isFinish=false;
+        isFinish = false;
     }
 
     @Override
@@ -47,7 +47,7 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
         HttpRequest myRequest = new HttpRequest(mContext, "http://plan-t.kr/queue/userMatching.php");
         myRequest.makeQuery(userData.getUserDataJson());
         myRequest.makeQuery(roomData.getRoomDataJson());
-        Thread t=new Thread(myRequest);
+        Thread t = new Thread(myRequest);
         t.start();
         try {
             t.join();
@@ -61,9 +61,9 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
                 new Thread(myRequest).start();
                 while (!myRequest.isFinish) {
                 }
-                JSONObject json=new JSONObject(myRequest.requestResult);
+                JSONObject json = new JSONObject(myRequest.requestResult);
                 matchingR.setRoomDataFromJson(json);
-                matchingR.destPoint=URLDecoder.decode(matchingR.destPoint,"euc-kr");
+                matchingR.destPoint = URLDecoder.decode(matchingR.destPoint, "euc-kr");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -78,7 +78,7 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void params) {
         super.onPostExecute(params);
-        isFinish=true;
+        isFinish = true;
         myTrigger.makeDarker(false);
         myTrigger.getResultFromThread(matchingR);
     }
@@ -87,27 +87,22 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     public void onCancelled(Void params) {
         super.onCancelled(params);
         HttpRequest myThread = new HttpRequest(mContext, "http://plan-t.kr/queue/cancellableCheck.php?ID=" + userData.userID);
-
-        if(myThread.isInternetConnected() == true){
-            Thread t = new Thread(myThread);
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            if (myThread.requestResult.equals(false)) {
-                Log.d("onCancelled", "failed");
-            } else {
-                Log.d("onCancelled", "success");
-            }
-            matchingR.roomID = -1;
+        Thread t = new Thread(myThread);
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        else {
-            isFinish = true;
-            myTrigger.makeDarker(false);
-            myTrigger.getResultFromThread(matchingR);
+
+        if (myThread.requestResult.equals(false)) {
+            Log.d("onCancelled", "failed");
+        } else {
+            Log.d("onCancelled", "success");
         }
+        matchingR.roomID = -1;
+        isFinish = true;
+        myTrigger.makeDarker(false);
+        myTrigger.getResultFromThread(matchingR);
     }
 };

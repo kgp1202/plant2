@@ -85,7 +85,11 @@ public class ReservationCheckFragment extends Fragment {
 
     public void init() {
         FindParticipateRoomData findParticipateRoomData = new FindParticipateRoomData();
-        findParticipateRoomData.execute(((FrameActivity)getContext()).userData.userID);
+        if(HttpRequest.isInternetConnected(getContext()))
+            findParticipateRoomData.execute(((FrameActivity)getContext()).userData.userID);
+        else {
+            //인터넷 연결이 안되어 있을 떄의 처리.
+        }
 
         reservation_listView = (ListView) mainView.findViewById(R.id.reservation_check_listView);
         reservation_listView.setAdapter(reservation_listView_adapter);

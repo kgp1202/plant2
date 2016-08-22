@@ -91,6 +91,7 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
                              Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_reservation_make, container, false);
         init();
+        ((FrameActivity)mContext).setupUI(mainView);
 
         return mainView;
     }
@@ -99,7 +100,8 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         mContext = getContext();
 
         AutoCompletePHP autoCompletePHP = new AutoCompletePHP();
-        autoCompletePHP.execute();
+        if(HttpRequest.isInternetConnected(mContext))
+            autoCompletePHP.execute();
 
         roomData = new RoomData();
         parentLayout = (LinearLayout) mainView.findViewById(R.id.fragment_reservation_make_parent);
@@ -120,8 +122,8 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         send_btn = (ImageView) mainView.findViewById(R.id.send_btn);
 
         
-        destination_editText.setOnEditorActionListener(this);
-        destination_editText.setOnFocusChangeListener(this);
+//        destination_editText.setOnEditorActionListener(this);
+//        destination_editText.setOnFocusChangeListener(this);
         comment_editText.setOnFocusChangeListener(this);
 
         //현재 시간을 입력한다.
@@ -140,13 +142,13 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         dayLaout.setOnClickListener(this);
         timeLayout.setOnClickListener(this);
         send_btn.setOnClickListener(this);
-        withNumSpin.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                destination_editText.clearFocus();
-                return false;
-            }
-        });
+//        withNumSpin.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                destination_editText.clearFocus();
+//                return false;
+//            }
+//        });
 
         withNumSpin.setAdapter(new WithNumSpinAdapter());
     }
@@ -240,45 +242,14 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         protected Void doInBackground(Void... params) {
             autoCompleteRequest = new HttpRequest(mContext, autoCompleteURL);
             Thread t = new Thread(autoCompleteRequest);
-            if(autoCompleteRequest.isInternetConnected()){
-                t.start();
-                try {
-                    t.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
             return null;
-//
-//            String arr[] = null;
-//            try {
-//                URL autoCompleteObj = new URL(autoCompleteURL);
-//                HttpURLConnection conn = (HttpURLConnection) autoCompleteObj.openConnection();
-//                conn.setDoOutput(true);
-//                conn.setConnectTimeout(2000);
-//
-//                int count = 0;
-//                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
-//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-//                    String resultNum = br.readLine();
-//                    arr = new String[Integer.parseInt(resultNum)];
-//                    while ( true ) {
-//                        String line = br.readLine();
-//                        if (line == null)
-//                            break;
-//                        arr[count++] = line;
-//                    }
-//                    br.close();
-//                }
-//                conn.disconnect();
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            } catch (IOException e)
-//            {
-//                e.printStackTrace();
-//            }
-//            return arr;
         }
 
         @Override
@@ -322,7 +293,8 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
                     roomData.maxUserNum = 4;
 
                     MakeRoomPHP makeRoomPHP = new MakeRoomPHP();
-                    makeRoomPHP.execute(roomData);
+                    if(HttpRequest.isInternetConnected(mContext))
+                        makeRoomPHP.execute(roomData);
                 }
                 break;
         }
@@ -353,54 +325,18 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
             makeRoomRequest = new HttpRequest(mContext, makeRoomURL);
             makeRoomRequest.makeQuery(params[0].getRoomDataJson());
             Thread t = new Thread(makeRoomRequest);
-            if(makeRoomRequest.isInternetConnected()){
-                t.start();
-                try {
-                    t.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
             return null;
-//            try {
-//                URL loginObj = new URL(makeRoomURL);
-//                HttpURLConnection conn = (HttpURLConnection) loginObj.openConnection();
-//                conn.setDoInput(true);
-//                conn.setDoOutput(true);
-//                conn.setRequestMethod("POST");
-//                conn.setRequestProperty("Content-Type", "application/json");
-//                conn.setRequestProperty("Accept", "application/json");
-//
-//                OutputStream outputStream = conn.getOutputStream();
-//                outputStream.write(params[0].getRoomDataJSONString().getBytes());
-//                outputStream.flush();
-//
-//                int result = conn.getResponseCode();
-//                if ( result == HttpURLConnection.HTTP_OK ) {
-//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-//                    while ( true ) {
-//                        String line = br.readLine();
-//                        if ( line == null )
-//                            break;
-//                        roomData.roomID = Long.parseLong(line);
-//                    }
-//                    br.close();
-//                }
-//            } catch (ProtocolException e) {
-//                e.printStackTrace();
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-//            ((FrameActivity) getActivity()).reservationCheckListCache.add(0, roomData);
-//            ((FrameActivity) getActivity()).reservationListCache.add(0, roomData);
             ((FrameActivity) getActivity()).makeChange(3);
             ((FrameActivity) getActivity()).makeRoomCount++;
         }

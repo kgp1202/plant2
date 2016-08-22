@@ -245,7 +245,11 @@ public class Login_Activity extends Activity implements View.OnClickListener{
     }
     private void redirectMainActivity(UserData input) {
         LoginPHP loginPHP = new LoginPHP(this);
-        loginPHP.execute(input);
+        if(HttpRequest.isInternetConnected(mContext))
+            loginPHP.execute(input);
+        else {
+            //인터넷 연결이 안되어 있을 떄의 처리.
+        }
     }
     protected void redirectLoginActivity() {
 //        Log.d("test","session close or anything");

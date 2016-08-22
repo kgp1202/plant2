@@ -66,10 +66,10 @@ public class HttpRequest extends Thread {
         }
     }
 
-    public Boolean isInternetConnected(){
-        if(InternetFailDIalog.checkInternetConnection(mContext) == false) {
+    public static Boolean isInternetConnected(Context context){
+        if(InternetFailDIalog.checkInternetConnection(context) == false) {
             Log.d("Internet fail", "conetect X");
-            InternetFailDIalog internetFailDIalog = new InternetFailDIalog(mContext);
+            InternetFailDIalog internetFailDIalog = new InternetFailDIalog(context);
             internetFailDIalog.show();
 
             return false;

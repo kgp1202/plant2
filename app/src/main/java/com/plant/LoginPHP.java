@@ -50,13 +50,11 @@ public class LoginPHP extends AsyncTask<UserData, Void, Void> {
         loginRequest = new HttpRequest(mContext, loginURL);
         loginRequest.makeQuery(tempUserData[0].getUserDataJson());
         Thread t = new Thread(loginRequest);
-        if(loginRequest.isInternetConnected()){
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         return null;

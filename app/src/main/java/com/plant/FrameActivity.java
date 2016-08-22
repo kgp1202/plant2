@@ -100,6 +100,9 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
 
         mView = (RelativeLayout) findViewById(R.id.mView);
 
+        LinearLayout activity_frame_menubar = (LinearLayout) findViewById(R.id.activity_frame_menubar);
+        setupUI(activity_frame_menubar);
+
         statusbar_home_btn = (ImageView) findViewById(R.id.statusbar_home_btn);
         statusbar_realtime_btn = (ImageView) findViewById(R.id.statusbar_realtime_btn);
         statusbar_conserve_btn = (ImageView) findViewById(R.id.statusbar_conserve_btn);
@@ -251,7 +254,12 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
             myQueueTask = new QueueTask(mContext, this);
             myQueueTask.setRoomData(RealTimeFragment.realTimeRommData);
             myQueueTask.setUserData(userData);
-            myQueueTask.execute();
+
+            if(HttpRequest.isInternetConnected(mContext))
+                myQueueTask.execute();
+            else {
+                //인터넷 연결이 안되어 있을 떄의 처리.
+            }
         }else {
             frameAnimation.stop();
             mView.removeViewAt(1);
@@ -261,6 +269,33 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
     float mThouchX;
     float baseX;
     boolean isMove=false;
+
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if(activity.getCurrentFocus() != null)
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+    }
+
+    public void setupUI(View view) {
+        // Set up touch listener for non-text box views to hide keyboard.
+        if (!(view instanceof EditText)) {
+            view.setOnTouchListener(new View.OnTouchListener() {
+                public boolean onTouch(View v, MotionEvent event) {
+                    hideSoftKeyboard((Activity) mContext);
+                    return false;
+                }
+            });
+        }
+
+        //If a layout container, iterate over children and seed recursion.
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                View innerView = ((ViewGroup) view).getChildAt(i);
+                setupUI(innerView);
+            }
+        }
+    }
+
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {

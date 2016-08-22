@@ -68,7 +68,8 @@ public class Splash_Activity extends Activity {
                 updateProfile();
             }else {
                 loginPHP = new LoginPHP(this);
-                loginPHP.execute(pastLoginUserData);
+                if(HttpRequest.isInternetConnected(mContext))
+                    loginPHP.execute(pastLoginUserData);
                 finish();
             }
         }else {

@@ -108,7 +108,12 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     void initData(){
         adapter=new ChatingListViewAdapter(this,myUserData);
         try {
-            String getData= new getFirstData().execute("http://www.plan-t.kr/chating/getFirstChating.php?roomID="+myRoomData.roomID).get();
+            String getData = "";
+            if(HttpRequest.isInternetConnected(mContext))
+                getData= new getFirstData().execute("http://www.plan-t.kr/chating/getFirstChating.php?roomID="+myRoomData.roomID).get();
+            else {
+                //인터넷 연결이 안되어 있을 떄의 처리.
+            }
             JSONObject myJsonObject;
             try {
                 myJsonObject=new JSONObject(getData);
@@ -138,7 +143,11 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     }
     void threadStart(){
         myChatingThread= new getData();
-        myChatingThread.execute();
+        if(HttpRequest.isInternetConnected(mContext))
+            myChatingThread.execute();
+        else {
+            //인터넷 연결이 안되어 있을 떄의 처리.
+        }
         timeStart();
     }
     int getUserDataFromParticipates(String ID){

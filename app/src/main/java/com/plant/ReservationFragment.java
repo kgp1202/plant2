@@ -1,6 +1,7 @@
 package com.plant;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Paint;
@@ -116,6 +117,7 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_reservation, container, false);
+        ((FrameActivity)mContext).setupUI(mainView);
         init();
 
         return mainView;
@@ -135,7 +137,8 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
 
 
         GetRoomDataPHP getRoomDataPHP = new GetRoomDataPHP();
-        getRoomDataPHP.execute((long)0, (long)0);
+        if(HttpRequest.isInternetConnected(mContext))
+            getRoomDataPHP.execute((long)0, (long)0);
 
         listViewAdapter.setList(getActivity(), roomDataList);
         listView.setAdapter(listViewAdapter);
@@ -163,7 +166,8 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
                 switch (v.getImeOptions()) {
                     case EditorInfo.IME_ACTION_SEARCH:
                         SearchPHP searchPHP = new SearchPHP();
-                        searchPHP.execute(searchEditText.getText().toString());
+                        if(HttpRequest.isInternetConnected(mContext))
+                            searchPHP.execute(searchEditText.getText().toString());
 
                         parentLayout.requestFocus();
                         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -187,8 +191,10 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
     private void refreshRoomDataList(){
         RefreshRoomDataPHP refreshRoomDataPHP = new RefreshRoomDataPHP(swipeRefreshLayout);
         long toRoomID = roomDataList.get(0).roomID;
-        Log.d("refresh start", " " + toRoomID);
-        refreshRoomDataPHP.execute((long)0, toRoomID);
+        if(HttpRequest.isInternetConnected(mContext))
+            refreshRoomDataPHP.execute((long)0, toRoomID);
+        else
+            swipeRefreshLayout.setRefreshing(false);
     }
 
     class RefreshRoomDataPHP extends GetRoomDataPHP{
@@ -237,7 +243,8 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
         if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastItemVisibleFlag) {
             GetRoomDataPHP getRoomDataPHP2 = new GetRoomDataPHP();
             long lastRoomID = roomDataList.get(roomDataList.size() - 1).roomID;
-            getRoomDataPHP2.execute(lastRoomID, (long)0);
+            if(HttpRequest.isInternetConnected(mContext))
+                getRoomDataPHP2.execute(lastRoomID, (long) 0);
         }else if(scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && lastItemVisibleFlag){
             Log.d("listview", "up");
         }
@@ -254,47 +261,14 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
             String destPoint = params[0];
             searchRequest = new HttpRequest(mContext, SearchURL + "?destPoint=" + destPoint);
             Thread t = new Thread(searchRequest);
-            if(searchRequest.isInternetConnected()){
-                t.start();
-                try {
-                    t.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
             return null;
-
-//            String destPoint = params[0];
-//            StringBuilder jsonResult = new StringBuilder();
-//            try {
-//                URL url = new URL(SearchURL + "?destPoint=" + destPoint);
-//                Log.d("SearchPHP destPoint", " " + destPoint);
-//                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//                conn.setDoInput(true);
-//                conn.setDoOutput(true);
-//                conn.setRequestMethod("GET");
-//                conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-//
-//                roomDataList.clear();
-//                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
-//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-//                    while ( true ) {
-//                        String line = br.readLine();
-//                        if (line == null)
-//                            break;
-//                        jsonResult.append(line + "\n");
-//                        roomDataList.add(new Gson().fromJson(line, RoomData.class));
-//                    }
-//                    br.close();
-//                }
-//                conn.disconnect();
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            } catch (IOException e)
-//            {
-//                e.printStackTrace();
-//            }
         }
 
         @Override
@@ -310,13 +284,6 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
                 listViewAdapter.notifyDataSetChanged();
                 listView.setOnScrollListener(null);
             }
-//
-//            for(int i = 0; i < roomDataList.size(); i++){
-//                Log.d("search result", " " + roomDataList.get(i).roomID);
-//            }
-//
-//            listViewAdapter.notifyDataSetChanged();
-//            listView.setOnScrollListener(null);
         }
     }
     /***************************** SearchPHP end*******************************************/
@@ -326,15 +293,6 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
     private class GetRoomDataPHP extends AsyncTask<Long, Void, Void>{
         public static final String GetRoomDataURL = "http://www.plan-t.kr/getRoomData.php";
         HttpRequest getRoomDataRequest;
-
-        @Override
-        protected void onPreExecute() {
-            if(InternetFailDIalog.checkInternetConnection(mContext) == false) {
-                Log.d("Internet fail", "conetect X");
-                InternetFailDIalog internetFailDIalog = new InternetFailDIalog(mContext);
-                internetFailDIalog.show();
-            }
-        }
 
         @Override
         protected Void doInBackground(Long... params) {
@@ -350,41 +308,6 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
             }
 
             return null;
-
-//            ArrayList<RoomData> resultRoomDataList = new ArrayList<RoomData>();
-//            try {
-//                Log.d("getRoomData", "?from=" + fromRoomID + "&to=" + toRoomID);
-//                URL url = new URL(GetRoomDataURL + "?from=" + fromRoomID + "&to=" + toRoomID);
-//                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//                conn.setDoInput(true);
-//                conn.setDoOutput(true);
-//                conn.setRequestMethod("GET");
-//                //conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-//
-//                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
-//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-//                    while ( true ) {
-//                        String line = br.readLine();
-//                        if (line == null)
-//                            break;
-//
-//                        //url encode를 한글로 바꿈
-//                        RoomData roomData=new Gson().fromJson(line, RoomData.class);
-//                        URLDecoder decoder=new URLDecoder();
-//                        roomData.setDestPoint(decoder.decode(roomData.destPoint,"euc-kr"));
-//                        resultRoomDataList.add(roomData);
-//                    }
-//                    br.close();
-//                }
-//                conn.disconnect();
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            } catch (IOException e)
-//            {
-//                e.printStackTrace();
-//            }
-//
-//            return resultRoomDataList;
         }
 
         @Override
@@ -404,31 +327,6 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
                 }
                 listViewAdapter.notifyDataSetChanged();
             }
-
-
-//            if(roomDataList != null){
-//                roomDataList.addAll(resultRoomDataList);
-//                listViewAdapter.notifyDataSetChanged();
-//            }
-
-
-//            if(resultRoomDataList == null){
-//                return;
-//            }
-//            else {
-//
-//                if((((FrameActivity) mContext).reservationListCache) == null){
-//                    ((FrameActivity) mContext).reservationListCache = new ArrayList<RoomData>();
-//                }
-//                if(roomDataList == null){
-//                    return;
-//                }
-//                ((FrameActivity) mContext).reservationListCache.addAll(resultRoomDataList);
-//                roomDataList.addAll(resultRoomDataList);
-//                listViewAdapter.notifyDataSetChanged();
-//
-//                ((FrameActivity)mContext).isDoBackground = false;
-//            }
         }
     }
     /***************************** GetRoomDataPHP end***************************************/
