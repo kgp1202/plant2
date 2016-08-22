@@ -285,6 +285,17 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
         Runnable updater = new Runnable() {
             public void run() {
                 if(timer_sec<=0){
+                    HttpRequest request=new HttpRequest(mContext,"http://plan-t.kr/chating/timeOutPrint?roomID="+myRoomData.roomID);
+                    Thread t= new Thread(request);
+                    t.start();
+                    try {
+                        t.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if(request.requestResult.equals("success")){
+                        myUserData.point++;
+                    }
                     finish();
                 }
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss / ");
