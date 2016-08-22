@@ -156,9 +156,31 @@ public class RoomDataDialog extends Dialog {
                 findViewById(R.id.dialog_detail_out).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        UserData myUser=((FrameActivity)mContext).userData;
+                        HttpRequest request;
                         if(roomData.roomType == RoomData.ROOM_TYPE_REALTIME){
+                            request=new HttpRequest(mContext, "http://plan-t.kr/outRoomRealTime.php?userID="+myUser.userID+"&roomID="+roomData.roomID);
+                            Thread t=new Thread(request);
+                            if(request.isInternetConnected() == true){
+                                t.start();
+                                try {
+                                    t.join();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
                         }else {
+                            request=new HttpRequest(mContext, "http://plan-t.kr/outRoom.php?userID="+myUser.userID+"&roomID="+roomData.roomID);
+                            Thread t=new Thread(request);
+                            if(request.isInternetConnected() == true){
+                                t.start();
+                                try {
+                                    t.join();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
                         }
                     }

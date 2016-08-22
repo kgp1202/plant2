@@ -328,18 +328,25 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
         HttpRequest getRoomDataRequest;
 
         @Override
+        protected void onPreExecute() {
+            if(InternetFailDIalog.checkInternetConnection(mContext) == false) {
+                Log.d("Internet fail", "conetect X");
+                InternetFailDIalog internetFailDIalog = new InternetFailDIalog(mContext);
+                internetFailDIalog.show();
+            }
+        }
+
+        @Override
         protected Void doInBackground(Long... params) {
             long fromRoomID = params[0];
             long toRoomID = params[1];
             getRoomDataRequest = new HttpRequest(mContext, GetRoomDataURL + "?from=" + fromRoomID + "&to=" + toRoomID);
             Thread t = new Thread(getRoomDataRequest);
-            if(getRoomDataRequest.isInternetConnected()){
-                t.start();
-                try {
-                    t.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
             return null;

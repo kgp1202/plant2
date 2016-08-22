@@ -47,8 +47,13 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
         HttpRequest myRequest = new HttpRequest(mContext, "http://plan-t.kr/queue/userMatching.php");
         myRequest.makeQuery(userData.getUserDataJson());
         myRequest.makeQuery(roomData.getRoomDataJson());
-        new Thread(myRequest).start();
-        while (!myRequest.isFinish) {}
+        Thread t=new Thread(myRequest);
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         do {
             try {
                 Thread.sleep(300);
@@ -82,18 +87,27 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     public void onCancelled(Void params) {
         super.onCancelled(params);
         HttpRequest myThread = new HttpRequest(mContext, "http://plan-t.kr/queue/cancellableCheck.php?ID=" + userData.userID);
-        new Thread(myThread).start();
-        while (!myThread.isFinish) {
+
+        if(myThread.isInternetConnected() == true){
+            Thread t = new Thread(myThread);
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (myThread.requestResult.equals(false)) {
+                Log.d("onCancelled", "failed");
+            } else {
+                Log.d("onCancelled", "success");
+            }
+            matchingR.roomID = -1;
         }
-        ;
-        if (myThread.requestResult.equals(false)) {
-            Log.d("onCancelled", "failed");
-        } else {
-            Log.d("onCancelled", "success");
+        else {
+            isFinish = true;
+            myTrigger.makeDarker(false);
+            myTrigger.getResultFromThread(matchingR);
         }
-        isFinish=true;
-        myTrigger.makeDarker(false);
-        matchingR.roomID=-1;
-        myTrigger.getResultFromThread(matchingR);
     }
 };

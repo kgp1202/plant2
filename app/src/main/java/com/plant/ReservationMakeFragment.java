@@ -309,7 +309,7 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
                     Toast.makeText(getContext(), "예약이 완료되었습니다.", Toast.LENGTH_SHORT).show();
 
                     //시간정보 format으로 변경하여 저장.
-                    roomData.setRoomTimeData(year, month, day, hour, minute);
+                    roomData.setRoomTimeData(year, month+1, day, hour, minute);
                     roomData.hostUserID = ((FrameActivity)getActivity()).userData.userID;
                     if(withNumSpin.getSelectedItem().equals("없음")){
                         roomData.userNum = 1;
