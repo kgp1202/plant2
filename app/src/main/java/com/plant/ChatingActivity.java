@@ -33,6 +33,7 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.net.URLDecoder;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -45,9 +46,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
-public class ChatingActivity extends Activity implements View.OnClickListener{
+public class ChatingActivity extends Activity implements View.OnClickListener {
     Context mContext;
-    ViewGroup.LayoutParams params=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+    ViewGroup.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
     TextView chatingTimer;
     ListView textBody;
     EditText chatingContent;
@@ -62,20 +63,21 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     ChatingListViewAdapter adapter;
 
     getData myChatingThread;
-    boolean end=false;
-    int id=0;
+    boolean end = false;
+    int id = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = this;
         setContentView(R.layout.activity_chating);
-        Intent intent=getIntent();
-        myRoomData=(RoomData) intent.getSerializableExtra("roomData");
-        myUserData=(UserData)intent.getSerializableExtra("userData");
-        participatedUser=(ArrayList<UserData>)intent.getSerializableExtra("participated");
-        withNumber=(ArrayList<Integer>)intent.getSerializableExtra("withNumber");
+        Intent intent = getIntent();
+        myRoomData = (RoomData) intent.getSerializableExtra("roomData");
+        myUserData = (UserData) intent.getSerializableExtra("userData");
+        participatedUser = (ArrayList<UserData>) intent.getSerializableExtra("participated");
+        withNumber = (ArrayList<Integer>) intent.getSerializableExtra("withNumber");
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window=this.getWindow();
+            Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(Color.parseColor("#77361a"));
@@ -85,49 +87,50 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
         threadStart();
         textBody.setAdapter(adapter);
     }
-    void init(){
-        if(myRoomData.roomID==-1){
-            Log.d("ERROR","No Room Data Input");
+
+    void init() {
+        if (myRoomData.roomID == -1) {
+            Log.d("ERROR", "No Room Data Input");
             finish();
-        }
-        else{
+        } else {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss + dd일");
-            Date d=new Date(myRoomData.startTime-Calendar.getInstance().getTimeInMillis());
-            String timeStr=format.format(d);
-            chatingTimer=(TextView)findViewById(R.id.chatingTimer);
+            Date d = new Date(myRoomData.startTime - Calendar.getInstance().getTimeInMillis());
+            String timeStr = format.format(d);
+            chatingTimer = (TextView) findViewById(R.id.chatingTimer);
             chatingTimer.setText(timeStr);
-            textBody=(ListView) findViewById(R.id.textBody);
-            (sendBtn=(ImageView)findViewById(R.id.sendBtn)).setOnClickListener(this);
-            (backBtn=(ImageView)findViewById(R.id.backBtn)).setOnClickListener(this);
+            textBody = (ListView) findViewById(R.id.textBody);
+            (sendBtn = (ImageView) findViewById(R.id.sendBtn)).setOnClickListener(this);
+            (backBtn = (ImageView) findViewById(R.id.backBtn)).setOnClickListener(this);
         }
-        chatingContent=(EditText)findViewById(R.id.chatingContents);
+        chatingContent = (EditText) findViewById(R.id.chatingContents);
         chatingContent.setOnFocusChangeListener(new MyFocusChangeListener());
     }
-    void initData(){
-        adapter=new ChatingListViewAdapter(this,myUserData);
+
+    void initData() {
+        adapter = new ChatingListViewAdapter(this, myUserData);
         try {
             String getData = "";
-            if(HttpRequest.isInternetConnected(mContext))
-                getData= new getFirstData().execute("http://www.plan-t.kr/chating/getFirstChating.php?roomID="+myRoomData.roomID).get();
+            if (HttpRequest.isInternetConnected(mContext))
+                getData = new getFirstData().execute("http://www.plan-t.kr/chating/getFirstChating.php?roomID=" + myRoomData.roomID).get();
             else {
                 //인터넷 연결이 안되어 있을 떄의 처리.
             }
             JSONObject myJsonObject;
             try {
-                myJsonObject=new JSONObject(getData);
-                for(int i=0; i<myJsonObject.length(); i++){
-                    JSONObject obj=new JSONObject(myJsonObject.getString((id+1)+""));
-                    int num=getUserDataFromParticipates(obj.getString("userID"));
-                    UserData temp=participatedUser.get(num);
-                    String content= URLDecoder.decode(obj.getString("content"),"euc-kr");
+                myJsonObject = new JSONObject(getData);
+                for (int i = 0; i < myJsonObject.length(); i++) {
+                    JSONObject obj = new JSONObject(myJsonObject.getString((id + 1) + ""));
+                    int num = getUserDataFromParticipates(obj.getString("userID"));
+                    UserData temp = participatedUser.get(num);
+                    String content = URLDecoder.decode(obj.getString("content"), "euc-kr");
                     obj.remove("content");
-                    obj.put("content",content);
-                    obj.put("profile",temp.thumbnailPath);
-                    obj.put("userNum",withNumber.get(num));
-                    obj.put("name",temp.name);
+                    obj.put("content", content);
+                    obj.put("profile", temp.thumbnailPath);
+                    obj.put("userNum", withNumber.get(num));
+                    obj.put("name", temp.name);
                     adapter.myJsonObjectList.add(obj);
                     id++;
-                   // Log.d("obj",obj.toString());
+                    // Log.d("obj",obj.toString());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -139,40 +142,43 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
             e.printStackTrace();
         }
     }
-    void threadStart(){
-        myChatingThread= new getData();
-        if(HttpRequest.isInternetConnected(mContext))
+
+    void threadStart() {
+        myChatingThread = new getData();
+        if (HttpRequest.isInternetConnected(mContext))
             myChatingThread.execute();
         else {
             //인터넷 연결이 안되어 있을 떄의 처리.
         }
         timeStart();
     }
-    int getUserDataFromParticipates(String ID){
-        for(int i=0; i<participatedUser.size(); i++){
-            if(participatedUser.get(i).userID.equals(ID))
+
+    int getUserDataFromParticipates(String ID) {
+        for (int i = 0; i < participatedUser.size(); i++) {
+            if (participatedUser.get(i).userID.equals(ID))
                 return i;
         }
         return 0;
     }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sendBtn:
-                String input=chatingContent.getText().toString();
+                String input = chatingContent.getText().toString();
                 chatingContent.setText("");
-                HttpRequest myRequest=new HttpRequest(this, "http://plan-t.kr/chating/insertChating.php");
-                JSONObject json=new JSONObject();
-                try{
-                    json.put("userID",myUserData.userID);
-                    json.put("roomID",myRoomData.roomID);
-                    json.put("content",input);
-                }catch (Exception e){
+                HttpRequest myRequest = new HttpRequest(this, "http://plan-t.kr/chating/insertChating.php");
+                JSONObject json = new JSONObject();
+                try {
+                    json.put("userID", myUserData.userID);
+                    json.put("roomID", myRoomData.roomID);
+                    json.put("content", input);
+                } catch (Exception e) {
                     e.getStackTrace();
                 }
                 myRequest.makeQuery(json);
-                Thread t=new Thread(myRequest);
-                if(myRequest.isInternetConnected(mContext) == true) {
+                Thread t = new Thread(myRequest);
+                if (myRequest.isInternetConnected(mContext) == true) {
                     t.start();
                     try {
                         t.join();
@@ -186,41 +192,45 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
                 break;
         }
     }
+
     private class MyFocusChangeListener implements View.OnFocusChangeListener {
-        public void onFocusChange(View v, boolean hasFocus){
-            if(v.getId() == R.id.chatingContents && !hasFocus) {
-                InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (v.getId() == R.id.chatingContents && !hasFocus) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
         }
     }
-    class getFirstData extends AsyncTask<String,String,String>{
+
+    class getFirstData extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... params) {
-            String returnV="";
-            HttpRequest httpRequest=new HttpRequest(mContext, params[0]);
-            Thread t=new Thread(httpRequest);
+            String returnV = "";
+            HttpRequest httpRequest = new HttpRequest(mContext, params[0]);
+            Thread t = new Thread(httpRequest);
             t.start();
             try {
                 t.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            returnV=httpRequest.requestResult;
+            returnV = httpRequest.requestResult;
             return returnV;
         }
+
         @Override
-        protected void onPostExecute(String params){
-            Log.d("getFromChating",params);
+        protected void onPostExecute(String params) {
+            Log.d("getFromChating", params);
         }
     }
-    class getData extends AsyncTask<Void,String,String>{
+
+    class getData extends AsyncTask<Void, String, String> {
         @Override
         protected String doInBackground(Void a[]) {
-            String returnV="";
-            while(!end){
-                HttpRequest httpRequest=new HttpRequest(mContext, "http://www.plan-t.kr/chating/getChating.php?roomID="+myRoomData.roomID+"&ID="+id);
-                Thread t=new Thread(httpRequest);
+            String returnV = "";
+            while (!end) {
+                HttpRequest httpRequest = new HttpRequest(mContext, "http://www.plan-t.kr/chating/getChating.php?roomID=" + myRoomData.roomID + "&ID=" + id);
+                Thread t = new Thread(httpRequest);
                 t.start();
                 try {
                     t.join();
@@ -228,7 +238,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
                     e.printStackTrace();
                 }
                 publishProgress(httpRequest.requestResult);
-                returnV=httpRequest.requestResult;
+                returnV = httpRequest.requestResult;
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -237,56 +247,59 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
             }
             return returnV;
         }
+
         @Override
-        protected void onProgressUpdate(String ...params){
+        protected void onProgressUpdate(String... params) {
             JSONObject myJsonObject;
             try {
-                myJsonObject=new JSONObject(params[0]);
-                for(int i=0; i<myJsonObject.length(); i++){
-                    JSONObject obj=new JSONObject(myJsonObject.getString((id+1)+""));
-                    int num=getUserDataFromParticipates(obj.getString("userID"));
-                    UserData temp=participatedUser.get(num);
-                    String content= URLDecoder.decode(obj.getString("content"),"euc-kr");
-                    obj.remove("content");
-                    obj.put("content",content);
-                    obj.put("profile",temp.profilePath);
-                    obj.put("userNum",withNumber.get(num));
-                    obj.put("name",temp.name);
-                    adapter.myJsonObjectList.add(obj);
-                    adapter.notifyDataSetChanged();
-                    textBody.setSelection(adapter.getCount()-1);
-                    id++;
-                    // Log.d("obj",obj.toString());
+                    myJsonObject = new JSONObject(params[0]);
+                    for (int i = 0; i < myJsonObject.length(); i++) {
+                        JSONObject obj = new JSONObject(myJsonObject.getString((id + 1) + ""));
+                        int num = getUserDataFromParticipates(obj.getString("userID"));
+                        UserData temp = participatedUser.get(num);
+                        String content = URLDecoder.decode(obj.getString("content"), "euc-kr");
+                        obj.remove("content");
+                        obj.put("content", content);
+                        obj.put("profile", temp.profilePath);
+                        obj.put("userNum", withNumber.get(num));
+                        obj.put("name", temp.name);
+                        adapter.myJsonObjectList.add(obj);
+                        adapter.notifyDataSetChanged();
+                        textBody.setSelection(adapter.getCount() - 1);
+                        id++;
+                        // Log.d("obj",obj.toString());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
+
     }
 
     private TimerTask second;
     private final Handler handler = new Handler();
     long timer_sec;
     Timer timer = new Timer();
-    String dayCnt="";
+    String dayCnt = "";
+    int hourTemp;
     public void timeStart() {
         second = new TimerTask() {
             @Override
             public void run() {
                 Update();
-                Calendar tempC=Calendar.getInstance();
-                Calendar nowC=Calendar.getInstance();
-                timer_sec=myRoomData.startTime-nowC.getTimeInMillis();
+                Calendar tempC = Calendar.getInstance();
+                Calendar nowC = Calendar.getInstance();
+                timer_sec = myRoomData.startTime - nowC.getTimeInMillis();
                 tempC.setTimeInMillis(myRoomData.startTime);
-                if(tempC.get(Calendar.MONTH)-nowC.get(Calendar.MONTH)>0)
-                    dayCnt="7일+";
-                else{
-                    int c=tempC.get(Calendar.DAY_OF_MONTH)-nowC.get(Calendar.DAY_OF_MONTH);
-                    if((c)>7)
-                        dayCnt="7일+";
+                hourTemp=tempC.get(Calendar.HOUR_OF_DAY)-nowC.get(Calendar.HOUR_OF_DAY);
+                if (tempC.get(Calendar.MONTH) - nowC.get(Calendar.MONTH) > 0)
+                    dayCnt = "7일+";
+                else {
+                    int c = tempC.get(Calendar.DAY_OF_MONTH) - nowC.get(Calendar.DAY_OF_MONTH);
+                    if ((c) > 7)
+                        dayCnt = "7일+";
                     else
-                        dayCnt=c+"일";
+                        dayCnt = c + "일";
                 }
             }
         };
@@ -296,30 +309,33 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     protected void Update() {
         Runnable updater = new Runnable() {
             public void run() {
-                if(timer_sec<=0){
-                    HttpRequest request=new HttpRequest(mContext,"http://plan-t.kr/chating/timeOutPrint?roomID="+myRoomData.roomID);
-                    Thread t= new Thread(request);
+                if (timer_sec <= 0) {
+                    HttpRequest request = new HttpRequest(mContext, "http://plan-t.kr/chating/timeOutPrint?roomID=" + myRoomData.roomID);
+                    Thread t = new Thread(request);
                     t.start();
                     try {
                         t.join();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if(request.requestResult.equals("success")){
+                    if (request.requestResult.equals("success")) {
                         myUserData.point++;
                     }
                     finish();
                 }
-                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss / ");
-                chatingTimer.setText(format.format(timer_sec)+dayCnt);
+                Calendar temp=Calendar.getInstance();
+                temp.setTimeInMillis(timer_sec);
+
+                chatingTimer.setText(hourTemp+":"+temp.get(Calendar.MINUTE)+":"+temp.get(Calendar.SECOND)+"/" + dayCnt);
             }
         };
         handler.post(updater);
     }
+
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
-        end=true;
+        end = true;
         timer.cancel();
     }
 }
