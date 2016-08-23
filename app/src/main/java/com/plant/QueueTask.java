@@ -56,13 +56,13 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
             /*Queue를 잡는다**********************/
-        if(userData.point<0){
-            try {
-                Thread.sleep(-1*userData.point*30*1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//        if(userData.point<0){
+//            try {
+//                Thread.sleep(-1*userData.point*30*1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
         HttpRequest myRequest = new HttpRequest(mContext, "http://plan-t.kr/queue/userMatching.php");
         myRequest.makeQuery(userData.getUserDataJson());
         myRequest.makeQuery(roomData.getRoomDataJson());
@@ -86,7 +86,7 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } while ((myRequest.requestResult.equals("false")) && (!isCancelled()));
+        } while  (myRequest.requestResult.equals("false\n")&&(!isCancelled()));
         /*************************************/
         //if(myRequest.line.equals("sucess")){
         //   isSucess=true;
