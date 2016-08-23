@@ -102,46 +102,65 @@ public class ReservationCheckFragment extends Fragment {
                 RoomDataListViewOnItemClickListener.DIALOG_MODE_CHECK));
     }
 
-    public class FindParticipateRoomData extends AsyncTask<String, Void, ArrayList<RoomData>> {
+    public class FindParticipateRoomData extends AsyncTask<String, Void, Void> {
         private String findParticipateURL = "http://plan-t.kr/findParticipateRoomData.php";
+        private HttpRequest findParticipateRoomDataRequest;
 
         @Override
-        protected ArrayList<RoomData> doInBackground(String... userIDInput) {
-            ArrayList<RoomData> resultArrayList = new ArrayList<RoomData>();
+        protected Void doInBackground(String... userIDInput) {
             String userID = userIDInput[0];
-            StringBuilder jsonResult = new StringBuilder();
+            findParticipateRoomDataRequest = new HttpRequest(getContext(), findParticipateURL + "?userID=" + userID);
+            Thread t = new Thread(findParticipateRoomDataRequest);
+            t.start();
             try {
-                URL url = new URL(findParticipateURL + "?userID=" + userID);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-
-                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                    while ( true ) {
-                        String line = br.readLine();
-                        if (line == null)
-                            break;
-                        jsonResult.append(line + "\n");
-                        resultArrayList.add(new Gson().fromJson(line, RoomData.class));
-                    }
-                    br.close();
-                }
-                conn.disconnect();
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e)
-            {
+                t.join();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return resultArrayList;
+            return null;
+
+//            ArrayList<RoomData> resultArrayList = new ArrayList<RoomData>();
+//            String userID = userIDInput[0];
+//            StringBuilder jsonResult = new StringBuilder();
+//            try {
+//                URL url = new URL(findParticipateURL + "?userID=" + userID);
+//                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//                conn.setDoInput(true);
+//                conn.setDoOutput(true);
+//                conn.setRequestMethod("GET");
+//                conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
+//
+//                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
+//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+//                    while ( true ) {
+//                        String line = br.readLine();
+//                        if (line == null)
+//                            break;
+//                        jsonResult.append(line + "\n");
+//                        resultArrayList.add(new Gson().fromJson(line, RoomData.class));
+//                    }
+//                    br.close();
+//                }
+//                conn.disconnect();
+//            } catch (MalformedURLException e) {
+//                e.printStackTrace();
+//            } catch (IOException e)
+//            {
+//                e.printStackTrace();
+//            }
+//            return resultArrayList;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<RoomData> resultRoomData) {
+        protected void onPostExecute(Void avoid) {
             if(roomDataList != null){
+                String lines[] = findParticipateRoomDataRequest.requestResult.split(System.getProperty("line.separator"));
+
+                for(int i = 0; i < lines.length; i++){
+                    if(lines[i].equals("")) break;
+                    roomDataList.add(new Gson().fromJson(lines[i], RoomData.class));
+                }
+
                 if(roomDataList.size() == 0){
                     LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     View v = inflater.inflate(R.layout.fragment_reservation_check_no_room, null);
@@ -151,7 +170,6 @@ public class ReservationCheckFragment extends Fragment {
                     //reservation_listView.setBackgroundResource(R.drawable.reservation_no_room);
                 }else {
                     reservation_listView.setBackground(null);
-                    roomDataList.addAll(resultRoomData);
                     reservation_listView_adapter.notifyDataSetChanged();
                 }
             }

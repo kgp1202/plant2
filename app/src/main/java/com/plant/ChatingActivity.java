@@ -100,7 +100,6 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
             textBody=(ListView) findViewById(R.id.textBody);
             (sendBtn=(ImageView)findViewById(R.id.sendBtn)).setOnClickListener(this);
             (backBtn=(ImageView)findViewById(R.id.backBtn)).setOnClickListener(this);
-            (moreBtn=(ImageView)findViewById(R.id.chatingMore)).setOnClickListener(this);
         }
         chatingContent=(EditText)findViewById(R.id.chatingContents);
         chatingContent.setOnFocusChangeListener(new MyFocusChangeListener());
@@ -177,8 +176,6 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
                 break;
             case R.id.backBtn:
                 finish();
-                break;
-            case R.id.chatingMore:
                 break;
 
         }

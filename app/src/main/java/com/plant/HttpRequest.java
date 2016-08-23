@@ -95,6 +95,7 @@ public class HttpRequest extends Thread {
                     BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
                     String temp2;
                     while ((temp2 = br.readLine()) != null) {
+                        temp2+="\n";
                         requestResult += temp2;
                     }
                     Log.d("request Result", requestResult);

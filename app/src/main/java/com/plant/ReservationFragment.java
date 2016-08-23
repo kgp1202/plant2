@@ -315,6 +315,7 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
             if(roomDataList != null){
                 String[] lines = getRoomDataRequest.requestResult.split(System.getProperty("line.separator"));
                 for(int i = 0; i < lines.length; i++){
+                    Log.d("a", " " + lines[i]);
                     if(lines[i].equals("")) break;
                     RoomData roomData=new Gson().fromJson(lines[i], RoomData.class);
                     URLDecoder decoder=new URLDecoder();

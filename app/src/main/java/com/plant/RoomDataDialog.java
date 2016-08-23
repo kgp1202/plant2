@@ -146,6 +146,8 @@ public class RoomDataDialog extends Dialog {
                 findViewById(R.id.dialog_detail_chating_join).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+
                         Intent intent = new Intent(mContext, ChatingActivity.class);
                         intent.putExtra("userData", ((FrameActivity)mContext).userData);
                         intent.putExtra("roomData", roomData);
