@@ -1,6 +1,9 @@
 package com.plant;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -79,30 +82,47 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        switch(userData.loginFrom) {
-            case UserData.KAKAO:
-                UserManagement.requestLogout(new LogoutResponseCallback() {
-                    @Override
-                    public void onCompleteLogout() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+        alert.setPositiveButton("확인",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                switch(userData.loginFrom) {
+                    case UserData.KAKAO:
+                        UserManagement.requestLogout(new LogoutResponseCallback() {
+                            @Override
+                            public void onCompleteLogout() {
+                                Intent intent = new Intent(mContext, Login_Activity.class);
+                                startActivity(intent);
+                                ((Activity)mContext).finish();
+                            }
+                        });
+                        break;
+                    case UserData.NAVER:
+                        OAuthLogin.getInstance().logoutAndDeleteToken(getContext());
                         Intent intent = new Intent(mContext, Login_Activity.class);
                         startActivity(intent);
-                    }
-                });
-                break;
-            case UserData.NAVER:
-                OAuthLogin.getInstance().logoutAndDeleteToken(getContext());
-                Intent intent = new Intent(mContext, Login_Activity.class);
-                startActivity(intent);
-                break;
-            default:
-                Log.d("Error", "UserData.loginFrom is not defined");
-                break;
-        }
+                        ((Activity)mContext).finish();
+                        break;
+                    default:
+                        Log.d("Error", "UserData.loginFrom is not defined");
+                        break;
+                }
 
-        //SharedPreference에 저장되어 있던 정보 삭제
-        SharedPreferences pref = getContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.clear();
-        editor.commit();
+                //SharedPreference에 저장되어 있던 정보 삭제
+                SharedPreferences pref = getContext().getSharedPreferences("UserData", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.clear();
+                editor.commit();
+            }
+        });
+        alert.setNegativeButton("취소",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alert.setMessage("로그아웃 하시겠습니까?");
+        alert.show();
     }
 }

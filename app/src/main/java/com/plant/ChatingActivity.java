@@ -54,7 +54,6 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
     long time;
     ImageView sendBtn;
     ImageView backBtn;
-    ImageView moreBtn;
 
     RoomData myRoomData;
     UserData myUserData;
@@ -172,12 +171,19 @@ public class ChatingActivity extends Activity implements View.OnClickListener{
                     e.getStackTrace();
                 }
                 myRequest.makeQuery(json);
-                new Thread(myRequest).start();
+                Thread t=new Thread(myRequest);
+                if(myRequest.isInternetConnected(mContext) == true) {
+                    t.start();
+                    try {
+                        t.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 break;
             case R.id.backBtn:
                 finish();
                 break;
-
         }
     }
     private class MyFocusChangeListener implements View.OnFocusChangeListener {
