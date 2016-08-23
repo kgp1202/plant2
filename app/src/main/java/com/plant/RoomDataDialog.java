@@ -184,7 +184,6 @@ public class RoomDataDialog extends Dialog {
                                     e.printStackTrace();
                                 }
                             }
-
                         }
                     }
                 });
