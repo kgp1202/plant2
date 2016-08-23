@@ -106,10 +106,6 @@ class DialogViewPagerAdapter extends PagerAdapter {
                 //dialog_detail_member에 들어갈 프로필을 inflate 해준다.
                 while(!findUserDataFromRoomData.isComplete){ }    //데이터 로딩이 완료되면
 
-                for(int i = 0; i < findUserDataFromRoomData.participateUserData.size(); i++){
-                    Log.d("aa", " " + findUserDataFromRoomData.participateUserData.get(i).userID + " " + findUserDataFromRoomData.withNumber.get(i));
-                }
-
                 //profile을 설정.
                 int count = 0;
                 for(int i = 0; i < findUserDataFromRoomData.participateUserData.size(); i++) {
@@ -125,7 +121,6 @@ class DialogViewPagerAdapter extends PagerAdapter {
                         ImageView profileImg = (ImageView) memberProfileView.findViewById(R.id.dialog_detail_member_profile_img);
 
                         UserData tempUserData = findUserDataFromRoomData.participateUserData.get(i);
-                        Log.d("a", " " + tempUserData.thumbnailPath);
 
                         profilePoint.setText("" + tempUserData.point);
                         profileName.setText(tempUserData.name);

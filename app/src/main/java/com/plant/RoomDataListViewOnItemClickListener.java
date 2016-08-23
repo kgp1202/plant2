@@ -63,6 +63,5 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
         clickedItem = (RoomData)parent.getAdapter().getItem(position);
 
         dialog.show(clickedItem);
-
     }
 }

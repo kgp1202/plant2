@@ -95,16 +95,22 @@ public class RoomDataDialog extends Dialog {
         }
     }
 
+    public FindUserDataFromRoomData findUserDataFromRoomData;
+
     public void show(final RoomData showedRoomData) {
         roomData = showedRoomData;
 
         //참여하고 있는 userData를 얻어온다.
-        final FindUserDataFromRoomData findUserDataFromRoomData = new FindUserDataFromRoomData();
-        if(HttpRequest.isInternetConnected(mContext))
-            findUserDataFromRoomData.execute(Long.toString(roomData.roomID));
+        findUserDataFromRoomData = new FindUserDataFromRoomData(mContext);
+        if(HttpRequest.isInternetConnected(mContext)){
+            findUserDataFromRoomData.run(Long.toString(roomData.roomID));
+        }
+        else {
+            return;
+        }
 
-        mViewPagerAdapter.setRoomData(roomData);
         mViewPagerAdapter.setFindUserDataFromRoomData(findUserDataFromRoomData);
+        mViewPagerAdapter.setRoomData(roomData);
 
         switch(mode){
             case DIALOG_MODE_JOIN:
@@ -149,8 +155,6 @@ public class RoomDataDialog extends Dialog {
                 findViewById(R.id.dialog_detail_chating_join).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-
                         Intent intent = new Intent(mContext, ChatingActivity.class);
                         intent.putExtra("userData", ((FrameActivity)mContext).userData);
                         intent.putExtra("roomData", roomData);
@@ -210,7 +214,7 @@ public class RoomDataDialog extends Dialog {
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
-                                }
+                                 }
 
                                 dialog.dismiss();     //닫기
                             }
@@ -256,8 +260,21 @@ public class RoomDataDialog extends Dialog {
 
             //roomJoin.php를 통해서 데이터베이스 업데이트.
             RoomJoinPHP roomJoinPHP = new RoomJoinPHP();
-            if(HttpRequest.isInternetConnected(getContext()))
-                roomJoinPHP.execute("" + roomData.roomID, ((FrameActivity)mContext).userData.userID, "" + number);
+            if(HttpRequest.isInternetConnected(getContext())) {
+                roomJoinPHP.execute("" + roomData.roomID, ((FrameActivity) mContext).userData.userID, "" + number);
+                HttpRequest myRequest=new HttpRequest(mContext, "http://plan-t.kr/chating/insertChating.php");
+                JSONObject json=new JSONObject();
+                try{
+                    json.put("userID",((FrameActivity) mContext).userData.userID);
+                    json.put("roomID",roomData.roomID);
+                    json.put("content",((FrameActivity) mContext).userData.name+"님이 참여하셨습니다!");
+                }catch (Exception e){
+                    e.getStackTrace();
+                }
+                myRequest.makeQuery(json);
+                Thread t=new Thread(myRequest);
+                t.start();
+            }
             else {
                 //인터넷 연결이 안되어 있을 떄의 처리.
             }
