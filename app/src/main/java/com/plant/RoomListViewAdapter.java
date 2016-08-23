@@ -30,6 +30,15 @@ public class RoomListViewAdapter extends BaseAdapter {
     }
 
     @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+
+        if(getCount() == 0){
+            
+        }
+    }
+
+    @Override
     public int getCount() {
         return list.size();
     }
@@ -52,6 +61,8 @@ public class RoomListViewAdapter extends BaseAdapter {
         TextView startingPoint;
         ImageView returnImage;
     }
+
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -122,8 +133,6 @@ public class RoomListViewAdapter extends BaseAdapter {
             e.printStackTrace();
         }
         myHolder.destination.setText(temp.destPoint);
-        //TextView textView = (TextView) convertView.findViewById(R.id.room_data);
-        //textView.setText(list.get(position).getRoomDataJSONString());
 
         return convertView;
     }

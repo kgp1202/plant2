@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
-        android:background="#ffffff"
+        android:background="@drawable/rounded_corner_background"
         android:orientation="vertical"
         >
         <LinearLayout
@@ -23,16 +23,21 @@
             android:layout_marginLeft="10dp"
             android:orientation="horizontal"
             >
-            <ImageView
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:src="@drawable/realtime_with_title"
-                />
-            <View
-                android:layout_weight="2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:text="동행인원"
+                    android:textSize="21dp"
+                    android:textColor="#000000"
+                    android:textAlignment="viewStart"
+                    android:layout_centerInParent="true"/>
+
+            </RelativeLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -78,7 +83,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
-        android:background="#ffffff"
+        android:background="@drawable/rounded_corner_background"
         android:orientation="vertical"
         >
         <LinearLayout
@@ -88,16 +93,21 @@
             android:layout_marginLeft="10dp"
             android:orientation="horizontal"
             >
-            <ImageView
+            <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:src="@drawable/realtime_max_title"
-                />
-            <View
-                android:layout_weight="2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:text="최대 승차 인원"
+                    android:textSize="21dp"
+                    android:textColor="#000000"
+                    android:textAlignment="viewStart"
+                    android:layout_centerInParent="true"/>
+
+            </RelativeLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -137,7 +147,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="horizontal"
-        android:background="#ffffff"
+        android:background="@drawable/rounded_corner_background"
         >
         <ImageView
             android:id="@+id/realtimeJuanBtn"
@@ -158,7 +168,9 @@
             android:src="@drawable/realtime_school_btn"
             />
     </LinearLayout>
-    <LinearLayout
+
+    <RelativeLayout
+        android:id="@+id/realtimeSendBtn"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
@@ -166,13 +178,38 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#ffffff"
-        >
-        <ImageView
-            android:id="@+id/realtimeSendBtn"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/matching_sendbtn"
-            />
-    </LinearLayout>
+        android:textAlignment="center"
+        android:background="@drawable/rounded_corner_background_colored">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="35dp"
+            android:textColor="@color/colorMainOrange"
+            android:text="전송"/>
+
+    </RelativeLayout>
+
+    <!--<TextView-->
+        <!--android:id="@+id/realtimeSendBtn"-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="1"-->
+        <!--android:text="전송"-->
+        <!--android:textSize="35dp"-->
+        <!--android:textAlignment="center"-->
+        <!--android:textColor="@color/colorMainOrange"-->
+        <!--android:background="@drawable/rounded_corner_background_colored"-->
+        <!--&gt;-->
+        <!--<ImageView-->
+            <!--android:id="@+id/realtimeSendBtn"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:src="@drawable/matching_sendbtn"-->
+            <!--/>-->
 </LinearLayout>

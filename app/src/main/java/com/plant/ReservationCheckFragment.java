@@ -95,7 +95,6 @@ public class ReservationCheckFragment extends Fragment {
 
         reservation_listView = (ListView) mainView.findViewById(R.id.reservation_check_listView);
         reservation_listView.setAdapter(reservation_listView_adapter);
-        //roomDataList = ((FrameActivity) getActivity()).reservationCheckListCache;
         reservation_listView_adapter.setList(getActivity(), roomDataList);
 
         reservation_listView.setOnItemClickListener(new RoomDataListViewOnItemClickListener(getContext(),
@@ -118,37 +117,6 @@ public class ReservationCheckFragment extends Fragment {
                 e.printStackTrace();
             }
             return null;
-
-//            ArrayList<RoomData> resultArrayList = new ArrayList<RoomData>();
-//            String userID = userIDInput[0];
-//            StringBuilder jsonResult = new StringBuilder();
-//            try {
-//                URL url = new URL(findParticipateURL + "?userID=" + userID);
-//                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//                conn.setDoInput(true);
-//                conn.setDoOutput(true);
-//                conn.setRequestMethod("GET");
-//                conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-//
-//                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
-//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-//                    while ( true ) {
-//                        String line = br.readLine();
-//                        if (line == null)
-//                            break;
-//                        jsonResult.append(line + "\n");
-//                        resultArrayList.add(new Gson().fromJson(line, RoomData.class));
-//                    }
-//                    br.close();
-//                }
-//                conn.disconnect();
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            } catch (IOException e)
-//            {
-//                e.printStackTrace();
-//            }
-//            return resultArrayList;
         }
 
         @Override

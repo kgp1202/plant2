@@ -19,6 +19,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 /**
  * Created by angks on 2016-05-22.
@@ -35,7 +36,7 @@ public class RealTimeFragment extends Fragment implements View.OnTouchListener {
     ImageView maxNumImages[] = new ImageView[3];
     ImageView juanBtn;
     ImageView schoolBtn;
-    ImageView sendBtn;
+    RelativeLayout sendBtn;
     View mainView;
     Context myContext;
 
@@ -68,7 +69,7 @@ public class RealTimeFragment extends Fragment implements View.OnTouchListener {
 
         (juanBtn = (ImageView) mainView.findViewById(R.id.realtimeJuanBtn)).setOnClickListener(DestOnClickListener);
         (schoolBtn = (ImageView) mainView.findViewById(R.id.realtimeSchoolBtn)).setOnClickListener(DestOnClickListener);
-        (sendBtn = (ImageView) mainView.findViewById(R.id.realtimeSendBtn)).setOnTouchListener(this);
+        (sendBtn = (RelativeLayout) mainView.findViewById(R.id.realtimeSendBtn)).setOnTouchListener(this);
 
     }
 
@@ -83,7 +84,7 @@ public class RealTimeFragment extends Fragment implements View.OnTouchListener {
                 withNumImages[0].setImageResource(R.drawable.matching_with1);
                 withNumImages[1].setImageResource(R.drawable.matching_with2);
                 withNumImages[2].setImageResource(R.drawable.matching_with3);
-                withNumImages[2].setTag(0);
+                //withNumImages[2].setTag(0);
                 break;
             case 2:
                 for (i = 1; i < 3; i++) maxNumImages[i].setTag(0);
@@ -120,7 +121,7 @@ public class RealTimeFragment extends Fragment implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (isQueuing) return false;
-        AlertDialog.Builder builder = new AlertDialog.Builder(myContext);
+        AlertDialog.Builder builder = new AlertDialog.Builder(myContext, android.R.style.Theme_Material_Dialog);
         if (checkValidation()) {
             String dest = "";
             dest=realTimeRommData.destPoint;
@@ -255,7 +256,7 @@ public class RealTimeFragment extends Fragment implements View.OnTouchListener {
             if (isQueuing) return;
             switch (v.getId()) {
                 case R.id.realTimeMax2:
-                    if (((int)withNumImages[2].getTag()) != 2) {
+                    if (withNumImages[2].getTag() == false) {
                         if (((int) maxNumImages[1].getTag()) == 2) {
                             maxNumImages[1].setImageResource(R.drawable.realtime_max_2);
                             maxNumImages[1].setTag(0);

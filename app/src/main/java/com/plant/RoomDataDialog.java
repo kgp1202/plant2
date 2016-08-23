@@ -133,20 +133,36 @@ public class RoomDataDialog extends Dialog {
                         }
                         else {
                             //동행인원을 물어보는 다이얼로그 띄우기
-                            Dialog roomJoinDialog = new Dialog(mContext);
-                            roomJoinDialog.setContentView(R.layout.dialog_detail_roomjoin);
-                            roomJoinDialog.setCancelable(true);
+                            AlertDialog.Builder alert = new AlertDialog.Builder(getContext(), android.R.style.Theme_Material_Dialog);
+                            alert.setTitle("동행 인원을 선택해주세요.");
 
-                            Button button1 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_one);
-                            Button button2 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_two);
-                            Button button3 = (Button) roomJoinDialog.findViewById(R.id.dialog_detail_roomjoin_three);
-
-                            RoomJoinDialogListener roomJoinDialogListener = new RoomJoinDialogListener(roomJoinDialog);
-                            button1.setOnClickListener(roomJoinDialogListener);
-                            button2.setOnClickListener(roomJoinDialogListener);
-                            button3.setOnClickListener(roomJoinDialogListener);
-
-                            roomJoinDialog.show();
+                            final String[] item = {"동행인원 없음", "1명과 동행", "2명과 동행"};
+                            alert.setItems(item, new OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int selectedItem) {
+                                    int number = selectedItem + 1;
+                                    RoomJoinPHP roomJoinPHP = new RoomJoinPHP();
+                                    if(HttpRequest.isInternetConnected(getContext())) {
+                                        roomJoinPHP.execute("" + roomData.roomID, ((FrameActivity) mContext).userData.userID, "" + number);
+                                        HttpRequest myRequest=new HttpRequest(mContext, "http://plan-t.kr/chating/insertChating.php");
+                                        JSONObject json=new JSONObject();
+                                        try{
+                                            json.put("userID",((FrameActivity) mContext).userData.userID);
+                                            json.put("roomID",roomData.roomID);
+                                            json.put("content",((FrameActivity) mContext).userData.name+"님이 참여하셨습니다!");
+                                        }catch (Exception e){
+                                            e.getStackTrace();
+                                        }
+                                        myRequest.makeQuery(json);
+                                        Thread t=new Thread(myRequest);
+                                        t.start();
+                                    }
+                                    else {
+                                        //인터넷 연결이 안되어 있을 떄의 처리.
+                                    }
+                                }
+                            });
+                            alert.show();
                         }
                     }
                 });
@@ -166,7 +182,9 @@ public class RoomDataDialog extends Dialog {
                 findViewById(R.id.dialog_detail_out).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+                        AlertDialog.Builder alert = new AlertDialog.Builder(mContext, android.R.style.Theme_Material_Dialog);
+                        //alert.setTitle("방 나가기");
+                        alert.setMessage("정말로 방을 나가시겠습니까?");
                         alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -182,6 +200,8 @@ public class RoomDataDialog extends Dialog {
                                         } catch (InterruptedException e) {
                                             e.printStackTrace();
                                         }
+                                    } else {
+                                        return;
                                     }
                                 }else {
                                     request=new HttpRequest(mContext, "http://plan-t.kr/outRoom.php?userID="+myUser.userID+"&roomID="+roomData.roomID);
@@ -193,6 +213,8 @@ public class RoomDataDialog extends Dialog {
                                         } catch (InterruptedException e) {
                                             e.printStackTrace();
                                         }
+                                    } else {
+                                        return;
                                     }
                                 }
 
@@ -217,6 +239,9 @@ public class RoomDataDialog extends Dialog {
                                  }
 
                                 dialog.dismiss();     //닫기
+                                dismiss();
+                                ((ReservationCheckFragment)((FrameActivity)mContext).fragment).roomDataList.remove(roomData);
+                                ((ReservationCheckFragment)((FrameActivity)mContext).fragment).reservation_listView_adapter.notifyDataSetChanged();
                             }
                         });
                         alert.setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -225,7 +250,6 @@ public class RoomDataDialog extends Dialog {
                                 dialog.dismiss();     //닫기
                             }
                         });
-                        alert.setMessage("방을 나가시겠습니까?");
                         alert.show();
                     }
                 });
@@ -234,53 +258,6 @@ public class RoomDataDialog extends Dialog {
         }
 
         super.show();
-    }
-
-    private class RoomJoinDialogListener implements View.OnClickListener {
-        Dialog roomJoinDialog;
-
-        public RoomJoinDialogListener(Dialog roomJoinDialog){
-            this.roomJoinDialog = roomJoinDialog;
-        }
-
-        @Override
-        public void onClick(View v) {
-            int number = 0;
-            switch(v.getId()){
-                case R.id.dialog_detail_roomjoin_one:
-                    number = 1;
-                    break;
-                case R.id.dialog_detail_roomjoin_two:
-                    number = 2;
-                    break;
-                case R.id.dialog_detail_roomjoin_three:
-                    number = 3;
-                    break;
-            }
-
-            //roomJoin.php를 통해서 데이터베이스 업데이트.
-            RoomJoinPHP roomJoinPHP = new RoomJoinPHP();
-            if(HttpRequest.isInternetConnected(getContext())) {
-                roomJoinPHP.execute("" + roomData.roomID, ((FrameActivity) mContext).userData.userID, "" + number);
-                HttpRequest myRequest=new HttpRequest(mContext, "http://plan-t.kr/chating/insertChating.php");
-                JSONObject json=new JSONObject();
-                try{
-                    json.put("userID",((FrameActivity) mContext).userData.userID);
-                    json.put("roomID",roomData.roomID);
-                    json.put("content",((FrameActivity) mContext).userData.name+"님이 참여하셨습니다!");
-                }catch (Exception e){
-                    e.getStackTrace();
-                }
-                myRequest.makeQuery(json);
-                Thread t=new Thread(myRequest);
-                t.start();
-            }
-            else {
-                //인터넷 연결이 안되어 있을 떄의 처리.
-            }
-
-            roomJoinDialog.dismiss();
-        }
     }
 
     private class RoomJoinPHP extends AsyncTask<String, Void, Void> {
@@ -308,45 +285,17 @@ public class RoomDataDialog extends Dialog {
             }
 
             return null;
-
-//            int result = 0;
-//            //StringBuilder jsonResult = new StringBuilder();
-//            try {
-//                URL urlTemp = new URL(roomJoinURL + "?userID=" + joinUserData.userID + "&roomID=" + joinRoomData.roomID + "&number=" + number);
-//                HttpURLConnection conn = (HttpURLConnection) urlTemp.openConnection();
-//                conn.setDoInput(true);
-//                conn.setDoOutput(true);
-//                conn.setRequestMethod("GET");
-//                conn.setRequestProperty("content-type", "application/x-www-form-urlencoded");
-//
-//                if ( conn.getResponseCode() == HttpURLConnection.HTTP_OK ) {
-//                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-//                    while ( true ) {
-//                        String line = br.readLine();
-//                        if (line == null)
-//                            break;
-//                        result = Integer.parseInt(line);
-//                    }
-//                    br.close();
-//                }
-//                conn.disconnect();
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            } catch (IOException e)
-//            {
-//                e.printStackTrace();
-//            }
-//
-//            return result;
         }
 
         @Override
         protected void onPostExecute(Void avoid) {
-            if(Integer.parseInt(roomJoinRequest.requestResult) == ROOM_JOIN_SUCCESS){
+            String[] lines = roomJoinRequest.requestResult.split(System.getProperty("line.separator"));
+
+            if(Integer.parseInt(lines[0]) == ROOM_JOIN_SUCCESS){
                 dismiss();
                 ((FrameActivity) mContext).makeChange(3);
-            } else if(Integer.parseInt(roomJoinRequest.requestResult) == ROOM_JOIN_FAIL){
-                Toast.makeText(mContext, "해당 방의 최대 참여 가능 유저의 수를 초과합니다.", Toast.LENGTH_SHORT).show();
+            } else if(Integer.parseInt(lines[0]) == ROOM_JOIN_FAIL){
+                Toast.makeText(mContext, "해당 방의 최대 참여 가능 유저의 수를 초과합니다.", Toast.LENGTH_LONG).show();
             }
         }
     }
