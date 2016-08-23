@@ -1,5 +1,6 @@
 package com.plant;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +17,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -157,33 +160,67 @@ public class RoomDataDialog extends Dialog {
                 findViewById(R.id.dialog_detail_out).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        UserData myUser=((FrameActivity)mContext).userData;
-                        HttpRequest request;
-                        if(roomData.roomType == RoomData.ROOM_TYPE_REALTIME){
-                            request=new HttpRequest(mContext, "http://plan-t.kr/outRoomRealTime.php?userID="+myUser.userID+"&roomID="+roomData.roomID);
-                            Thread t=new Thread(request);
-                            if(request.isInternetConnected(mContext) == true){
-                                t.start();
-                                try {
-                                    t.join();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
+                        AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+                        alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                UserData myUser=((FrameActivity)mContext).userData;
+                                HttpRequest request;
+                                if(roomData.roomType == RoomData.ROOM_TYPE_REALTIME){
+                                    request=new HttpRequest(mContext, "http://plan-t.kr/outRoomRealTime.php?userID="+myUser.userID+"&roomID="+roomData.roomID);
+                                    Thread t=new Thread(request);
+                                    if(request.isInternetConnected(mContext) == true){
+                                        t.start();
+                                        try {
+                                            t.join();
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }else {
+                                    request=new HttpRequest(mContext, "http://plan-t.kr/outRoom.php?userID="+myUser.userID+"&roomID="+roomData.roomID);
+                                    Thread t=new Thread(request);
+                                    if(request.isInternetConnected(mContext) == true){
+                                        t.start();
+                                        try {
+                                            t.join();
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
                                 }
-                            }
 
-                        }else {
-                            request=new HttpRequest(mContext, "http://plan-t.kr/outRoom.php?userID="+myUser.userID+"&roomID="+roomData.roomID);
-                            Thread t=new Thread(request);
-                            if(request.isInternetConnected(mContext) == true){
-                                t.start();
-                                try {
-                                    t.join();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
+                                HttpRequest myRequest=new HttpRequest(mContext, "http://plan-t.kr/chating/insertChating.php");
+                                JSONObject json=new JSONObject();
+                                try{
+                                    json.put("userID",myUser.userID);
+                                    json.put("roomID",roomData.roomID);
+                                    json.put("content",myUser.name+"님이 나가셨습니다!");
+                                }catch (Exception e){
+                                    e.getStackTrace();
                                 }
-                            }
+                                myRequest.makeQuery(json);
+                                Thread t=new Thread(myRequest);
+                                if(myRequest.isInternetConnected(mContext) == true) {
+                                    t.start();
+                                    try {
+                                        t.join();
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
 
-                        }
+                                dialog.dismiss();     //닫기
+                            }
+                        });
+                        alert.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();     //닫기
+                            }
+                        });
+                        alert.setMessage("방을 나가시겠습니까?");
+                        alert.show();
                     }
                 });
 
