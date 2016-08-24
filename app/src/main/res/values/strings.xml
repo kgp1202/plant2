@@ -4,6 +4,9 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="user_name_prompt">Choo</string>
     <string name="internet_fail_alarm">네트워크가 연결되어 있지 않습니다.</string>
+    <string name="fragment_index_reatime_str">이 부분은 알아서\n작성해주시길\n바랍니다.</string>
+    <string name="fragment_index_reservation_str">이 부분은 알아서\n작성해주시길\n바랍니다.</string>
+    <string name="fragment_index_reservation_check_str">이 부분은 알아서\n작성해주시길\n바랍니다.</string>
     <string-array name="user_name_array">
         <item></item>
         <item>없음</item>

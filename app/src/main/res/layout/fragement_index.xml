@@ -20,11 +20,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_weight="0.7"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="15"
                 android:orientation="horizontal">
 
                 <TextView
@@ -32,15 +33,75 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"/>
 
-                <ImageView
+                <LinearLayout
                     android:id="@+id/index_realtime_btn"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="41"
-                    android:src="@drawable/index_realtime_btn"
-                    android:scaleType="fitXY"
-                    android:adjustViewBounds="true"
-                    android:clickable="true"/>
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_corner_background">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="4"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"/>
+
+                        <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="14">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/index_realtime_btn_part"
+                                android:adjustViewBounds="true"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#000000"
+                                android:text="실시간 매칭"
+                                android:layout_alignParentRight="true"
+                                android:textSize="33dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_alignParentRight="true"
+                                android:textAlignment="viewEnd"
+                                android:textColor="#595959"
+                                android:lineSpacingExtra="7dp"
+                                android:textSize="18dp"
+                                android:text="@string/fragment_index_reatime_str"/>
+
+                        </RelativeLayout>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="0dp"
@@ -52,12 +113,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_weight="0.7"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="20"
+                android:layout_weight="22"
                 android:orientation="horizontal">
 
                 <TextView
@@ -65,29 +126,132 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"/>
 
-                <ImageView
+                <LinearLayout
                     android:id="@+id/index_conserve_btn"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="20"
-                    android:src="@drawable/index_conserve_btn"
-                    android:scaleType="fitXY"
-                    android:adjustViewBounds="true"
-                    android:clickable="true"/>
+                    android:orientation="horizontal"
+                    android:background="@drawable/rounded_corner_background">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="8.6"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.5"/>
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="8"
+                            android:src="@drawable/index_conserve_btn_part"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.8"/>
+                        
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="3.5"
+                            android:text="예약하기"
+                            android:textSize="33dp"
+                            android:textColor="#000000"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="7.7"
+                            android:textColor="#595959"
+                            android:lineSpacingExtra="7dp"
+                            android:textSize="17dp"
+                            android:text="@string/fragment_index_reservation_str"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.5"/>
+
+                </LinearLayout>
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"/>
 
-                <ImageView
+                <LinearLayout
                     android:id="@+id/index_conserve_confirm_btn"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="20"
-                    android:src="@drawable/index_conserve_confirm_btn"
-                    android:scaleType="fitXY"
-                    android:adjustViewBounds="true"
-                    android:clickable="true"/>
+                    android:orientation="horizontal"
+                    android:background="@drawable/rounded_corner_background">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="8.6"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.5"/>
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="8"
+                            android:src="@drawable/index_conserve_confirm_btn_part"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.8"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="3.5"
+                            android:text="예약 확인"
+                            android:textSize="33dp"
+                            android:textColor="#000000"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="7.7"
+                            android:textColor="#595959"
+                            android:lineSpacingExtra="7dp"
+                            android:textSize="17dp"
+                            android:text="@string/fragment_index_reservation_str"/>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+
+                </LinearLayout>
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -98,7 +262,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_weight="0.7"/>
 
         </LinearLayout>
 

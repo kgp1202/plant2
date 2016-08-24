@@ -14,6 +14,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 /**
@@ -22,9 +23,9 @@ import android.widget.Toast;
 
 public class IndexFragment extends Fragment implements View.OnTouchListener{
     /*view*******************************************/
-    ImageView index_realtime_btn;
-    ImageView index_conserve_btn;
-    ImageView index_conserve_confirm_btn;
+    LinearLayout index_realtime_btn;
+    LinearLayout index_conserve_btn;
+    LinearLayout index_conserve_confirm_btn;
     Animation scale_touch_anim;
     View touched_view;
     View mainView;
@@ -54,9 +55,6 @@ public class IndexFragment extends Fragment implements View.OnTouchListener{
 
     /**********************************************/
 
-
-
-
     public IndexFragment(){}
 
     @Override
@@ -73,9 +71,9 @@ public class IndexFragment extends Fragment implements View.OnTouchListener{
     }
 
     public void init(View v){
-        index_realtime_btn = (ImageView) v.findViewById(R.id.index_realtime_btn);
-        index_conserve_btn = (ImageView) v.findViewById(R.id.index_conserve_btn);
-        index_conserve_confirm_btn = (ImageView) v.findViewById(R.id.index_conserve_confirm_btn);
+        index_realtime_btn = (LinearLayout) v.findViewById(R.id.index_realtime_btn);
+        index_conserve_btn = (LinearLayout) v.findViewById(R.id.index_conserve_btn);
+        index_conserve_confirm_btn = (LinearLayout) v.findViewById(R.id.index_conserve_confirm_btn);
 
         index_realtime_btn.setOnTouchListener(this);
         index_conserve_btn.setOnTouchListener(this);
@@ -86,13 +84,13 @@ public class IndexFragment extends Fragment implements View.OnTouchListener{
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if(event.getAction() == MotionEvent.ACTION_DOWN) {
-            touched_view = v;
-            v.startAnimation(scale_touch_anim);
-        }
-        if(event.getAction() == MotionEvent.ACTION_UP){
-            touched_view.clearAnimation();
-            switch(touched_view.getId()){
+//        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+//            touched_view = v;
+//            v.startAnimation(scale_touch_anim);
+//        }
+//        if(event.getAction() == MotionEvent.ACTION_UP){
+//            touched_view.clearAnimation();
+            switch(v.getId()){
                 case R.id.index_realtime_btn:
                     mCallback.makeChange(1);
                     break;
@@ -103,7 +101,8 @@ public class IndexFragment extends Fragment implements View.OnTouchListener{
                     mCallback.makeChange(3);
                     break;
             }
-        }
+
+
         return false;
     }
 }
