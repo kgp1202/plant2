@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -42,7 +43,9 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
     /***************** UI ***********************/
     View rootView;
     Button logout_btn;
+    LinearLayout pointImg;
     TextView point;
+    TextView name;
     ImageView profileImg;
 
     @Override
@@ -64,16 +67,18 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
     public void init(){
         /************************* UI ****************************/
         logout_btn = (Button) rootView.findViewById(R.id.logout_btn);
-        point=(TextView)rootView.findViewById(R.id.myPoint);
+        pointImg=(LinearLayout)rootView.findViewById(R.id.myPoint);
+        point = (TextView)rootView.findViewById(R.id.point);
         profileImg = (ImageView) rootView.findViewById(R.id.profile);
+        name = (TextView)rootView.findViewById(R.id.fragment_more_name);
 
         logout_btn.setOnClickListener(this);
-
 
         /**************** UserData 받아오기 ************************/
         FrameActivity frameActivity = (FrameActivity) getActivity();
         userData = frameActivity.userData;
-        point.setText("포인트 : "+userData.point+"");
+        point.setText("포인트   "+userData.point+"");
+        name.setText(userData.name);
         /**************** Profile Img 설정 *************************/
         if(!userData.profilePath.equals(""))
             Glide.with(mContext).load(userData.profilePath).into(profileImg);

@@ -12,7 +12,7 @@
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_weight="2"
         android:background="@drawable/rounded_corner_background"
         android:orientation="vertical"
         >
@@ -82,7 +82,7 @@
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_weight="2"
         android:background="@drawable/rounded_corner_background"
         android:orientation="vertical"
         >
@@ -146,27 +146,56 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:background="@drawable/rounded_corner_background"
         >
-        <ImageView
-            android:id="@+id/realtimeJuanBtn"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:src="@drawable/realtime_juan_btn"
-            />
-        <View
-            android:layout_width="1dp"
-            android:layout_height="fill_parent"
-            android:background="#dddddd" />
-        <ImageView
-            android:id="@+id/realtimeSchoolBtn"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:src="@drawable/realtime_school_btn"
-            />
+            android:layout_height="0dp"
+            android:layout_marginLeft="10dp"
+            android:orientation="horizontal"
+            >
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:text="목적지"
+                    android:textSize="21dp"
+                    android:textColor="#000000"
+                    android:textAlignment="viewStart"
+                    android:layout_centerInParent="true"/>
+
+            </RelativeLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            >
+            <ImageView
+                android:id="@+id/realtimeJuanBtn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:src="@drawable/realtime_juan_btn"
+                />
+            <View
+                android:layout_width="1dp"
+                android:layout_height="fill_parent"
+                android:background="#dddddd" />
+            <ImageView
+                android:id="@+id/realtimeSchoolBtn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:src="@drawable/realtime_school_btn"
+                />
+        </LinearLayout>
     </LinearLayout>
 
     <RelativeLayout
@@ -177,7 +206,7 @@
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="0.7"
         android:textAlignment="center"
         android:background="@drawable/rounded_corner_background_colored">
 
@@ -192,24 +221,24 @@
     </RelativeLayout>
 
     <!--<TextView-->
-        <!--android:id="@+id/realtimeSendBtn"-->
-        <!--android:layout_marginTop="5dp"-->
-        <!--android:layout_marginBottom="10dp"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:layout_marginRight="10dp"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:layout_weight="1"-->
-        <!--android:text="전송"-->
-        <!--android:textSize="35dp"-->
-        <!--android:textAlignment="center"-->
-        <!--android:textColor="@color/colorMainOrange"-->
-        <!--android:background="@drawable/rounded_corner_background_colored"-->
-        <!--&gt;-->
-        <!--<ImageView-->
-            <!--android:id="@+id/realtimeSendBtn"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:src="@drawable/matching_sendbtn"-->
-            <!--/>-->
+    <!--android:id="@+id/realtimeSendBtn"-->
+    <!--android:layout_marginTop="5dp"-->
+    <!--android:layout_marginBottom="10dp"-->
+    <!--android:layout_marginLeft="10dp"-->
+    <!--android:layout_marginRight="10dp"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="0dp"-->
+    <!--android:layout_weight="1"-->
+    <!--android:text="전송"-->
+    <!--android:textSize="35dp"-->
+    <!--android:textAlignment="center"-->
+    <!--android:textColor="@color/colorMainOrange"-->
+    <!--android:background="@drawable/rounded_corner_background_colored"-->
+    <!--&gt;-->
+    <!--<ImageView-->
+    <!--android:id="@+id/realtimeSendBtn"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:src="@drawable/matching_sendbtn"-->
+    <!--/>-->
 </LinearLayout>

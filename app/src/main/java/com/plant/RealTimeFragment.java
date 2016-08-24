@@ -240,7 +240,7 @@ public class RealTimeFragment extends Fragment implements View.OnTouchListener {
                         initData(2);
                         v.setTag(true);
                         withNumImages[2].setImageResource(R.drawable.matching_with3_s);
-                        withNumImages[2].setTag(2);
+                      //  withNumImages[2].setTag(2);
                         makeUnableMaxNumImages(2);
                         realTimeRommData.userNum = 3;
                         realTimeRommData.maxUserNum = 0;

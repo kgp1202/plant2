@@ -240,8 +240,7 @@ public class RoomDataDialog extends Dialog {
 
                                 dialog.dismiss();     //닫기
                                 dismiss();
-                                ((ReservationCheckFragment)((FrameActivity)mContext).fragment).roomDataList.remove(roomData);
-                                ((ReservationCheckFragment)((FrameActivity)mContext).fragment).reservation_listView_adapter.notifyDataSetChanged();
+                                ((FrameActivity)mContext).makeChange(3);
                             }
                         });
                         alert.setNegativeButton("취소", new DialogInterface.OnClickListener() {

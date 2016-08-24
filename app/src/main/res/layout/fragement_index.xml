@@ -84,7 +84,7 @@
                                 android:textAlignment="viewEnd"
                                 android:textColor="#595959"
                                 android:lineSpacingExtra="7dp"
-                                android:textSize="18dp"
+                                android:textSize="14dp"
                                 android:text="@string/fragment_index_reatime_str"/>
 
                         </RelativeLayout>
@@ -242,7 +242,7 @@
                             android:textColor="#595959"
                             android:lineSpacingExtra="7dp"
                             android:textSize="17dp"
-                            android:text="@string/fragment_index_reservation_str"/>
+                            android:text="@string/fragment_index_reservation_check_str"/>
 
                     </LinearLayout>
 
