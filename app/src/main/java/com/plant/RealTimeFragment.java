@@ -240,7 +240,7 @@ public class RealTimeFragment extends Fragment implements View.OnTouchListener {
                         initData(2);
                         v.setTag(true);
                         withNumImages[2].setImageResource(R.drawable.matching_with3_s);
-                        withNumImages[2].setTag(2);
+                       // withNumImages[2].setTag(2);
                         makeUnableMaxNumImages(2);
                         realTimeRommData.userNum = 3;
                         realTimeRommData.maxUserNum = 0;
@@ -256,7 +256,7 @@ public class RealTimeFragment extends Fragment implements View.OnTouchListener {
             if (isQueuing) return;
             switch (v.getId()) {
                 case R.id.realTimeMax2:
-                    if (withNumImages[2].getTag() == false) {
+                    if ((boolean)withNumImages[2].getTag() == false) {
                         if (((int) maxNumImages[1].getTag()) == 2) {
                             maxNumImages[1].setImageResource(R.drawable.realtime_max_2);
                             maxNumImages[1].setTag(0);
