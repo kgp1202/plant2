@@ -256,6 +256,7 @@ public class RoomDataDialog extends Dialog {
                 break;
         }
 
+        ((FrameActivity)mContext).stopProgressBar();
         super.show();
     }
 

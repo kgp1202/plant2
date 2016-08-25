@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <permission android:name="com.plant.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.plant.permission.C2D_MESSAGE" />
 
     <application
         android:name=".Kakao.GlobalApplication"
@@ -47,6 +50,37 @@
         <activity android:name="com.nhn.android.naverlogin.ui.OAuthLoginInAppBrowserActivity"
             android:label="OAuth2.0 In-app"/>
         <!-- [naveroauthlogin][end] -->
+
+
+        <!-- [START gcm_registration_service] -->
+        <service
+            android:name="com.plant.RegistrationIntentService"
+            android:exported="false"></service>
+        <!-- [END gcm_registration_service] -->
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.example.gcm" />
+            </intent-filter>
+        </receiver>
+        <service
+            android:name="com.plant.MyGcmListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.plant.MyInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

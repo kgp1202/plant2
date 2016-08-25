@@ -140,6 +140,7 @@ public class ReservationCheckFragment extends Fragment {
                     reservation_listView.setBackground(null);
                     reservation_listView_adapter.notifyDataSetChanged();
                 }
+                ((FrameActivity)getContext()).stopProgressBar();
             }
         }
     }

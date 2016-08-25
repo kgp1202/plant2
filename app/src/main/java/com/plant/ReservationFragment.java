@@ -329,6 +329,8 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
                     roomDataList.add(roomData);
                 }
                 listViewAdapter.notifyDataSetChanged();
+
+                ((FrameActivity)getContext()).stopProgressBar();
             }
         }
     }
