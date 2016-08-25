@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "664266721749",
+    "project_id": "firebase-plant"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:664266721749:android:b9371a062bd49d5a",
+        "android_client_info": {
+          "package_name": "com.plant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-_J3_QyFvzkXHr9aH3kyrBHc93YRQ1rE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

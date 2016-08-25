@@ -26,10 +26,12 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.concurrent.RunnableFuture;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -48,6 +50,9 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
     AnimationDrawable frameAnimation;
     RelativeLayout addedView;
     ImageView wheel;
+
+    ProgressBar progressBar;
+    public boolean startViewChange = false;
     /************************************************/
 
     //UserData와 RoomData
@@ -108,6 +113,7 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
         statusbar_conserve_btn = (ImageView) findViewById(R.id.statusbar_conserve_btn);
         statusbar_conserve_confirm_btn = (ImageView) findViewById(R.id.statusbar_conserve_confirm_btn);
         statusbar_more_btn = (ImageView) findViewById(R.id.statusbar_more_btn);
+        progressBar = (ProgressBar) findViewById(R.id.activity_frame_progressbar);
 
         statusbar_home_btn.setOnClickListener(this);
         statusbar_realtime_btn.setOnClickListener(this);
@@ -122,6 +128,29 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
                 .commit();
 
         currentFragmentNumber = 0;
+    }
+
+    public void activateProgressBar(){
+//        startViewChange = true;
+//        Thread thread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Thread.sleep(1000);
+//                    if(((FrameActivity)mContext).startViewChange == true) {
+//                        progressBar.setVisibility(View.VISIBLE);
+//                    }
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//        thread.run();
+
+    }
+    public void stopProgressBar(){
+//        startViewChange = false;
+//        progressBar.setVisibility(View.INVISIBLE);
     }
 
     //클릭 되어졌던 이미지를 초기화
@@ -143,6 +172,7 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        activateProgressBar();
         switch (v.getId()) {
             case R.id.statusbar_home_btn:
                 makeChange(0);

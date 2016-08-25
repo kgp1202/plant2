@@ -4,9 +4,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="user_name_prompt">Choo</string>
     <string name="internet_fail_alarm">네트워크가 연결되어 있지 않습니다.</string>
-    <string name="fragment_index_reatime_str">이 부분은 알아서\n작성해주시길\n바랍니다.</string>
-    <string name="fragment_index_reservation_str">이 부분은 알아서\n작성해주시길\n바랍니다.</string>
-    <string name="fragment_index_reservation_check_str">이 부분은 알아서\n작성해주시길\n바랍니다.</string>
+    <string name="fragment_index_reatime_str">주안역이나 후문으로 가는사람들을 실시간으로연결시켜줍니다.</string>
+    <string name="fragment_index_reatime_str1">주안역이나 후문으로 가는</string>
+    <string name="fragment_index_reatime_str2">사람들을 실시간으로</string>
+    <string name="fragment_index_reatime_str3">연결시켜줍니다.</string>
+    <string name="fragment_index_reservation_str">목적지가 같은\n사람들을\n연결시켜 줍니다.</string>
+    <string name="fragment_index_reservation_check_str">참여중인 방의\n목록을 보여줍니다</string>
     <string-array name="user_name_array">
         <item></item>
         <item>없음</item>
