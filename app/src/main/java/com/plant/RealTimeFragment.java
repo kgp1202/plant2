@@ -142,7 +142,6 @@ public class RealTimeFragment extends Fragment implements View.OnTouchListener {
                                 dialog.cancel();
                             }
                         });
-
             }
             else {
                 builder.setTitle("확인!")
