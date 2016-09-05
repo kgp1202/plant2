@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 
 import org.json.JSONObject;
 
@@ -41,56 +42,56 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
         super.onPreExecute();
         isFinish=false;
         if(userData.point<0){
-            AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
-            alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            final BasicDialog basicDialog = new BasicDialog(mContext, BasicDialog.TEXT_MODE);
+            basicDialog.title.setVisibility(View.GONE);
+            basicDialog.noButton.setVisibility(View.GONE);
+            basicDialog.content.setText("패널티로인해 "+-1*userData.point*30+"초 지연됩니다.");
+            basicDialog.yesButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();     //닫기
+                public void onClick(View v) {
+                    basicDialog.dismiss();
                 }
             });
-            alert.setMessage("패널티로인해 "+-1*userData.point*30+"초 지연됩니다.");
-            alert.show();
+            basicDialog.show();
+//            AlertDialog.Builder alert = new AlertDialog.Builder(mContext);
+//            alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    dialog.dismiss();     //닫기
+//                }
+//            });
+//            alert.setMessage("패널티로인해 "+-1*userData.point*30+"초 지연됩니다.");
+//            alert.show();
         }
     }
 
     @Override
     protected Void doInBackground(Void... params) {
-            /*Queue를 잡는다**********************/
-//        if(userData.point<0){
-//            try {
-//                Thread.sleep(-1*userData.point*30*1000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-        HttpRequest myRequest = new HttpRequest(mContext, "http://plan-t.kr/queue/userMatching.php");
+        HttpRequest myRequest = new HttpRequest("http://plan-t.kr/queue/userMatching.php");
         myRequest.makeQuery(userData.getUserDataJson());
         myRequest.makeQuery(roomData.getRoomDataJson());
-        Thread t = new Thread(myRequest);
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        do {
+        if(HttpRequest.isInternetConnected(mContext)){
+            myRequest.start();
             try {
-                Thread.sleep(300);
-                myRequest = new HttpRequest(mContext, "http://plan-t.kr/queue/checkMatching.php?ID=" + userData.userID);
-                Thread t2=new Thread(myRequest);
-                t2.start();
-                t2.join();
-                JSONObject json=new JSONObject(myRequest.requestResult);
-                matchingR.setRoomDataFromJson(json);
-                matchingR.destPoint = URLDecoder.decode(matchingR.destPoint, "euc-kr");
-            } catch (Exception e) {
+                myRequest.join();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        } while  (myRequest.requestResult.equals("false\n")&&(!isCancelled()));
-        /*************************************/
-        //if(myRequest.line.equals("sucess")){
-        //   isSucess=true;
-        //}
+            do {
+                try {
+                    Thread.sleep(300);
+                    myRequest = new HttpRequest("http://plan-t.kr/queue/checkMatching.php?ID=" + userData.userID);
+                    myRequest.start();
+                    myRequest.join();
+                    JSONObject json=new JSONObject(myRequest.requestResult);
+                    matchingR.setRoomDataFromJson(json);
+                    matchingR.destPoint = URLDecoder.decode(matchingR.destPoint, "euc-kr");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } while  (myRequest.requestResult.equals("false\n")&&(!isCancelled()));
+        }
+
         return null;
     }
 
@@ -105,23 +106,23 @@ class QueueTask extends AsyncTask<Void, Void, Void> {
     @Override
     public void onCancelled(Void params) {
         super.onCancelled(params);
-        HttpRequest myThread = new HttpRequest(mContext, "http://plan-t.kr/queue/cancellableCheck.php?ID=" + userData.userID);
-        Thread t = new Thread(myThread);
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        HttpRequest myThread = new HttpRequest("http://plan-t.kr/queue/cancellableCheck.php?ID=" + userData.userID);
+        if(HttpRequest.isInternetConnected(mContext)){
+            myThread.start();
+            try {
+                myThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (myThread.requestResult.equals(false)) {
+                Log.d("onCancelled", "failed");
+            } else {
+                Log.d("onCancelled", "success");
+            }
+            matchingR.roomID = -1;
+            isFinish = true;
+            myTrigger.makeDarker(false);
+            myTrigger.getResultFromThread(matchingR);
         }
-
-        if (myThread.requestResult.equals(false)) {
-            Log.d("onCancelled", "failed");
-        } else {
-            Log.d("onCancelled", "success");
-        }
-        matchingR.roomID = -1;
-        isFinish = true;
-        myTrigger.makeDarker(false);
-        myTrigger.getResultFromThread(matchingR);
     }
 };

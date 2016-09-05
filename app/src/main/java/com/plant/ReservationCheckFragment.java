@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.google.gson.Gson;
@@ -43,9 +44,12 @@ import java.util.concurrent.ExecutionException;
 public class ReservationCheckFragment extends Fragment {
     View mainView;
     ListView reservation_listView;
+    RelativeLayout frame;
     RoomListViewAdapter reservation_listView_adapter = new RoomListViewAdapter();
+    ProgressBar progressBar;
 
     ArrayList<RoomData> roomDataList = new ArrayList<RoomData>();
+    Context mContext;
 
     @Override
     public void onDestroy() {
@@ -82,10 +86,6 @@ public class ReservationCheckFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        reservation_listView_adapter.notifyDataSetChanged();
-    }
-
-    public void init() {
         FindParticipateRoomData findParticipateRoomData = new FindParticipateRoomData();
         if(HttpRequest.isInternetConnected(getContext()))
             findParticipateRoomData.execute(((FrameActivity)getContext()).userData.userID);
@@ -93,6 +93,14 @@ public class ReservationCheckFragment extends Fragment {
             //인터넷 연결이 안되어 있을 떄의 처리.
         }
 
+        reservation_listView_adapter.notifyDataSetChanged();
+    }
+
+    public void init() {
+        mContext = getContext();
+       progressBar = (ProgressBar) mainView.findViewById(R.id.fragment_reservation_check_progressbar);
+
+        frame = (RelativeLayout) mainView.findViewById(R.id.fragment_reservation_check_frame);
         reservation_listView = (ListView) mainView.findViewById(R.id.reservation_check_listView);
         reservation_listView.setAdapter(reservation_listView_adapter);
         reservation_listView_adapter.setList(getActivity(), roomDataList);
@@ -106,17 +114,28 @@ public class ReservationCheckFragment extends Fragment {
         private HttpRequest findParticipateRoomDataRequest;
 
         @Override
+        protected void onPreExecute() {
+            roomDataList.clear();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
         protected Void doInBackground(String... userIDInput) {
             String userID = userIDInput[0];
-            findParticipateRoomDataRequest = new HttpRequest(getContext(), findParticipateURL + "?userID=" + userID);
-            Thread t = new Thread(findParticipateRoomDataRequest);
-            t.start();
+            findParticipateRoomDataRequest = new HttpRequest(findParticipateURL + "?userID=" + userID);
+            findParticipateRoomDataRequest.setContext(mContext);
+            findParticipateRoomDataRequest.start();
             try {
-                t.join();
+                findParticipateRoomDataRequest.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            progressBar.setVisibility(View.GONE);
         }
 
         @Override
@@ -140,7 +159,8 @@ public class ReservationCheckFragment extends Fragment {
                     reservation_listView.setBackground(null);
                     reservation_listView_adapter.notifyDataSetChanged();
                 }
-                ((FrameActivity)getContext()).stopProgressBar();
+
+                progressBar.setVisibility(View.GONE);
             }
         }
     }

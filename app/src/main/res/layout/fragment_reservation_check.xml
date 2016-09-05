@@ -1,15 +1,22 @@
-<RelativeLayout
-    android:id="@+id/fragment_reservation_check_frame"
+<RelativeLayout android:id="@+id/fragment_reservation_check_frame"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#dddddd"
-    tools:context="com.plant.ReservationCheckFragment">
+    tools:context="com.plant.ReservationCheckFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ListView
         android:id="@+id/reservation_check_listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></ListView>
+
+    <ProgressBar
+        android:id="@+id/fragment_reservation_check_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
 
 </RelativeLayout>

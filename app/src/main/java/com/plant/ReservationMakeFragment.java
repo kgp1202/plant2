@@ -1,5 +1,6 @@
 package com.plant;
 
+import android.app.Activity;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
@@ -121,6 +122,8 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
         (goal_btn[2] = (ImageView) mainView.findViewById(R.id.goal_btn2)).setOnClickListener(goalListener);
         send_btn = (ImageView) mainView.findViewById(R.id.send_btn);
 
+        destination_editText.setOnEditorActionListener(this);
+
         //현재 시간을 입력한다.
         GregorianCalendar calendar = new GregorianCalendar();
         year = calendar.get(Calendar.YEAR);
@@ -230,13 +233,15 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
         @Override
         protected Void doInBackground(Void... params) {
-            autoCompleteRequest = new HttpRequest(mContext, autoCompleteURL);
-            Thread t = new Thread(autoCompleteRequest);
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            autoCompleteRequest = new HttpRequest(autoCompleteURL);
+            autoCompleteRequest.setContext(mContext);
+            if(HttpRequest.isInternetConnected(mContext)){
+                autoCompleteRequest.start();
+                try {
+                    autoCompleteRequest.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
 
             return null;
@@ -267,10 +272,10 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
                 timePickerDialog.show();
                 break;
             case R.id.send_btn:
-                if (destination_editText.getText().toString().trim().equals("")) {
-                    Toast.makeText(getContext(), "목적지를 입력해주세요.", Toast.LENGTH_SHORT).show();
-                } else if (((String) withNumSpin.getSelectedItem()).equals("동행 인원")) {
+                if(withNumSpin.getSelectedItem() == null) {
                     Toast.makeText(getContext(), "동행 인원을 선택해주세요.", Toast.LENGTH_SHORT).show();
+                } else if (destination_editText.getText().toString().trim().equals("")) {
+                    Toast.makeText(getContext(), "목적지를 입력해주세요.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "예약이 완료되었습니다.", Toast.LENGTH_SHORT).show();
 
@@ -288,8 +293,7 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
                     roomData.maxUserNum = 4;
 
                     MakeRoomPHP makeRoomPHP = new MakeRoomPHP();
-                    if(HttpRequest.isInternetConnected(mContext))
-                        makeRoomPHP.execute(roomData);
+                    makeRoomPHP.execute(roomData);
                 }
                 break;
         }
@@ -297,9 +301,11 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if(actionId == EditorInfo.IME_ACTION_DONE){
-            destination_editText.clearFocus();
-        }
+        v.clearFocus();
+        InputMethodManager inputMethodManager = (InputMethodManager) mContext.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if(((Activity)mContext).getCurrentFocus() != null)
+            inputMethodManager.hideSoftInputFromWindow(((Activity)mContext).getCurrentFocus().getWindowToken(), 0);
+
         return false;
     }
 
@@ -309,14 +315,16 @@ public class ReservationMakeFragment extends Fragment implements View.OnClickLis
 
         @Override
         protected Void doInBackground(RoomData... params) {
-            makeRoomRequest = new HttpRequest(mContext, makeRoomURL);
+            makeRoomRequest = new HttpRequest(makeRoomURL);
             makeRoomRequest.makeQuery(params[0].getRoomDataJson());
-            Thread t = new Thread(makeRoomRequest);
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            makeRoomRequest.setContext(mContext);
+            if(HttpRequest.isInternetConnected(mContext)){
+                makeRoomRequest.start();
+                try {
+                    makeRoomRequest.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
 
             return null;

@@ -1,6 +1,7 @@
 package com.plant;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.AnimationDrawable;
@@ -121,59 +122,37 @@ public class RealTimeFragment extends Fragment implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (isQueuing) return false;
+        final BasicDialog basicDialog = new BasicDialog(myContext, BasicDialog.TEXT_MODE);
+        basicDialog.title.setVisibility(View.GONE);
+        basicDialog.noButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                basicDialog.cancel();
+            }
+        });
         AlertDialog.Builder builder = new AlertDialog.Builder(myContext, android.R.style.Theme_Material_Dialog);
         if (checkValidation()) {
             String dest = "";
             dest=realTimeRommData.destPoint;
             realTimeRommData.roomType=1;
             if(((int) maxNumImages[2].getTag()) == 2 && ((int) maxNumImages[1].getTag()) == 2){
-                builder.setTitle("확인!")
-                        .setMessage(realTimeRommData.userNum + "명이서 3명 또는 4명과 함께 택시를 타고 " + dest + " 가는 것 맞나요?")
-                        .setCancelable(true)
-                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mCallBack.makeDarker(true);
-                            }
-                        })
-                        .setNegativeButton("아뇨", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-
+                basicDialog.content.setText(realTimeRommData.userNum + "명이서 3명 또는 4명과 함께 택시를 타고 " + dest + " 가는 것 맞나요?");
             }
             else {
-                builder.setTitle("확인!")
-                        .setMessage(realTimeRommData.userNum + "명이서 " + realTimeRommData.maxUserNum + "명과 함께 택시를 타고 " + dest + " 가는 것 맞나요?")
-                        .setCancelable(true)
-                        .setPositiveButton("네", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mCallBack.makeDarker(true);
-                            }
-                        })
-                        .setNegativeButton("아뇨", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
+                basicDialog.content.setText(realTimeRommData.userNum + "명이서 " + realTimeRommData.maxUserNum + "명과 함께 택시를 타고 " + dest + " 가는 것 맞나요?");
             }
+            basicDialog.yesButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallBack.makeDarker(true);
+                    basicDialog.dismiss();
+                }
+            });
         } else {
-            builder.setTitle("확인")
-                    .setMessage("부족한 정보를 입력해 주세요!")
-                    .setCancelable(true)
-                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
+            basicDialog.content.setText("부족한 정보를 입력해 주세요!");
+            basicDialog.noButton.setVisibility(View.GONE);
         }
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        basicDialog.show();
         return false;
     }
 

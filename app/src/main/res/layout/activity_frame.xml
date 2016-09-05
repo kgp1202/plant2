@@ -102,7 +102,6 @@
 
         </FrameLayout>
 
-
         <RelativeLayout
             android:id="@+id/fragmentReplace"
             android:layout_width="match_parent"
@@ -112,11 +111,4 @@
 
         </RelativeLayout>
     </LinearLayout>
-
-    <ProgressBar
-        android:id="@+id/activity_frame_progressbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="invisible"/>
 </RelativeLayout>

@@ -2,6 +2,7 @@ package com.plant;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -83,6 +84,14 @@ public class MoreFragment extends Fragment implements View.OnClickListener {
         if(!userData.profilePath.equals(""))
             Glide.with(mContext).load(userData.profilePath).into(profileImg);
 
+        name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("onclick", "a");
+                BasicDialog basicDialog = new BasicDialog(mContext, BasicDialog.TEXT_MODE);
+                basicDialog.show();
+            }
+        });
     }
 
     @Override

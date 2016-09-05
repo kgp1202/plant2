@@ -10,14 +10,31 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 import com.kakao.auth.KakaoSDK;
+import com.plant.HttpRequest;
+import com.plant.UserData;
 
 /**
  * Created by angks on 2016-05-17.
  */
 public class GlobalApplication extends Application {
+    private HttpRequest currentRequest;
+    public UserData userData = new UserData();
     private static volatile GlobalApplication instance = null;
     private static volatile Activity currentActivity = null;
     private ImageLoader imageLoader;
+
+    public void setCurrentRequest(HttpRequest request){
+        currentRequest = request;
+    }
+
+    public void clearCurrentRequest(){
+        currentRequest = null;
+    }
+
+    public void stopCurrentRequest(){
+        if(currentRequest != null)
+            currentRequest.interrupt();
+    }
 
     public static Activity getCurrentActivity() {
         return currentActivity;

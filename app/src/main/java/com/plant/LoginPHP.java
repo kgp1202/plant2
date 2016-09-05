@@ -15,7 +15,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.gson.Gson;
+import com.plant.Kakao.GlobalApplication;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,12 +50,11 @@ public class LoginPHP extends AsyncTask<UserData, Void, Void> {
 
     @Override
     protected Void doInBackground(UserData... tempUserData) {
-        loginRequest = new HttpRequest(mContext, loginURL);
+        loginRequest = new HttpRequest(loginURL);
         loginRequest.makeQuery(tempUserData[0].getUserDataJson());
-        Thread t = new Thread(loginRequest);
-        t.start();
+        loginRequest.run();
         try {
-            t.join();
+            loginRequest.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -64,7 +66,8 @@ public class LoginPHP extends AsyncTask<UserData, Void, Void> {
         String[] lines = loginRequest.requestResult.split(System.getProperty("line.separator"));
 
         try {
-            userData.setUserDataFromJson(new JSONObject(lines[0]));
+            ((GlobalApplication)((Activity)mContext).getApplication()).userData.setUserDataFromJson(new JSONObject(lines[0]));
+            userData = ((GlobalApplication)((Activity)mContext).getApplication()).userData;
 
             for(int i = 1; i < lines.length; i++){
                 RoomData tempRoomData = new Gson().fromJson(lines[0], RoomData.class);
@@ -81,9 +84,9 @@ public class LoginPHP extends AsyncTask<UserData, Void, Void> {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         Intent intent=new Intent(mContext,FrameActivity.class);
-        intent.putExtra("UserData", userData);
-        //intent.putExtra("RoomDataList", roomDataList);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         mContext.startActivity(intent);
         ((Activity)mContext).finish();
     }

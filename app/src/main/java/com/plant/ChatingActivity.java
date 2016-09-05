@@ -26,6 +26,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.kakao.usermgmt.response.model.User;
+import com.plant.Kakao.GlobalApplication;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -73,7 +74,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_chating);
         Intent intent = getIntent();
         myRoomData = (RoomData) intent.getSerializableExtra("roomData");
-        myUserData = (UserData) intent.getSerializableExtra("userData");
+        myUserData = ((GlobalApplication)getApplication()).userData;
         participatedUser = (ArrayList<UserData>) intent.getSerializableExtra("participated");
         withNumber = (ArrayList<Integer>) intent.getSerializableExtra("withNumber");
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -167,7 +168,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener {
             case R.id.sendBtn:
                 String input = chatingContent.getText().toString();
                 chatingContent.setText("");
-                HttpRequest myRequest = new HttpRequest(this, "http://plan-t.kr/chating/insertChating.php");
+                HttpRequest myRequest = new HttpRequest("http://plan-t.kr/chating/insertChating.php");
                 JSONObject json = new JSONObject();
                 try {
                     json.put("userID", myUserData.userID);
@@ -177,14 +178,18 @@ public class ChatingActivity extends Activity implements View.OnClickListener {
                     e.getStackTrace();
                 }
                 myRequest.makeQuery(json);
-                Thread t = new Thread(myRequest);
-                if (myRequest.isInternetConnected(mContext) == true) {
-                    t.start();
-                    try {
-                        t.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                if (HttpRequest.isInternetConnected(mContext)) {
+                    myRequest.run();
+
+                    String sendPushAlarmUrl = "http://plan-t.kr/sendPushAlarm.php";
+                    HttpRequest sendPushAlarmRequest = new HttpRequest(sendPushAlarmUrl);
+                    sendPushAlarmRequest.makeQuery(myRoomData.getRoomDataJson());
+                    sendPushAlarmRequest.run();
+                }
+                try {
+                    myRequest.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 break;
             case R.id.backBtn:
@@ -206,16 +211,13 @@ public class ChatingActivity extends Activity implements View.OnClickListener {
         @Override
         protected String doInBackground(String... params) {
             String returnV = "";
-            HttpRequest httpRequest = new HttpRequest(mContext, params[0]);
-            Thread t = new Thread(httpRequest);
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            HttpRequest httpRequest = new HttpRequest(params[0]);
+            if(HttpRequest.isInternetConnected(mContext)) {
+                httpRequest.start();
+                returnV = httpRequest.requestResult;
+                return returnV;
             }
-            returnV = httpRequest.requestResult;
-            return returnV;
+            return null;
         }
 
         @Override
@@ -229,20 +231,21 @@ public class ChatingActivity extends Activity implements View.OnClickListener {
         protected String doInBackground(Void a[]) {
             String returnV = "";
             while (!end) {
-                HttpRequest httpRequest = new HttpRequest(mContext, "http://www.plan-t.kr/chating/getChating.php?roomID=" + myRoomData.roomID + "&ID=" + id);
-                Thread t = new Thread(httpRequest);
-                t.start();
-                try {
-                    t.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                publishProgress(httpRequest.requestResult);
-                returnV = httpRequest.requestResult;
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                HttpRequest httpRequest = new HttpRequest("http://www.plan-t.kr/chating/getChating.php?roomID=" + myRoomData.roomID + "&ID=" + id);
+                if(HttpRequest.isInternetConnected(mContext)) {
+                    httpRequest.start();
+                    try {
+                        httpRequest.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    publishProgress(httpRequest.requestResult);
+                    returnV = httpRequest.requestResult;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             return returnV;
@@ -310,18 +313,26 @@ public class ChatingActivity extends Activity implements View.OnClickListener {
         Runnable updater = new Runnable() {
             public void run() {
                 if (timer_sec <= 0) {
-                    HttpRequest request = new HttpRequest(mContext, "http://plan-t.kr/chating/timeOutPrint?roomID=" + myRoomData.roomID);
-                    Thread t = new Thread(request);
-                    t.start();
-                    try {
-                        t.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    HttpRequest request = new HttpRequest("http://plan-t.kr/chating/timeOutPrint?roomID=" + myRoomData.roomID);
+                    if(HttpRequest.isInternetConnected(mContext)) {
+                        Thread t = new Thread(request);
+                        t.start();
+                        try {
+                            t.join();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+//                        request.run(mContext);
+//                        try {
+//                            request.join();
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+                        if (request.requestResult.equals("success")) {
+                            myUserData.point++;
+                        }
+                        finish();
                     }
-                    if (request.requestResult.equals("success")) {
-                        myUserData.point++;
-                    }
-                    finish();
                 }
                 Calendar temp=Calendar.getInstance();
                 temp.setTimeInMillis(timer_sec);

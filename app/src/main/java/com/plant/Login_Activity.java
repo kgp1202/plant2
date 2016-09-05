@@ -87,8 +87,6 @@ public class Login_Activity extends Activity implements View.OnClickListener{
 
             //Go to FrameActivity!!
             Intent intent=new Intent(this,FrameActivity.class);
-            intent.putExtra("UserData", loginPHP.userData);
-            intent.putExtra("RoomDataList", loginPHP.roomDataList);
             startActivity(intent);
             finish();
         } else {
@@ -162,7 +160,9 @@ public class Login_Activity extends Activity implements View.OnClickListener{
 
         protected void onPostExecute(UserData tempUserData) {
             loginPHP = new LoginPHP(getBaseContext());
-            loginPHP.execute(tempUserData);
+            if(HttpRequest.isInternetConnected(mContext)) {
+                loginPHP.execute(tempUserData);
+            }
         }
     }
     /************* NAVER extend class  and function END *************/

@@ -1,8 +1,12 @@
 package com.plant;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.util.Log;
+
+import com.plant.Kakao.GlobalApplication;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,17 +28,15 @@ import java.util.Iterator;
 public class HttpRequest extends Thread {
     HttpURLConnection conn;
     boolean uriExi;
-    public boolean isFinish;
     String query="";
     JSONObject object=new JSONObject();
-    public String requestResult="";
-    URL url;
     Context mContext;
 
-    public HttpRequest(Context context, String inputUrl){
-        mContext = context;
+    public String requestResult="";
+    URL url;
+
+    public HttpRequest(String inputUrl){
         uriExi=false;
-        isFinish=false;
         Log.d("url",inputUrl);
         try {
             url=new URL(inputUrl);
@@ -76,34 +78,41 @@ public class HttpRequest extends Thread {
         }else { return true; }
     }
 
+    public void setContext(Context context){ mContext = context; }
     @Override
     public void run(){
-            try {
-                if (uriExi) {
-                    query = object.toString();
-                    OutputStream os = conn.getOutputStream();
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                    writer.write(query);
-                    writer.flush();
-                    writer.close();
-                    os.close();
-                }
-                conn.connect();
-                if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                    //Log.d("httpRequest","done");
-                    requestResult = "";
-                    BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-                    String temp2;
-                    while ((temp2 = br.readLine()) != null) {
-                        temp2+="\n";
-                        requestResult += temp2;
-                    }
-                    Log.d("request Result", requestResult);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            if(mContext != null){
+                ((GlobalApplication)((Activity)mContext).getApplication()).setCurrentRequest(this);
             }
-            isFinish = true;
+            if (uriExi) {
+                query = object.toString();
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(query);
+                writer.flush();
+                writer.close();
+                os.close();
+            }
+            conn.connect();
+            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                //Log.d("httpRequest","done");
+                requestResult = "";
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+                String temp2;
+                while ((temp2 = br.readLine()) != null) {
+                    temp2+="\n";
+                    requestResult += temp2;
+                }
+                Log.d("request Result", requestResult);
+            }
 
+            if(mContext != null){
+                ((GlobalApplication)((Activity)mContext).getApplication()).clearCurrentRequest();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

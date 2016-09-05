@@ -4,29 +4,97 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1.1">
+        android:layout_weight="1.1"
+        android:background="@drawable/rounded_corner_background_dialog_top">
 
-        <ImageView
-            android:id="@+id/dialog_detail_top_img"
+        <!--중간에 그림 넣기.-->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/dialog_detail_head2"
-            android:scaleType="fitXY"/>
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="12.3"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="9.2"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="3.7"/>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="8.9"
+                    android:src="@drawable/dialog_detail_check_head_diagram"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="5.3"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.3"/>
+        </LinearLayout>
+        <!--그림 넣기 끝-->
+
+        <!--텍스트 넣기-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="20.8"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="12.3"/>
+                <com.plant.AutoResizeTextView
+                    android:id="@+id/dialog_detail_top_text1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="2.4"
+                    android:textSize="40dp"
+                    android:textColor="#ffffff"/>
+                <com.plant.AutoResizeTextView
+                    android:id="@+id/dialog_detail_top_text2"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="2.4"
+                    android:textSize="40dp"
+                    android:textColor="#ffffff"/>
+            </LinearLayout>
+        </LinearLayout>
+        <!--텍스트 넣기 끝-->
 
         <ImageView
             android:id="@+id/dialog_detail_cancel_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/dialog_detail_cancel"
-            android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:padding="20dp"/>
-
+            android:layout_alignParentTop="true"
+            android:padding="10dp"
+            android:src="@drawable/dialog_detail_cancel"/>
     </RelativeLayout>
 
     <LinearLayout
@@ -95,7 +163,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="6"
-            android:background="#ffffff">
+            android:background="@drawable/rounded_corner_background_dialog_bottom">
 
             <TextView
                 android:layout_width="0dp"

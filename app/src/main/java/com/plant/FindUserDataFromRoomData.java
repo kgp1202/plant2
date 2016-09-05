@@ -36,7 +36,7 @@ public class FindUserDataFromRoomData{
 
     public void run(String roomID){
         participateUserData.clear();
-        findUserDataFromRoomDataReqeust = new HttpRequest(mContext, SearchURL + "?roomID=" + roomID);
+        findUserDataFromRoomDataReqeust = new HttpRequest(SearchURL + "?roomID=" + roomID);
         t = new Thread(findUserDataFromRoomDataReqeust);
         t.start();
         try {

@@ -9,4 +9,6 @@
     <color name="colorBackground">#dfdfdf</color>
     <color name="colorReserveText">#888888</color>
     <color name="colorNoRoom">#dddddd</color>
+    <color name="colorSearchBar">#e4e5e7</color>
+    <color name="colorSearchBarBackground">#f9f9f9</color>
 </resources>

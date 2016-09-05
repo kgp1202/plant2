@@ -1,5 +1,7 @@
 package com.plant;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -22,6 +24,8 @@ public class UserData implements Serializable {
     public String name;
     public String profilePath;
     public String thumbnailPath;
+    public String gcmClientID = null;
+
     public JSONObject getUserDataJson(){
         Gson makeString=new Gson();
         JSONObject returnV=null;
@@ -48,6 +52,20 @@ public class UserData implements Serializable {
         this.reserveRoomID=temp.reserveRoomID;
         this.point=temp.point;
         this.name=temp.name;
+        if(this.gcmClientID != null
+                && !this.gcmClientID.equals(temp.gcmClientID)){
+            Log.d("userData", " " + this.gcmClientID + " " + temp.gcmClientID);
+
+            //데이터베이스 this.gcmClientID로 업데이트
+            String gcmClientIDRestUrl = "http://plan-t.kr/gcmClientIDReset.php";
+            HttpRequest gcmClientIDResetRequest = new HttpRequest(gcmClientIDRestUrl + "?userID=" + this.userID
+                            + "&gcmClientID=" + this.gcmClientID);
+            gcmClientIDResetRequest.start();
+        }
+        if(this.gcmClientID == null){
+            this.gcmClientID = temp.gcmClientID;
+        }
+
     }
     public String getDecodedProfilePath(){
         return profilePath.replace('/', '_');

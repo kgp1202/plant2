@@ -24,30 +24,44 @@
                 android:id="@+id/search_layout_a"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+                android:layout_weight="1.2"
+                android:orientation="horizontal"
+                android:background="@color/colorSearchBarBackground">
 
-                <ImageView
-                    android:id="@+id/search_imageView"
-                    android:layout_marginTop="7dp"
-                    android:layout_marginBottom="7dp"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/reserv_list_search2"/>
+                    android:layout_margin="8dp"
+                    android:background="@drawable/rounded_corner_background_entire_gray">
+                    <ImageView
+                        android:id="@+id/search_imageView"
+                        android:layout_marginTop="7dp"
+                        android:layout_marginBottom="7dp"
+                        android:layout_marginLeft="2dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/reserv_list_search2"/>
 
-                <EditText
-                    android:id="@+id/search_editText"
-                    android:layout_width="0dp"
-                    android:layout_weight="9"
-                    android:layout_height="match_parent"
-                    android:imeOptions="actionSearch"
-                    android:textSize="15dp"
-                    android:hint="목적지를 입력하세요."
-                    android:inputType="text"/>
-
+                    <EditText
+                        android:id="@+id/search_editText"
+                        android:layout_width="0dp"
+                        android:layout_weight="9"
+                        android:layout_height="match_parent"
+                        android:imeOptions="actionSearch"
+                        android:textSize="15dp"
+                        android:hint="목적지를 입력하세요."
+                        android:inputType="text"
+                        android:layout_margin="2dp"
+                        android:background="@color/colorSearchBar"/>
+                </LinearLayout>
             </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorSearchBar"/>
 
             <android.support.v4.widget.SwipeRefreshLayout
                 android:id="@+id/swipeRefreshLayout"
@@ -73,5 +87,12 @@
             android:layout_marginBottom="20dp"
             android:layout_marginRight="20dp"
             />
+
+        <ProgressBar
+            android:id="@+id/fragment_reservation_progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
     </RelativeLayout>
 </LinearLayout>

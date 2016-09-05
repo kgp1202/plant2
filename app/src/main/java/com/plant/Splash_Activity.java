@@ -21,6 +21,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.kakao.auth.Session;
 import com.kakao.kakaotalk.KakaoTalkService;
 import com.kakao.kakaotalk.callback.TalkResponseCallback;
@@ -32,9 +34,22 @@ public class Splash_Activity extends Activity {
     boolean isPastLogin;
     private UserData pastLoginUserData;
     private Context mContext;
+    public boolean isPushAlarm = false;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("splash activity", "onCreate");
+
+        if(getIntent().getBooleanExtra("flag", false)){
+            Log.d("Splash_activity", "this is push alarm" + getIntent().getStringExtra("roomID"));
+        }
+
+        Intent intent = new Intent(getApplicationContext(), RegistrationIntentService.class);
+        startService(intent);
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_);
 
@@ -111,6 +126,7 @@ public class Splash_Activity extends Activity {
                     int secondsDelayed = 1;
                     new Handler().postDelayed(new Runnable() {
                         public void run() {
+                            Intent intent = getIntent();
                             startActivity(new Intent(Splash_Activity.this, Login_Activity.class));
                             finish();
                         }

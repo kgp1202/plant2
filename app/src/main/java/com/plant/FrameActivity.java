@@ -1,6 +1,7 @@
 package com.plant;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
+import android.support.v4.app.ActivityManagerCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -29,6 +31,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.plant.Kakao.GlobalApplication;
 
 import java.util.ArrayList;
 import java.util.concurrent.RunnableFuture;
@@ -75,7 +80,16 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("FrameActivity", "onResume");
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("FrameActiity", "onCreate");
+
+
         super.onCreate(savedInstanceState);
 
         mContext = this;
@@ -100,7 +114,8 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
      ******************************************************************************************/
     public void init() {
         //intent를 통해서 넘어온 데이터
-        userData = (UserData) getIntent().getSerializableExtra("UserData");
+        //userData = (UserData) getIntent().getSerializableExtra("UserData");
+        userData = ((GlobalApplication)getApplication()).userData;
        // reservationCheckListCache = (ArrayList<RoomData>) getIntent().getSerializableExtra("RoomDataList");
 
         mView = (RelativeLayout) findViewById(R.id.mView);
@@ -113,7 +128,6 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
         statusbar_conserve_btn = (ImageView) findViewById(R.id.statusbar_conserve_btn);
         statusbar_conserve_confirm_btn = (ImageView) findViewById(R.id.statusbar_conserve_confirm_btn);
         statusbar_more_btn = (ImageView) findViewById(R.id.statusbar_more_btn);
-        progressBar = (ProgressBar) findViewById(R.id.activity_frame_progressbar);
 
         statusbar_home_btn.setOnClickListener(this);
         statusbar_realtime_btn.setOnClickListener(this);
@@ -128,29 +142,18 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
                 .commit();
 
         currentFragmentNumber = 0;
+
+        if(isPushAlarm()){
+            makeChange(3);
+            RoomDataDialog roomDataDialog = new RoomDataDialog(mContext, RoomDataDialog.DIALOG_MODE_CHECK);
+            RoomData showedRoomData = new Gson().fromJson(getIntent().getStringExtra("RoomData"), RoomData.class);
+            roomDataDialog.show(showedRoomData);
+            roomDataDialog.openChatingActivity();
+        }
     }
 
-    public void activateProgressBar(){
-//        startViewChange = true;
-//        Thread thread = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Thread.sleep(1000);
-//                    if(((FrameActivity)mContext).startViewChange == true) {
-//                        progressBar.setVisibility(View.VISIBLE);
-//                    }
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//        thread.run();
-
-    }
-    public void stopProgressBar(){
-//        startViewChange = false;
-//        progressBar.setVisibility(View.INVISIBLE);
+    private boolean isPushAlarm(){
+        return getIntent().getBooleanExtra("isPushAlarm", false);
     }
 
     //클릭 되어졌던 이미지를 초기화
@@ -172,7 +175,6 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        activateProgressBar();
         switch (v.getId()) {
             case R.id.statusbar_home_btn:
                 makeChange(0);
@@ -197,6 +199,7 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
         initImage();
         currentFragmentNumber = number;
         fragmentManager.beginTransaction().remove(fragment).commit();
+        ((GlobalApplication)getApplication()).stopCurrentRequest();
 
         switch (number) {
             case 0:
@@ -245,21 +248,23 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
     }
 
     public void getResultFromThread(RoomData tempR){
-        //reservationCheckListCache.add(0, tempR);
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+        final BasicDialog basicDialog = new BasicDialog(mContext, BasicDialog.TEXT_MODE);
+        basicDialog.title.setVisibility(View.GONE);
+        basicDialog.noButton.setVisibility(View.GONE);
+        basicDialog.yesButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();     //닫기
+            public void onClick(View v) {
+                basicDialog.dismiss();
             }
         });
+
         if(tempR.roomID==0){
-            alert.setMessage("방 생성에 실패하셨습니다 ㅜ");
-            alert.show();
+            basicDialog.content.setText("방 생성에 실패하셨습니다");
+            basicDialog.show();
         }
         else if(tempR.roomID==-1){
-            alert.setMessage("실시간 매칭을 취소하셨습니다!");
-            alert.show();
+            basicDialog.content.setText("실시간 매칭을 취소되었습니다");
+            basicDialog.show();
         }
         else{
             RoomDataDialog dialog=new RoomDataDialog(this,RoomDataDialog.DIALOG_MODE_CHECK);

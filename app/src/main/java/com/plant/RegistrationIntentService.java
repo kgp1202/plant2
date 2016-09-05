@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.plant.Kakao.GlobalApplication;
 
 import java.io.IOException;
 
@@ -50,16 +51,27 @@ public class RegistrationIntentService extends IntentService {
                 // Instance ID에 해당하는 토큰을 생성하여 가져온다.
                 token = instanceID.getToken(default_senderId, scope, null);
 
+                //현재 userData의 gcmClientID를 update한다.
+                if(((GlobalApplication)getApplication()).userData.gcmClientID != null
+                        && !((GlobalApplication)getApplication()).userData.gcmClientID.equals(token)){
+
+                    Log.d("userData", " " + ((GlobalApplication)getApplication()).userData.gcmClientID + " " + token);
+
+                    ((GlobalApplication)getApplication()).userData.gcmClientID = token;
+                    //데이터 베이스도 갱신.
+                    String gcmClientIDRestUrl = "http://plan-t.kr/gcmClientIDReset.php";
+                    HttpRequest gcmClientIDResetRequest = new HttpRequest(
+                            gcmClientIDRestUrl + "?userID=" + ((GlobalApplication)getApplication()).userData.userID
+                            + "&gcmClientID=" + token);
+                    gcmClientIDResetRequest.start();
+                }
+                if(((GlobalApplication)getApplication()).userData.gcmClientID == null){
+                    ((GlobalApplication)getApplication()).userData.gcmClientID = token;
+                }
                 Log.i(TAG, "GCM Registration Token: " + token);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // GCM Instance ID에 해당하는 토큰을 획득하면 LocalBoardcast에 COMPLETE 액션을 알린다.
-        // 이때 토큰을 함께 넘겨주어서 UI에 토큰 정보를 활용할 수 있도록 했다.
-        Intent registrationComplete = new Intent(QuickstartPreferences.REGISTRATION_COMPLETE);
-        registrationComplete.putExtra("token", token);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 }

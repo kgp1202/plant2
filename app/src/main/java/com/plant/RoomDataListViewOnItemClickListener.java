@@ -61,7 +61,6 @@ public class RoomDataListViewOnItemClickListener implements AdapterView.OnItemCl
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         clickedItem = (RoomData)parent.getAdapter().getItem(position);
-        ((FrameActivity)mContext).activateProgressBar();
         dialog.show(clickedItem);
     }
 }

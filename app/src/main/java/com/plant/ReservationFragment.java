@@ -37,6 +37,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,8 +75,8 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
     ListView listView;
     EditText searchEditText;
     LinearLayout parentLayout;
-
     SwipeRefreshLayout swipeRefreshLayout;
+    ProgressBar progressBar;
 
     RoomListViewAdapter listViewAdapter = new RoomListViewAdapter();
     ArrayList<RoomData> roomDataList = new ArrayList<RoomData>();
@@ -127,6 +128,7 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
     }
 
     public void init() {
+        progressBar = (ProgressBar) mainView.findViewById(R.id.fragment_reservation_progressbar);
         swipeRefreshLayout = (SwipeRefreshLayout) mainView.findViewById(R.id.swipeRefreshLayout);
 
         ImageView btn = (ImageView) mainView.findViewById(R.id.reservationAddBtn);
@@ -262,15 +264,16 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
         @Override
         protected Void doInBackground(String... params) {
             String destPoint = params[0];
-            searchRequest = new HttpRequest(mContext, SearchURL + "?destPoint=" + destPoint);
-            Thread t = new Thread(searchRequest);
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            searchRequest = new HttpRequest(SearchURL + "?destPoint=" + destPoint);
+            searchRequest.setContext(mContext);
+            if(HttpRequest.isInternetConnected(mContext)){
+                searchRequest.start();
+                try {
+                    searchRequest.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-
             return null;
         }
 
@@ -298,19 +301,30 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
         HttpRequest getRoomDataRequest;
 
         @Override
+        protected void onPreExecute() {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
         protected Void doInBackground(Long... params) {
             long fromRoomID = params[0];
             long toRoomID = params[1];
-            getRoomDataRequest = new HttpRequest(mContext, GetRoomDataURL + "?from=" + fromRoomID + "&to=" + toRoomID);
-            Thread t = new Thread(getRoomDataRequest);
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            getRoomDataRequest = new HttpRequest(GetRoomDataURL + "?from=" + fromRoomID + "&to=" + toRoomID);
+            getRoomDataRequest.setContext(mContext);
+            if(HttpRequest.isInternetConnected(mContext)) {
+                getRoomDataRequest.start();
+                try {
+                    getRoomDataRequest.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-
             return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            progressBar.setVisibility(View.GONE);
         }
 
         @Override
@@ -329,8 +343,7 @@ public class ReservationFragment extends Fragment implements AbsListView.OnScrol
                     roomDataList.add(roomData);
                 }
                 listViewAdapter.notifyDataSetChanged();
-
-                ((FrameActivity)getContext()).stopProgressBar();
+                progressBar.setVisibility(View.GONE);
             }
         }
     }
