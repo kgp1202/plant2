@@ -47,6 +47,8 @@ public class ReservationCheckFragment extends Fragment {
     RelativeLayout frame;
     RoomListViewAdapter reservation_listView_adapter = new RoomListViewAdapter();
     ProgressBar progressBar;
+    /*chating request*/
+    HttpRequest h;
 
     ArrayList<RoomData> roomDataList = new ArrayList<RoomData>();
     Context mContext;
@@ -78,6 +80,10 @@ public class ReservationCheckFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mainView = inflater.inflate(R.layout.fragment_reservation_check, container, false);
+
+        /* * for chating read check*/
+        reservation_listView_adapter.isCheckFrame=true;
+        /* */
         init();
 
         return mainView;
@@ -130,6 +136,18 @@ public class ReservationCheckFragment extends Fragment {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            /*get from chating number from server*/
+            if(HttpRequest.isInternetConnected(mContext)) {
+                h = new HttpRequest("http://www.plan-t.kr/getAllNumberOfChating.php?userID=" + userID);
+                h.start();
+                try {
+                    h.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                /********/
+            }
             return null;
         }
 
@@ -161,6 +179,13 @@ public class ReservationCheckFragment extends Fragment {
                 }
 
                 progressBar.setVisibility(View.GONE);
+
+                try {
+                    reservation_listView_adapter.roomChatingID=new JSONObject(h.requestResult);
+                    Log.d("chating check",reservation_listView_adapter.roomChatingID.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

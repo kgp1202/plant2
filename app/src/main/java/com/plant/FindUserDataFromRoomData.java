@@ -44,7 +44,7 @@ public class FindUserDataFromRoomData{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+        Log.d("test",findUserDataFromRoomDataReqeust.requestResult);
         String[] lines = findUserDataFromRoomDataReqeust.requestResult.split(System.getProperty("line.separator"));
         for(int i = 0; i < lines.length; i++){
             participateUserData.add(new Gson().fromJson(lines[i], UserData.class));

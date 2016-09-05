@@ -297,7 +297,7 @@ public class FrameActivity extends FragmentActivity implements View.OnClickListe
             }
         }else {
             frameAnimation.stop();
-            mView.removeViewAt(1);
+            mView.removeViewAt(2);
         }
     }
 

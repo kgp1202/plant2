@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -66,10 +67,11 @@ public class ChatingActivity extends Activity implements View.OnClickListener {
     getData myChatingThread;
     boolean end = false;
     int id = 0;
-
+    SharedPreferences pref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pref=getSharedPreferences("chating",MODE_PRIVATE);
         mContext = this;
         setContentView(R.layout.activity_chating);
         Intent intent = getIntent();
@@ -122,15 +124,29 @@ public class ChatingActivity extends Activity implements View.OnClickListener {
                 for (int i = 0; i < myJsonObject.length(); i++) {
                     JSONObject obj = new JSONObject(myJsonObject.getString((id + 1) + ""));
                     int num = getUserDataFromParticipates(obj.getString("userID"));
-                    UserData temp = participatedUser.get(num);
-                    String content = URLDecoder.decode(obj.getString("content"), "euc-kr");
-                    obj.remove("content");
-                    obj.put("content", content);
-                    obj.put("profile", temp.thumbnailPath);
-                    obj.put("userNum", withNumber.get(num));
-                    obj.put("name", temp.name);
-                    adapter.myJsonObjectList.add(obj);
+                    if(num!=-1) {
+                        UserData temp = participatedUser.get(num);
+                        String content = URLDecoder.decode(obj.getString("content"), "euc-kr");
+                        obj.remove("content");
+                        obj.put("content", content);
+                        obj.put("profile", temp.thumbnailPath);
+                        obj.put("userNum", withNumber.get(num));
+                        obj.put("name", temp.name);
+                        adapter.myJsonObjectList.add(obj);
+                    }
+                    else{
+                        String content = URLDecoder.decode(obj.getString("content"), "euc-kr");
+                        obj.remove("content");
+                        obj.put("content", content);
+                        obj.put("profile", "");
+                        obj.put("userNum",1);
+                        obj.put("name", "없음");
+                        adapter.myJsonObjectList.add(obj);
+                    }
                     id++;
+                    SharedPreferences.Editor editor=pref.edit();
+                    editor.putInt(""+myRoomData.roomID,id);
+                    editor.commit();
                     // Log.d("obj",obj.toString());
                 }
             } catch (Exception e) {
@@ -159,7 +175,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener {
             if (participatedUser.get(i).userID.equals(ID))
                 return i;
         }
-        return 0;
+        return -1;
     }
 
     @Override
@@ -168,6 +184,9 @@ public class ChatingActivity extends Activity implements View.OnClickListener {
             case R.id.sendBtn:
                 String input = chatingContent.getText().toString();
                 chatingContent.setText("");
+
+                if(input.trim().equals(""))
+                    break;
                 HttpRequest myRequest = new HttpRequest("http://plan-t.kr/chating/insertChating.php");
                 JSONObject json = new JSONObject();
                 try {
@@ -270,6 +289,9 @@ public class ChatingActivity extends Activity implements View.OnClickListener {
                         adapter.notifyDataSetChanged();
                         textBody.setSelection(adapter.getCount() - 1);
                         id++;
+                        SharedPreferences.Editor editor=pref.edit();
+                        editor.putInt(""+myRoomData.roomID,id);
+                        editor.commit();
                         // Log.d("obj",obj.toString());
                 }
             } catch (Exception e) {
@@ -295,6 +317,7 @@ public class ChatingActivity extends Activity implements View.OnClickListener {
                 timer_sec = myRoomData.startTime - nowC.getTimeInMillis();
                 tempC.setTimeInMillis(myRoomData.startTime);
                 hourTemp=tempC.get(Calendar.HOUR_OF_DAY)-nowC.get(Calendar.HOUR_OF_DAY);
+                if(hourTemp<0)hourTemp+=24;
                 if (tempC.get(Calendar.MONTH) - nowC.get(Calendar.MONTH) > 0)
                     dayCnt = "7일+";
                 else {

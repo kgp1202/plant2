@@ -1,6 +1,7 @@
 package com.plant;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,11 +10,16 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.zip.Inflater;
 
 /**
@@ -23,6 +29,8 @@ public class RoomListViewAdapter extends BaseAdapter {
 
     public Context myContext;
     private ArrayList<RoomData> list = new ArrayList<RoomData>();
+    public JSONObject roomChatingID=new JSONObject();
+    public boolean isCheckFrame=false;
 
     public void setList(Context con,ArrayList<RoomData> inputList){
         myContext=con;
@@ -60,6 +68,7 @@ public class RoomListViewAdapter extends BaseAdapter {
         TextView destination;
         TextView startingPoint;
         ImageView returnImage;
+        TextView unReadMessageNum;
     }
 
 
@@ -79,7 +88,7 @@ public class RoomListViewAdapter extends BaseAdapter {
             myHolder.returnImage = (ImageView) convertView.findViewById(R.id.returnImage);
             myHolder.date = (TextView) convertView.findViewById(R.id.date);
             myHolder.reservationCnt = (ImageView) convertView.findViewById(R.id.reservationCnt);
-
+            myHolder.unReadMessageNum=(TextView)convertView.findViewById(R.id.unReadMessageNum);
             convertView.setTag(myHolder);
         }
         else{
@@ -134,6 +143,27 @@ public class RoomListViewAdapter extends BaseAdapter {
         }
         myHolder.destination.setText(temp.destPoint);
 
+
+        if(isCheckFrame){
+            myHolder.unReadMessageNum.setVisibility(View.VISIBLE);
+            SharedPreferences pref=myContext.getSharedPreferences("chating",myContext.MODE_PRIVATE);
+            Iterator<String> it=roomChatingID.keys();
+            while(it.hasNext()){
+                String key=it.next();
+                try {
+                    int read=pref.getInt(key,0);
+                    int all=Integer.parseInt(roomChatingID.getString(key));
+                    if(read!=all){
+                            myHolder.unReadMessageNum.setText((all-read)+"");
+                    }
+                    else{
+                        myHolder.unReadMessageNum.setVisibility(View.INVISIBLE);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         return convertView;
     }
 }

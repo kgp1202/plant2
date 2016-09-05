@@ -88,9 +88,7 @@ public class ChatingListViewAdapter extends BaseAdapter {
                 if(temp.getString("userID").equals(holder.beforeID)){
                     holder.number.setVisibility(View.INVISIBLE);
                     holder.name.setVisibility(View.INVISIBLE);
-                    holder.profile.setVisibility(View.INVISIBLE);
-                    LinearLayout.LayoutParams p=(LinearLayout.LayoutParams)holder.marginLayout.getLayoutParams();
-                    p.leftMargin=getPXfromDP(60);
+                    Glide.with(context).load(R.drawable.trans).override(getPXfromDP(60),getPXfromDP(5)).into(holder.profile);
                 }
                 else{
                     holder.number.setVisibility(View.VISIBLE);
